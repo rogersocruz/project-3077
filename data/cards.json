@@ -1,0 +1,1147 @@
+[
+  {
+    "id": "reinforcement_orbital",
+    "name": "Reforço Orbital",
+    "deck": "n1",
+    "tier": 1,
+    "type": "action",
+    "timing": "own",
+    "valence": "benefit",
+    "target": "troop",
+    "range": "own",
+    "duration": "round",
+    "cost": {
+      "resources": {
+        "food": 1
+      }
+    },
+    "effect": "A tropa alvo ganha **+2 de força** até o fim da rodada.",
+    "effectId": "troopStrengthBonus",
+    "params": {
+      "amount": 2
+    },
+    "copies": 3,
+    "art": {
+      "subject": "orbital supply capsule landing beside armored colonial soldiers"
+    }
+  },
+  {
+    "id": "desertion",
+    "name": "Deserção",
+    "deck": "n1",
+    "tier": 1,
+    "type": "action",
+    "timing": "delivered",
+    "valence": "sabotage",
+    "target": "troop",
+    "range": "drone",
+    "duration": "turn",
+    "cost": {
+      "resources": {
+        "food": 1
+      }
+    },
+    "effect": "A tropa alvo **não pode se mover** neste turno.",
+    "effectId": "troopRoot",
+    "params": {},
+    "copies": 3,
+    "art": {
+      "subject": "soldiers abandoning their post at night under a stormy sky"
+    }
+  },
+  {
+    "id": "thermal_sweep",
+    "name": "Varredura Térmica",
+    "deck": "n1",
+    "tier": 1,
+    "type": "action",
+    "timing": "own",
+    "valence": "information",
+    "target": "troop",
+    "range": "radius:3",
+    "duration": "instant",
+    "cost": {},
+    "effect": "Revela todas as tropas em alcance.",
+    "effectId": "revealTroops",
+    "params": {
+      "radius": 3
+    },
+    "copies": 2,
+    "art": {
+      "subject": "thermal scanner drone casting a heat-vision overlay on a valley"
+    }
+  },
+  {
+    "id": "overload",
+    "name": "Sobrecarga",
+    "deck": "n1",
+    "tier": 1,
+    "type": "action",
+    "timing": "own",
+    "valence": "benefit",
+    "target": "structure",
+    "range": "own",
+    "duration": "turn",
+    "cost": {},
+    "effect": "A estrutura de extração alvo produz o **dobro**. Na rodada seguinte, fica inativa.",
+    "effectId": "overload",
+    "params": {
+      "extraProductions": 1
+    },
+    "copies": 3,
+    "art": {
+      "subject": "overheating extraction machine glowing orange with steam vents"
+    }
+  },
+  {
+    "id": "induced_failure",
+    "name": "Pane Induzida",
+    "deck": "n1",
+    "tier": 1,
+    "type": "action",
+    "timing": "delivered",
+    "valence": "sabotage",
+    "target": "structure",
+    "range": "drone",
+    "duration": "turn",
+    "cost": {
+      "resources": {
+        "coal": 1
+      }
+    },
+    "effect": "A estrutura de extração alvo **não produz** neste turno.",
+    "effectId": "structureNoProduce",
+    "params": {},
+    "copies": 3,
+    "art": {
+      "subject": "saboteur drone attaching a device to an industrial machine, sparks flying"
+    }
+  },
+  {
+    "id": "audit",
+    "name": "Auditoria",
+    "deck": "n1",
+    "tier": 1,
+    "type": "action",
+    "timing": "own",
+    "valence": "information",
+    "target": "structure",
+    "range": "radius:2",
+    "duration": "instant",
+    "cost": {},
+    "effect": "Veja nível e produção de todas as estruturas em alcance.",
+    "effectId": "revealStructures",
+    "params": {
+      "radius": 2
+    },
+    "copies": 2,
+    "art": {
+      "subject": "holographic audit report floating over a mining facility"
+    }
+  },
+  {
+    "id": "convoy",
+    "name": "Comboio",
+    "deck": "n1",
+    "tier": 1,
+    "type": "action",
+    "timing": "own",
+    "valence": "benefit",
+    "target": "resource",
+    "range": "own",
+    "duration": "instant",
+    "cost": {
+      "discard": 1
+    },
+    "effect": "Receba **2** de um recurso à sua escolha (exceto Ouro e Petróleo).",
+    "effectId": "gainResourceChoice",
+    "params": {
+      "amount": 2,
+      "exclude": [
+        "gold",
+        "oil"
+      ]
+    },
+    "copies": 3,
+    "art": {
+      "subject": "armored supply convoy crossing a dusty plain at sunrise"
+    }
+  },
+  {
+    "id": "plunder",
+    "name": "Pilhagem",
+    "deck": "n1",
+    "tier": 1,
+    "type": "action",
+    "timing": "delivered",
+    "valence": "sabotage",
+    "target": "resource",
+    "range": "drone",
+    "duration": "instant",
+    "cost": {
+      "resources": {
+        "food": 1
+      }
+    },
+    "effect": "O alvo perde **2** de um recurso à sua escolha; você recebe **1**.",
+    "effectId": "stealResource",
+    "params": {
+      "lose": 2,
+      "gain": 1
+    },
+    "copies": 3,
+    "art": {
+      "subject": "pirate skiff raiding a cargo depot, crates scattered"
+    }
+  },
+  {
+    "id": "market_leak",
+    "name": "Vazamento de Mercado",
+    "deck": "n1",
+    "tier": 1,
+    "type": "action",
+    "timing": "own",
+    "valence": "information",
+    "target": "player",
+    "range": "global",
+    "duration": "instant",
+    "cost": {},
+    "effect": "Todos revelam seus estoques até o fim da rodada.",
+    "effectId": "revealStocks",
+    "params": {},
+    "copies": 2,
+    "art": {
+      "subject": "leaked financial data streams projected across a city skyline"
+    }
+  },
+  {
+    "id": "deep_survey",
+    "name": "Sondagem Profunda",
+    "deck": "n1",
+    "tier": 1,
+    "type": "action",
+    "timing": "own",
+    "valence": "information",
+    "target": "subsoil",
+    "range": "radius:2",
+    "duration": "instant",
+    "cost": {
+      "resources": {
+        "coal": 1
+      }
+    },
+    "effect": "Revela o subsolo de todos os hexes em alcance a partir da Vila **ou** de um Posto.",
+    "effectId": "revealSubsoilArea",
+    "params": {
+      "radius": 2
+    },
+    "copies": 3,
+    "art": {
+      "subject": "seismic survey pulse rippling through layered rock, cross-section view"
+    }
+  },
+  {
+    "id": "diplomatic_support",
+    "name": "Apoio Diplomático",
+    "deck": "n1",
+    "tier": 1,
+    "type": "action",
+    "timing": "delivered",
+    "valence": "benefit",
+    "target": "player",
+    "range": "global",
+    "duration": "turn",
+    "cost": {},
+    "effect": "O alvo ganha **1 ação extra** no próximo turno dele.",
+    "effectId": "extraAction",
+    "params": {
+      "amount": 1
+    },
+    "copies": 2,
+    "art": {
+      "subject": "two envoys exchanging a sealed data tablet in a diplomatic hall"
+    }
+  },
+  {
+    "id": "reconnaissance",
+    "name": "Reconhecimento",
+    "deck": "n1",
+    "tier": 1,
+    "type": "action",
+    "timing": "own",
+    "valence": "information",
+    "target": "player",
+    "range": "global",
+    "duration": "instant",
+    "cost": {},
+    "effect": "Revela todas as estruturas e tropas do tabuleiro alvo.",
+    "effectId": "revealBoard",
+    "params": {},
+    "copies": 2,
+    "art": {
+      "subject": "high-altitude recon drone photographing a colony from above"
+    }
+  },
+  {
+    "id": "drone_1",
+    "name": "Drone I",
+    "deck": "n1",
+    "tier": 1,
+    "type": "action",
+    "timing": "own",
+    "valence": "logistics",
+    "target": "hex",
+    "range": "drone",
+    "duration": "instant",
+    "cost": {
+      "resourcesAny": [
+        {
+          "coal": 2
+        },
+        {
+          "oil": 1
+        }
+      ]
+    },
+    "effect": "Jogue com uma ação de Sondar ou Construir: alcance **+1**. Pode atingir hex de outro tabuleiro para Sondar.",
+    "effectId": "droneRange",
+    "params": {
+      "bonus": 1
+    },
+    "copies": 4,
+    "art": {
+      "subject": "small quadcopter survey drone flying over alien terrain"
+    },
+    "flags": [
+      "fixedCost"
+    ]
+  },
+  {
+    "id": "strategic_retreat",
+    "name": "Retirada Estratégica",
+    "deck": "n1",
+    "tier": 1,
+    "type": "action",
+    "timing": "own",
+    "valence": "logistics",
+    "target": "troop",
+    "range": "own",
+    "duration": "instant",
+    "cost": {
+      "resources": {
+        "iron": 1
+      }
+    },
+    "effect": "Mova todas as suas tropas de um hex adjacente a uma tropa inimiga para um hex seguro adjacente. **Sem custo de Comida.** Esta ação não gera combate.",
+    "effectId": "freeRetreat",
+    "params": {},
+    "copies": 3,
+    "art": {
+      "subject": "armored soldiers retreating across a green valley, smoke and burning wreckage behind them"
+    }
+  },
+  {
+    "id": "drone_2",
+    "name": "Drone II",
+    "deck": "n2",
+    "tier": 2,
+    "type": "action",
+    "timing": "own",
+    "valence": "logistics",
+    "target": "hex",
+    "range": "drone",
+    "duration": "instant",
+    "cost": {
+      "resourcesAny": [
+        {
+          "coal": 2
+        },
+        {
+          "oil": 1
+        }
+      ]
+    },
+    "effect": "Jogue com Sondar ou Construir: alcance **+2**. Pode atingir hex de outro tabuleiro para Sondar.",
+    "effectId": "droneRange",
+    "params": {
+      "bonus": 2
+    },
+    "copies": 3,
+    "art": {
+      "subject": "long-range survey drone with folding wings over a canyon"
+    },
+    "flags": [
+      "fixedCost"
+    ]
+  },
+  {
+    "id": "ion_bomb",
+    "name": "Bomba de Íons",
+    "deck": "n2",
+    "tier": 2,
+    "type": "action",
+    "timing": "delivered",
+    "valence": "sabotage",
+    "target": "hex",
+    "range": "drone",
+    "duration": "round",
+    "cost": {
+      "discard": 2
+    },
+    "effect": "**Revelação:** escolha 1 hex do alvo. Todas as estruturas que consomem **CARVÃO** naquele hex e adjacentes não produzem e não operam nesta rodada.",
+    "effectId": "ionPulse",
+    "params": {
+      "radius": 1
+    },
+    "copies": 2,
+    "art": {
+      "subject": "massive blue ion shockwave dome over an industrial complex in a desert valley"
+    }
+  },
+  {
+    "id": "transmutation",
+    "name": "Transmutação",
+    "deck": "n2",
+    "tier": 2,
+    "type": "action",
+    "timing": "own",
+    "valence": "logistics",
+    "target": "resource",
+    "range": "own",
+    "duration": "instant",
+    "cost": {
+      "resources": {
+        "iron": 4
+      }
+    },
+    "effect": "Receba **1 Ouro**.",
+    "effectId": "gainResource",
+    "params": {
+      "resource": "gold",
+      "amount": 1
+    },
+    "copies": 2,
+    "art": {
+      "subject": "alchemical fusion reactor turning iron bars into glowing gold"
+    }
+  },
+  {
+    "id": "terraform",
+    "name": "Terraformação",
+    "deck": "n2",
+    "tier": 2,
+    "type": "action",
+    "timing": "own",
+    "valence": "benefit",
+    "target": "hex",
+    "range": "own",
+    "duration": "permanent",
+    "cost": {
+      "resources": {
+        "stone": 2
+      }
+    },
+    "effect": "O hex alvo passa a produzir **+1** do seu recurso.",
+    "effectId": "hexYieldBonus",
+    "params": {
+      "amount": 1
+    },
+    "copies": 2,
+    "art": {
+      "subject": "terraforming machines seeding fertile soil on barren land"
+    }
+  },
+  {
+    "id": "gallery_collapse",
+    "name": "Colapso de Galeria",
+    "deck": "n2",
+    "tier": 2,
+    "type": "action",
+    "timing": "delivered",
+    "valence": "sabotage",
+    "target": "subsoil",
+    "range": "drone",
+    "duration": "permanent",
+    "cost": {
+      "resources": {
+        "coal": 1
+      },
+      "discard": 1
+    },
+    "effect": "O subsolo do hex alvo fica **selado**. O dono remove gastando 2 ações.",
+    "effectId": "sealSubsoil",
+    "params": {
+      "clearActions": 2
+    },
+    "copies": 2,
+    "art": {
+      "subject": "collapsed underground mine tunnel with dust and broken supports"
+    }
+  },
+  {
+    "id": "political_coup",
+    "name": "Golpe Político",
+    "deck": "n2",
+    "tier": 2,
+    "type": "action",
+    "timing": "delivered",
+    "valence": "sabotage",
+    "target": "player",
+    "range": "global",
+    "duration": "turn",
+    "cost": {
+      "resources": {
+        "gold": 1
+      }
+    },
+    "effect": "O alvo perde **1 ação** no próximo turno dele.",
+    "effectId": "loseAction",
+    "params": {
+      "amount": 1
+    },
+    "copies": 2,
+    "art": {
+      "subject": "tense political chamber, holographic votes flipping red"
+    }
+  },
+  {
+    "id": "dossier",
+    "name": "Dossiê",
+    "deck": "n2",
+    "tier": 2,
+    "type": "action",
+    "timing": "own",
+    "valence": "information",
+    "target": "card",
+    "range": "global",
+    "duration": "instant",
+    "cost": {
+      "discard": 2
+    },
+    "effect": "Veja a mão de cartas do alvo.",
+    "effectId": "revealHand",
+    "params": {},
+    "copies": 2,
+    "art": {
+      "subject": "classified dossier folder with surveillance photos on a desk"
+    }
+  },
+  {
+    "id": "construction_contract",
+    "name": "Contrato de Obra",
+    "deck": "n2",
+    "tier": 2,
+    "type": "action",
+    "timing": "own",
+    "valence": "benefit",
+    "target": "structure",
+    "range": "own",
+    "duration": "instant",
+    "cost": {
+      "discard": 2
+    },
+    "effect": "Construa uma estrutura pagando **metade** do custo (arredondado para cima). Ainda gasta 1 ação.",
+    "effectId": "halfCostBuild",
+    "params": {},
+    "copies": 3,
+    "art": {
+      "subject": "construction crew and mechs raising a prefab building rapidly"
+    }
+  },
+  {
+    "id": "demolition",
+    "name": "Demolição",
+    "deck": "n2",
+    "tier": 2,
+    "type": "action",
+    "timing": "delivered",
+    "valence": "sabotage",
+    "target": "structure",
+    "range": "drone",
+    "duration": "permanent",
+    "cost": {
+      "resources": {
+        "coal": 1
+      },
+      "discard": 1
+    },
+    "effect": "Destrói uma estrutura alvo. **Não alveja a Vila.** Muro e Posto absorvem: sofrem downgrade em vez de serem destruídos.",
+    "effectId": "destroyStructure",
+    "params": {
+      "absorbedBy": [
+        "wall",
+        "outpost"
+      ]
+    },
+    "copies": 2,
+    "art": {
+      "subject": "controlled demolition charges collapsing an industrial tower"
+    }
+  },
+  {
+    "id": "reverse_engineering",
+    "name": "Engenharia Reversa",
+    "deck": "n2",
+    "tier": 2,
+    "type": "action",
+    "timing": "delivered",
+    "valence": "sabotage",
+    "target": "permanent",
+    "range": "global",
+    "duration": "permanent",
+    "cost": {
+      "resources": {
+        "coal": 1
+      }
+    },
+    "effect": "Destrói 1 permanente instalado do alvo.",
+    "effectId": "destroyPermanent",
+    "params": {},
+    "copies": 2,
+    "art": {
+      "subject": "engineers disassembling a captured alien device on a lab bench"
+    }
+  },
+  {
+    "id": "drone_3",
+    "name": "Drone III",
+    "deck": "n3",
+    "tier": 3,
+    "type": "action",
+    "timing": "own",
+    "valence": "logistics",
+    "target": "hex",
+    "range": "drone",
+    "duration": "instant",
+    "cost": {
+      "resourcesAny": [
+        {
+          "coal": 2
+        },
+        {
+          "oil": 1
+        }
+      ]
+    },
+    "effect": "Jogue com Sondar ou Construir: alcance **+3**. Pode atingir hex de outro tabuleiro para Sondar.",
+    "effectId": "droneRange",
+    "params": {
+      "bonus": 3
+    },
+    "copies": 2,
+    "art": {
+      "subject": "stealth high-altitude drone above clouds at dawn"
+    },
+    "flags": [
+      "fixedCost"
+    ]
+  },
+  {
+    "id": "orbital_strike",
+    "name": "Ataque Orbital",
+    "deck": "n3",
+    "tier": 3,
+    "type": "action",
+    "timing": "delivered",
+    "valence": "sabotage",
+    "target": "structure",
+    "range": "global",
+    "duration": "permanent",
+    "cost": {
+      "resources": {
+        "oil": 1
+      },
+      "discard": 2
+    },
+    "effect": "Destrói **completamente** uma estrutura alvo, ignorando Muro e Posto. Não alveja o Centro da Vila.",
+    "effectId": "destroyStructure",
+    "params": {
+      "absorbedBy": []
+    },
+    "copies": 1,
+    "art": {
+      "subject": "orbital laser beam striking a facility from space"
+    }
+  },
+  {
+    "id": "advanced_research",
+    "name": "Pesquisa Avançada",
+    "deck": "n3",
+    "tier": 3,
+    "type": "action",
+    "timing": "own",
+    "valence": "benefit",
+    "target": "structure",
+    "range": "own",
+    "duration": "instant",
+    "cost": {
+      "resources": {
+        "gold": 1
+      }
+    },
+    "effect": "Suba **1 nível** de uma estrutura sua, sem pagar o custo de melhoria. Não gasta ação.",
+    "effectId": "freeUpgrade",
+    "params": {
+      "levels": 1
+    },
+    "copies": 2,
+    "art": {
+      "subject": "scientists celebrating a breakthrough under a holographic blueprint"
+    }
+  },
+  {
+    "id": "priority_requisition",
+    "name": "Requisição Prioritária",
+    "deck": "n3",
+    "tier": 3,
+    "type": "action",
+    "timing": "own",
+    "valence": "logistics",
+    "target": "card",
+    "range": "own",
+    "duration": "instant",
+    "cost": {
+      "discard": 1
+    },
+    "effect": "Veja as **6** primeiras cartas do baralho n1 ou n2, pegue uma e **revele-a**. Embaralhe.",
+    "effectId": "tutor",
+    "params": {
+      "decks": [
+        "n1",
+        "n2"
+      ],
+      "look": 6,
+      "reveal": true
+    },
+    "copies": 2,
+    "art": {
+      "subject": "quartermaster selecting a sealed crate from an automated warehouse"
+    }
+  },
+  {
+    "id": "industrial_espionage",
+    "name": "Espionagem Industrial",
+    "deck": "n3",
+    "tier": 3,
+    "type": "action",
+    "timing": "delivered",
+    "valence": "sabotage",
+    "target": "permanent",
+    "range": "global",
+    "duration": "permanent",
+    "cost": {
+      "resources": {
+        "gold": 1
+      }
+    },
+    "effect": "Rouba 1 permanente do alvo. **Troca forçada:** você descarta um permanente seu no lugar, se estiver sem slot livre.",
+    "effectId": "stealPermanent",
+    "params": {},
+    "copies": 1,
+    "art": {
+      "subject": "spy in a dark suit copying blueprints in a corporate server room"
+    }
+  },
+  {
+    "id": "tech_orbital_logistics",
+    "name": "Logística Orbital",
+    "deck": "n1",
+    "tier": 1,
+    "type": "tech",
+    "timing": "install",
+    "valence": "benefit",
+    "target": "player",
+    "range": "own",
+    "duration": "permanent",
+    "cost": {
+      "actions": 1,
+      "resources": {
+        "stone": 1
+      }
+    },
+    "effect": "**Slots:** ocupa 1 slot. Seus **DRONES** custam 1 Carvão a menos para operar (mínimo 1).",
+    "effectId": "droneDiscount",
+    "params": {
+      "coal": 1,
+      "min": 1
+    },
+    "copies": 2,
+    "art": {
+      "subject": "satellite and delivery drones orbiting a blue-green planet"
+    }
+  },
+  {
+    "id": "tech_silos",
+    "name": "Silos",
+    "deck": "n1",
+    "tier": 1,
+    "type": "tech",
+    "timing": "install",
+    "valence": "benefit",
+    "target": "player",
+    "range": "own",
+    "duration": "permanent",
+    "cost": {
+      "actions": 1,
+      "resources": {
+        "stone": 1
+      }
+    },
+    "effect": "Ao fim da Produção, ganhe **+1** do recurso que você mais produziu neste turno.",
+    "effectId": "silos",
+    "params": {
+      "amount": 1
+    },
+    "copies": 2,
+    "art": {
+      "subject": "row of tall storage silos at a frontier colony"
+    }
+  },
+  {
+    "id": "tech_deep_drilling",
+    "name": "Perfuração Profunda",
+    "deck": "n2",
+    "tier": 2,
+    "type": "tech",
+    "timing": "install",
+    "valence": "benefit",
+    "target": "player",
+    "range": "own",
+    "duration": "permanent",
+    "cost": {
+      "actions": 1,
+      "resources": {
+        "iron": 2
+      }
+    },
+    "effect": "Suas Minas recebem **+2** tokens de esgotamento ao serem construídas.",
+    "effectId": "mineTokensBonus",
+    "params": {
+      "amount": 2
+    },
+    "copies": 2,
+    "art": {
+      "subject": "giant drill bit boring deep into glowing rock strata"
+    }
+  },
+  {
+    "id": "tech_ceramic_alloy",
+    "name": "Liga Cerâmica",
+    "deck": "n2",
+    "tier": 2,
+    "type": "tech",
+    "timing": "install",
+    "valence": "benefit",
+    "target": "player",
+    "range": "own",
+    "duration": "permanent",
+    "cost": {
+      "actions": 1,
+      "resources": {
+        "iron": 2,
+        "coal": 1
+      }
+    },
+    "effect": "Suas tropas **Linha** têm **+1** de força.",
+    "effectId": "lineStrengthBonus",
+    "params": {},
+    "copies": 2,
+    "art": {
+      "subject": "soldier in ceramic composite armor plating, forge sparks"
+    }
+  },
+  {
+    "id": "tech_sensor_network",
+    "name": "Rede de Sensores",
+    "deck": "n2",
+    "tier": 2,
+    "type": "tech",
+    "timing": "install",
+    "valence": "benefit",
+    "target": "player",
+    "range": "own",
+    "duration": "permanent",
+    "cost": {
+      "actions": 1,
+      "resources": {
+        "iron": 1,
+        "coal": 1
+      }
+    },
+    "effect": "**+1** de alcance em todos os seus Postos.",
+    "effectId": "outpostRangeBonus",
+    "params": {
+      "amount": 1
+    },
+    "copies": 2,
+    "art": {
+      "subject": "network of sensor pylons linked by light beams across hills"
+    }
+  },
+  {
+    "id": "tech_counterintel",
+    "name": "Contraespionagem",
+    "deck": "n2",
+    "tier": 2,
+    "type": "tech",
+    "timing": "install",
+    "valence": "benefit",
+    "target": "player",
+    "range": "own",
+    "duration": "permanent",
+    "cost": {
+      "actions": 1,
+      "resources": {
+        "gold": 1
+      }
+    },
+    "effect": "Seus permanentes **não podem ser roubados**, apenas destruídos.",
+    "effectId": "immuneToSteal",
+    "params": {},
+    "copies": 2,
+    "art": {
+      "subject": "security operative scanning for bugs in a control room"
+    }
+  },
+  {
+    "id": "tech_extraction_automation",
+    "name": "Automação de Extração",
+    "deck": "n3",
+    "tier": 3,
+    "type": "tech",
+    "timing": "install",
+    "valence": "benefit",
+    "target": "player",
+    "range": "own",
+    "duration": "permanent",
+    "cost": {
+      "actions": 1,
+      "resources": {
+        "iron": 2,
+        "gold": 1
+      }
+    },
+    "effect": "Até **3** Parques à sua escolha produzem **+1**.",
+    "effectId": "parkBonus",
+    "params": {
+      "count": 3,
+      "amount": 1
+    },
+    "copies": 1,
+    "art": {
+      "subject": "fully automated robotic extraction line with no workers"
+    }
+  },
+  {
+    "id": "tech_corporate_diplomacy",
+    "name": "Diplomacia Corporativa",
+    "deck": "n3",
+    "tier": 3,
+    "type": "tech",
+    "timing": "install",
+    "valence": "benefit",
+    "target": "player",
+    "range": "own",
+    "duration": "permanent",
+    "cost": {
+      "actions": 1,
+      "resources": {
+        "gold": 2
+      }
+    },
+    "effect": "Tratados **não custam Ouro** para você.",
+    "effectId": "freeTreaties",
+    "params": {},
+    "copies": 1,
+    "art": {
+      "subject": "corporate executives signing a holographic contract in a skyscraper"
+    }
+  },
+  {
+    "id": "tech_seismic_shielding",
+    "name": "Blindagem Sísmica",
+    "deck": "n3",
+    "tier": 3,
+    "type": "tech",
+    "timing": "install",
+    "valence": "benefit",
+    "target": "player",
+    "range": "own",
+    "duration": "permanent",
+    "cost": {
+      "actions": 1,
+      "resources": {
+        "iron": 3
+      }
+    },
+    "effect": "Desastres aplicam downgrade às suas estruturas, mas **não destroem** as de nível 1.",
+    "effectId": "disasterResist",
+    "params": {},
+    "copies": 1,
+    "art": {
+      "subject": "buildings on shock absorbers withstanding an earthquake"
+    }
+  },
+  {
+    "id": "tech_antigrav",
+    "name": "Propulsão Antigrav",
+    "deck": "n3",
+    "tier": 3,
+    "type": "tech",
+    "timing": "install",
+    "valence": "benefit",
+    "target": "player",
+    "range": "own",
+    "duration": "permanent",
+    "cost": {
+      "actions": 1,
+      "resources": {
+        "oil": 1,
+        "iron": 1
+      }
+    },
+    "effect": "Suas tropas ignoram o custo extra de Montanha e pagam **metade** da Comida de movimento (arredondado para cima).",
+    "effectId": "antigrav",
+    "params": {},
+    "copies": 1,
+    "art": {
+      "subject": "hovering antigravity troop transports gliding over mountains"
+    }
+  },
+  {
+    "id": "treasure_cache",
+    "name": "Cofre Precursor",
+    "deck": "treasure",
+    "tier": null,
+    "type": "treasure",
+    "timing": "instant",
+    "valence": "benefit",
+    "target": "resource",
+    "range": "own",
+    "duration": "instant",
+    "cost": {},
+    "effect": "Receba **4** de Ouro ou Petróleo (escolha).",
+    "effectId": "gainResourceChoice",
+    "params": {
+      "amount": 4,
+      "only": [
+        "gold",
+        "oil"
+      ]
+    },
+    "copies": 5,
+    "art": {
+      "subject": "opened ancient vault full of glowing gold ingots"
+    }
+  },
+  {
+    "id": "treasure_archive",
+    "name": "Arquivo Selado",
+    "deck": "treasure",
+    "tier": null,
+    "type": "treasure",
+    "timing": "instant",
+    "valence": "benefit",
+    "target": "card",
+    "range": "own",
+    "duration": "instant",
+    "cost": {},
+    "effect": "Compre 1 carta n2 **ou** n3.",
+    "effectId": "drawFromDeck",
+    "params": {
+      "decks": [
+        "n2",
+        "n3"
+      ],
+      "count": 1
+    },
+    "copies": 4,
+    "art": {
+      "subject": "sealed precursor data cylinder glowing with blue script"
+    }
+  },
+  {
+    "id": "relic_nav_core",
+    "name": "Núcleo de Navegação",
+    "deck": "treasure",
+    "tier": null,
+    "type": "relic",
+    "timing": "install",
+    "valence": "benefit",
+    "target": "player",
+    "range": "own",
+    "duration": "permanent",
+    "cost": {},
+    "effect": "Seus Drones **não custam recursos**.",
+    "effectId": "freeDrones",
+    "params": {},
+    "copies": 1,
+    "art": {
+      "subject": "floating crystalline navigation core with orbiting rings"
+    }
+  },
+  {
+    "id": "relic_ancestral_lens",
+    "name": "Lente Ancestral",
+    "deck": "treasure",
+    "tier": null,
+    "type": "relic",
+    "timing": "install",
+    "valence": "benefit",
+    "target": "player",
+    "range": "own",
+    "duration": "permanent",
+    "cost": {},
+    "effect": "**+1** de alcance em todos os seus Postos e na Vila.",
+    "effectId": "rangeBonusAll",
+    "params": {
+      "amount": 1
+    },
+    "copies": 1,
+    "art": {
+      "subject": "ancient alien lens refracting light into a map of the planet"
+    }
+  },
+  {
+    "id": "relic_star_map",
+    "name": "Mapa Estelar",
+    "deck": "treasure",
+    "tier": null,
+    "type": "relic",
+    "timing": "install",
+    "valence": "benefit",
+    "target": "player",
+    "range": "own",
+    "duration": "permanent",
+    "cost": {},
+    "effect": "O subsolo de todos os hexes adjacentes às suas estruturas é revelado para você automaticamente.",
+    "effectId": "autoSurveyAdjacent",
+    "params": {},
+    "copies": 1,
+    "art": {
+      "subject": "holographic star map projected from a stone pedestal"
+    }
+  },
+  {
+    "id": "guardian_awakened",
+    "name": "Guardião Desperto",
+    "deck": "treasure",
+    "tier": null,
+    "type": "treasure",
+    "timing": "instant",
+    "valence": "sabotage",
+    "target": "troop",
+    "range": "own",
+    "duration": "instant",
+    "cost": {},
+    "effect": "Um Guardião de **força 4** surge no hex e ataca as tropas presentes. Sem tropas, avança para um hex adjacente.",
+    "effectId": "spawnGuardian",
+    "params": {
+      "strength": 4
+    },
+    "copies": 3,
+    "art": {
+      "subject": "towering stone-and-light guardian construct rising from temple ruins"
+    }
+  }
+]

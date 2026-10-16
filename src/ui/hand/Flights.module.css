@@ -1,0 +1,129 @@
+/* Voos de carta e legenda da revelação (UX_SPEC 6, 2.9). */
+.layer {
+  position: fixed;
+  inset: 0;
+  z-index: 35;
+  pointer-events: none;
+  perspective: 1200px;
+}
+
+.flight {
+  position: absolute;
+  left: 0;
+  top: 0;
+  will-change: transform, opacity;
+}
+
+.inner {
+  position: absolute;
+  left: 0;
+  top: 0;
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+
+.back,
+.face {
+  backface-visibility: hidden;
+}
+
+.back svg,
+.face svg {
+  display: block;
+}
+
+/* O verso fica de costas (rotateY 180): flip 0 mostra o verso, flip 1 a face. */
+.back {
+  transform: rotateY(180deg);
+}
+
+.face {
+  position: absolute;
+  inset: 0;
+}
+
+.burst {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 160px;
+  height: 160px;
+  border-radius: 50%;
+  opacity: 0;
+  background: radial-gradient(
+    circle,
+    transparent 30%,
+    color-mix(in srgb, var(--burst) 85%, var(--paper-100)) 42%,
+    transparent 46%,
+    color-mix(in srgb, var(--burst) 55%, transparent) 58%,
+    transparent 70%
+  );
+}
+
+.caption {
+  position: fixed;
+  left: 50%;
+  bottom: 150px;
+  z-index: 36;
+  transform: translateX(-50%);
+  width: min(520px, calc(100vw - 32px));
+  padding: 10px 16px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  pointer-events: none;
+  color: var(--ink-900);
+  background: linear-gradient(180deg, var(--paper-100) 0%, var(--paper-100) 78%, var(--paper-300) 100%);
+  clip-path: polygon(
+    8px 0,
+    calc(100% - 8px) 0,
+    100% 8px,
+    100% calc(100% - 8px),
+    calc(100% - 8px) 100%,
+    8px 100%,
+    0 calc(100% - 8px),
+    0 8px
+  );
+  filter: drop-shadow(0 8px 18px rgb(0 0 0 / 0.5));
+  animation: captionIn 180ms ease-out;
+}
+
+@keyframes captionIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 8px);
+  }
+}
+
+.captionKicker {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-600);
+}
+
+.captionTitle {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 22px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.captionText {
+  font-size: 14px;
+  line-height: 1.35;
+}
+
+.captionFizzled {
+  font-weight: 700;
+  color: color-mix(in srgb, var(--ui-danger) 75%, var(--ink-900));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .caption {
+    animation: none;
+  }
+}

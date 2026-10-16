@@ -1,0 +1,132 @@
+.screen {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 32px 16px;
+  background:
+    radial-gradient(ellipse at 30% 20%, var(--frame-700) 0%, transparent 55%),
+    radial-gradient(ellipse at 70% 90%, var(--frame-800) 0%, transparent 60%), var(--frame-900);
+}
+
+.panel {
+  --chamfer: 18px;
+  width: min(560px, 100%);
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding: 28px 32px 26px;
+}
+
+.head {
+  text-align: center;
+}
+
+.title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 44px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.subtitle {
+  margin: 4px 0 0;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 15px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--accent-orange);
+}
+
+.field {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.counts {
+  display: flex;
+  gap: 6px;
+}
+
+.counts button {
+  min-width: 52px;
+  font-size: 20px;
+}
+
+.seats {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px 16px;
+  font-size: 14px;
+}
+
+.seats li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.seats li span:last-child {
+  margin-left: auto;
+  color: var(--frame-edge);
+  font-size: 12px;
+}
+
+.option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.option input {
+  accent-color: var(--accent-orange);
+}
+
+.seedRow {
+  display: flex;
+  gap: 8px;
+}
+
+.seed {
+  flex: 1;
+  min-width: 0;
+  padding: 6px 10px;
+  font-family: var(--font-numeric);
+  font-weight: 700;
+  font-size: 20px;
+  color: var(--paper-100);
+  background: var(--frame-900);
+  border: 1px solid var(--frame-700);
+}
+
+.seed:focus-visible {
+  outline: 2px solid var(--accent-orange);
+}
+
+.note {
+  margin: -6px 0 0;
+  font-size: 13px;
+  color: var(--frame-edge);
+}
+
+.actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.start {
+  min-width: 200px;
+  min-height: 44px;
+  font-size: 20px;
+}

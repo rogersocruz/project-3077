@@ -1,0 +1,122 @@
+[
+  {
+    "id": "revolutionaries",
+    "name": "Revolucionários",
+    "alignment": "Caótico Bom",
+    "color": "#D64541",
+    "symbol": "circle",
+    "ability": {
+      "name": "Levante",
+      "text": "Quando estiver em último lugar no progresso de vitória, ganhe +1 ação por turno.",
+      "effectId": "underdogAction"
+    },
+    "advisor": {
+      "name": "Tenente Inara Vex",
+      "voice": "Inflamada, direta, odeia corporações"
+    },
+    "lore": "Ex-trabalhadores de colônias mineradoras que tomaram uma nave de carga e juraram que este planeta não teria donos.",
+    "art": {
+      "subject": "rebel colonists with red armbands around a captured cargo ship, defiant pose"
+    }
+  },
+  {
+    "id": "government",
+    "name": "Governo Intergaláctico",
+    "alignment": "Leal Neutro",
+    "color": "#3A7BD5",
+    "symbol": "square",
+    "ability": {
+      "name": "Protocolo",
+      "text": "Só pode jogar cartas cujo custo esteja na faixa n1 de pontos, mas compra +1 carta por turno.",
+      "effectId": "protocol"
+    },
+    "advisor": {
+      "name": "Comissário Aldren Hale",
+      "voice": "Burocrático, protocolar, cita regulamentos"
+    },
+    "lore": "A autoridade que chegou atrasada e tenta impor ordem a um mundo que já decidiu não ter uma.",
+    "art": {
+      "subject": "uniformed interstellar government delegation descending a ship ramp with flags"
+    }
+  },
+  {
+    "id": "helix",
+    "name": "Consórcio Helix",
+    "alignment": "Leal Mau",
+    "color": "#E89A2C",
+    "symbol": "triangle",
+    "ability": {
+      "name": "Eficiência",
+      "text": "Seus Parques de nível 1 produzem como nível 2.",
+      "effectId": "parkEfficiency"
+    },
+    "advisor": {
+      "name": "Diretora Selene Okafor",
+      "voice": "Fria, fala em métricas e margens"
+    },
+    "lore": "Conglomerado de extração que comprou os direitos do planeta de uma junta que não existe mais.",
+    "art": {
+      "subject": "sleek corporate extraction fleet with orange livery over a desert"
+    }
+  },
+  {
+    "id": "vantage",
+    "name": "Vantage Dynamics",
+    "alignment": "Neutro Mau",
+    "color": "#7E6BD6",
+    "symbol": "rhombus",
+    "ability": {
+      "name": "Aquisição",
+      "text": "Sua banca compra pelo valor −1 e vende pelo valor (spread 1).",
+      "effectId": "betterBank"
+    },
+    "advisor": {
+      "name": "Dr. Marlow Kade",
+      "voice": "Cientista ambicioso, curioso, sem escrúpulos"
+    },
+    "lore": "Laboratório privado que veio pelas ruínas precursoras e trata a colonização como experimento.",
+    "art": {
+      "subject": "corporate research team studying alien ruins with violet holographic scanners"
+    }
+  },
+  {
+    "id": "pirates",
+    "name": "Piratas da Fenda",
+    "alignment": "Caótico Mau",
+    "color": "#6E6C66",
+    "symbol": "hexagon",
+    "ability": {
+      "name": "Saque",
+      "text": "Ignore o descarte exigido no custo de cartas de Sabotagem.",
+      "effectId": "ignoreDiscardOnSabotage"
+    },
+    "advisor": {
+      "name": "Capitã Rook \"Ferrugem\" Daly",
+      "voice": "Debochada, pragmática, adora um bom roubo"
+    },
+    "lore": "Contrabandistas do cinturão da Fenda que seguiram o sinal antes de todo mundo e chegaram sem convite.",
+    "art": {
+      "subject": "rugged space pirates on a patched-up gunship, gray and rust colors"
+    }
+  },
+  {
+    "id": "natives",
+    "name": "Nativos de Aurum",
+    "alignment": "Neutro Bom",
+    "color": "#22A07A",
+    "symbol": "pentagon",
+    "ability": {
+      "name": "Raízes",
+      "text": "Sondar não custa ação (máximo 1 vez por turno).",
+      "effectId": "freeSurvey"
+    },
+    "advisor": {
+      "name": "Guardiã Teyra",
+      "voice": "Calma, enigmática, fala do planeta como ser vivo"
+    },
+    "lore": "Descendentes de uma expedição perdida há três séculos. Para eles, todos os outros são os invasores.",
+    "art": {
+      "subject": "mysterious native settlers in organic teal clothing among giant alien trees"
+    }
+  }
+]

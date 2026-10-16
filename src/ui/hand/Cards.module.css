@@ -1,0 +1,305 @@
+/* Cartas no HUD: painel de uso, mini cartas, zoom e escolhas (ART_DIRECTION 1, UX_SPEC 2.7–2.9). */
+
+/* ── Mini carta ─────────────────────────────────────────────────────────────── */
+.mini {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  border-radius: 4px;
+  transition:
+    transform 140ms ease-out,
+    filter 140ms ease-out;
+  filter: drop-shadow(0 3px 5px rgb(0 0 0 / 0.45));
+}
+
+.mini svg {
+  display: block;
+}
+
+.mini:hover:not(:disabled),
+.mini:focus-visible {
+  outline: none;
+  transform: translateY(-3px);
+  filter: drop-shadow(0 0 2px var(--accent-orange)) drop-shadow(0 4px 8px rgb(0 0 0 / 0.5));
+}
+
+.mini:disabled {
+  cursor: default;
+  opacity: 0.5;
+}
+
+.miniOn {
+  transform: translateY(-4px);
+  filter: drop-shadow(0 0 2px var(--accent-orange)) drop-shadow(0 0 8px var(--accent-orange));
+}
+
+/* ── Painel de uso da carta ─────────────────────────────────────────────────── */
+.dialog {
+  grid-column: 2;
+  grid-row: 2;
+  align-self: start;
+  justify-self: end;
+  z-index: 25;
+  width: min(430px, 100%);
+  max-height: calc(100% - 140px);
+  margin: 10px;
+  padding: 12px 14px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  overflow: auto;
+  filter: drop-shadow(0 10px 22px color-mix(in srgb, var(--frame-900) 80%, transparent));
+  animation: dialogIn 200ms cubic-bezier(0.2, 0.9, 0.3, 1.2);
+}
+
+@keyframes dialogIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+}
+
+.dialogHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.dialogTitle {
+  font-style: normal;
+  color: var(--accent-orange);
+}
+
+.dialogBody {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 12px;
+  align-items: start;
+}
+
+.dialogCard {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: zoom-in;
+  filter: drop-shadow(0 6px 10px rgb(0 0 0 / 0.5));
+}
+
+.dialogCard svg {
+  display: block;
+}
+
+.steps {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+}
+
+.effect {
+  margin: 0;
+  padding: 8px 10px;
+  font-size: 13px;
+  line-height: 1.35;
+}
+
+.step {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.step h3 {
+  margin: 0;
+}
+
+.stepDone {
+  color: var(--accent-orange);
+}
+
+.stepHint {
+  margin: 0;
+  font-size: 13px;
+  color: var(--paper-300);
+}
+
+.choices {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: flex-end;
+}
+
+.reason {
+  margin: 0;
+  font-size: 13px;
+}
+
+.dialogFoot {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* ── Zoom (UX_SPEC 2.7) ─────────────────────────────────────────────────────── */
+.zoomOverlay {
+  background: color-mix(in srgb, var(--frame-900) 45%, transparent);
+}
+
+.zoom {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  max-width: 100%;
+}
+
+.zoomCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+  transition: transform 120ms ease-out;
+  filter: drop-shadow(0 18px 30px rgb(0 0 0 / 0.6));
+}
+
+.zoomCard svg {
+  display: block;
+}
+
+.zoomPlate {
+  --chamfer: 8px;
+  padding: 6px 22px 8px;
+  margin-bottom: -4px;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 18px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+}
+
+.zoomPlate em {
+  font-style: normal;
+  font-family: var(--font-numeric);
+  letter-spacing: 0.08em;
+  color: var(--accent-orange);
+}
+
+.zoomInfo {
+  width: min(340px, 40vw);
+  padding: 14px 16px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.zoomText p {
+  margin: 0 0 10px;
+  font-size: 15px;
+  line-height: 1.45;
+}
+
+.facts {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 4px 10px;
+  margin: 0;
+  font-size: 13px;
+}
+
+.facts dt {
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-600);
+}
+
+.facts dd {
+  margin: 0;
+}
+
+/* ── Escolhas modais ────────────────────────────────────────────────────────── */
+.choiceModal {
+  width: min(560px, 100%);
+}
+
+.tutorModal {
+  width: min(860px, 100%);
+}
+
+.drawRows {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.drawRow {
+  justify-content: flex-start;
+  gap: 18px;
+  min-height: 84px;
+  padding: 10px 14px;
+}
+
+.drawItem {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.drawItem svg {
+  display: block;
+}
+
+.drawItem > span {
+  margin-left: 6px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dialog {
+    animation: none;
+  }
+  .mini,
+  .zoomCard {
+    transition: none;
+  }
+}
+
+/* ── Relatório de informação ────────────────────────────────────────────────── */
+.intelTable {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.intelTable th {
+  text-align: left;
+  white-space: nowrap;
+  padding: 4px 8px 4px 0;
+}
+
+.intelTable td {
+  padding: 4px 6px;
+  white-space: nowrap;
+}
+
+.intelList {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 13px;
+}
+
+.intelList li {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}

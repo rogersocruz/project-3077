@@ -1,0 +1,370 @@
+[
+  {
+    "id": "village",
+    "name": "Centro da Vila",
+    "subtype": "village",
+    "rarity": 1,
+    "slots": 1,
+    "buildable": false,
+    "levels": [
+      {
+        "cost": {},
+        "range": 2,
+        "outpostLimit": 2
+      },
+      {
+        "cost": {
+          "stone": 3,
+          "iron": 2
+        },
+        "range": 2,
+        "outpostLimit": 3
+      },
+      {
+        "cost": {
+          "stone": 4,
+          "iron": 3,
+          "gold": 1
+        },
+        "range": 2,
+        "outpostLimit": 4
+      }
+    ],
+    "flags": [
+      "indestructible",
+      "bank",
+      "lives"
+    ],
+    "art": {
+      "subject": "frontier colony command center with landing pad and antenna array"
+    }
+  },
+  {
+    "id": "park",
+    "name": "Parque de Extração",
+    "subtype": "extraction",
+    "rarity": 1,
+    "slots": 1,
+    "buildOn": [
+      "forest",
+      "lagoon",
+      "vein_iron",
+      "vein_coal",
+      "vein_gold"
+    ],
+    "levels": [
+      {
+        "cost": {
+          "stone": 2
+        },
+        "yield": 1
+      },
+      {
+        "cost": {
+          "stone": 1,
+          "iron": 1
+        },
+        "yield": 2
+      },
+      {
+        "cost": {
+          "iron": 2,
+          "coal": 1
+        },
+        "yield": 3
+      }
+    ],
+    "art": {
+      "subject": "automated surface extraction rig with conveyor belts"
+    }
+  },
+  {
+    "id": "quarry",
+    "name": "Pedreira",
+    "subtype": "extraction",
+    "rarity": 1,
+    "slots": 1,
+    "buildOn": [
+      "mountain"
+    ],
+    "levels": [
+      {
+        "cost": {
+          "iron": 2
+        },
+        "yield": 1
+      },
+      {
+        "cost": {
+          "iron": 2,
+          "stone": 1
+        },
+        "yield": 2
+      }
+    ],
+    "art": {
+      "subject": "terraced mountain quarry with stone-cutting machines"
+    }
+  },
+  {
+    "id": "mine",
+    "name": "Mina",
+    "subtype": "extraction",
+    "rarity": 2,
+    "slots": 1,
+    "buildOn": [
+      "surveyedSubsoil"
+    ],
+    "levels": [
+      {
+        "cost": {
+          "stone": 3,
+          "iron": 1
+        },
+        "multiplier": 3
+      },
+      {
+        "cost": {
+          "stone": 2,
+          "iron": 2
+        },
+        "multiplier": 4
+      },
+      {
+        "cost": {
+          "iron": 3,
+          "gold": 1
+        },
+        "multiplier": 5
+      }
+    ],
+    "upkeep": {
+      "coal": 1
+    },
+    "tokens": 4,
+    "art": {
+      "subject": "deep drilling mine shaft with heavy headframe tower"
+    }
+  },
+  {
+    "id": "workshop",
+    "name": "Oficina",
+    "subtype": "workshop",
+    "rarity": 1,
+    "slots": 1,
+    "levels": [
+      {
+        "cost": {
+          "iron": 2,
+          "stone": 1
+        },
+        "unlocksUpgradeTo": 2
+      },
+      {
+        "cost": {
+          "iron": 2,
+          "coal": 1
+        },
+        "unlocksUpgradeTo": 3
+      },
+      {
+        "cost": {
+          "iron": 3,
+          "oil": 1
+        },
+        "upgradeDiscount": 1
+      }
+    ],
+    "art": {
+      "subject": "industrial fabrication workshop with robotic arms and sparks"
+    }
+  },
+  {
+    "id": "outpost",
+    "name": "Posto de Observação",
+    "subtype": "reach",
+    "rarity": 1,
+    "slots": 1,
+    "levels": [
+      {
+        "cost": {
+          "stone": 2
+        },
+        "range": 2
+      },
+      {
+        "cost": {
+          "stone": 2,
+          "iron": 1
+        },
+        "range": 2,
+        "defenseAdjacent": 1
+      },
+      {
+        "cost": {
+          "iron": 2,
+          "coal": 1
+        },
+        "range": 3,
+        "defenseAdjacent": 1
+      }
+    ],
+    "flags": [
+      "mountainRange4",
+      "limitedByVillage"
+    ],
+    "art": {
+      "subject": "tall observation tower with radar dish on a ridge"
+    }
+  },
+  {
+    "id": "wall",
+    "name": "Muro",
+    "subtype": "military",
+    "rarity": 1,
+    "slots": 1,
+    "levels": [
+      {
+        "cost": {
+          "stone": 3
+        },
+        "defense": 2
+      }
+    ],
+    "flags": [
+      "absorbsDemolition"
+    ],
+    "art": {
+      "subject": "modular energy-reinforced defensive wall segment"
+    }
+  },
+  {
+    "id": "barracks",
+    "name": "Quartel",
+    "subtype": "military",
+    "rarity": 1,
+    "slots": 1,
+    "levels": [
+      {
+        "cost": {
+          "iron": 3
+        },
+        "armyCap": 3
+      },
+      {
+        "cost": {
+          "iron": 2,
+          "stone": 2
+        },
+        "armyCap": 6
+      },
+      {
+        "cost": {
+          "iron": 3,
+          "coal": 1
+        },
+        "armyCap": 9
+      }
+    ],
+    "art": {
+      "subject": "military barracks compound with drop pods and training yard"
+    }
+  },
+  {
+    "id": "university",
+    "name": "Universidade",
+    "subtype": "knowledge",
+    "rarity": 1,
+    "slots": 1,
+    "levels": [
+      {
+        "cost": {
+          "iron": 3,
+          "gold": 1
+        },
+        "drawTable": 1
+      },
+      {
+        "cost": {
+          "iron": 2,
+          "stone": 2,
+          "gold": 1
+        },
+        "drawTable": 2
+      },
+      {
+        "cost": {
+          "iron": 3,
+          "coal": 1,
+          "gold": 1
+        },
+        "drawTable": 3
+      }
+    ],
+    "flags": [
+      "noProduction"
+    ],
+    "art": {
+      "subject": "glass-domed research university with observatory"
+    }
+  },
+  {
+    "id": "archive",
+    "name": "Arquivo",
+    "subtype": "knowledge",
+    "rarity": 2,
+    "slots": 1,
+    "levels": [
+      {
+        "cost": {
+          "stone": 2,
+          "iron": 1
+        },
+        "handLimitBonus": 1
+      },
+      {
+        "cost": {
+          "stone": 2,
+          "iron": 1
+        },
+        "handLimitBonus": 2
+      },
+      {
+        "cost": {
+          "iron": 2,
+          "coal": 1
+        },
+        "handLimitBonus": 3
+      }
+    ],
+    "art": {
+      "subject": "fortified data archive vault with server racks"
+    }
+  },
+  {
+    "id": "market",
+    "name": "Mercado",
+    "subtype": "commerce",
+    "rarity": 2,
+    "slots": 1,
+    "levels": [
+      {
+        "cost": {
+          "iron": 2,
+          "coal": 1
+        },
+        "spreadReduction": 1
+      },
+      {
+        "cost": {
+          "iron": 2,
+          "gold": 1
+        },
+        "spreadReduction": 2
+      }
+    ],
+    "art": {
+      "subject": "bustling frontier trade market with holographic price boards"
+    }
+  }
+]

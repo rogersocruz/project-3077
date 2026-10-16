@@ -1,0 +1,202 @@
+.screen {
+  min-height: 100vh;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 40px;
+  padding: 48px 24px;
+  background:
+    radial-gradient(ellipse at 30% 20%, var(--frame-700) 0%, transparent 55%),
+    radial-gradient(ellipse at 70% 90%, var(--frame-800) 0%, transparent 60%), var(--frame-900);
+}
+
+/* Placa metálica chanfrada com filete claro, como o suporte "PROJETO 3077" da foto. */
+.plate {
+  --chamfer: 22px;
+  position: relative;
+  padding: 28px 72px 24px;
+  text-align: center;
+  background: linear-gradient(180deg, var(--frame-700) 0%, var(--frame-800) 55%, var(--frame-900) 100%);
+  clip-path: polygon(
+    var(--chamfer) 0,
+    calc(100% - var(--chamfer)) 0,
+    100% var(--chamfer),
+    100% calc(100% - var(--chamfer)),
+    calc(100% - var(--chamfer)) 100%,
+    var(--chamfer) 100%,
+    0 calc(100% - var(--chamfer)),
+    0 var(--chamfer)
+  );
+  box-shadow:
+    inset 0 1px 0 var(--frame-edge),
+    inset 0 -2px 0 var(--frame-900);
+}
+
+.title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(56px, 9vw, 132px);
+  line-height: 1;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.titleWord {
+  color: var(--paper-100);
+}
+
+.titleNumber {
+  color: var(--accent-orange);
+  text-shadow: 0 0 24px color-mix(in srgb, var(--accent-orange) 45%, transparent);
+}
+
+.tagline {
+  margin: 14px 0 0;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 20px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--frame-edge);
+}
+
+/* Painel creme: texto sempre lido em papel, nunca sobre ilustração. */
+.paper {
+  --chamfer: 14px;
+  position: relative;
+  width: min(1040px, 100%);
+  box-sizing: border-box;
+  padding: 28px 36px 40px;
+  color: var(--ink-900);
+  background: linear-gradient(180deg, var(--paper-100) 0%, var(--paper-100) 80%, var(--paper-300) 100%);
+  clip-path: polygon(
+    var(--chamfer) 0,
+    calc(100% - var(--chamfer)) 0,
+    100% var(--chamfer),
+    100% calc(100% - var(--chamfer)),
+    calc(100% - var(--chamfer)) 100%,
+    var(--chamfer) 100%,
+    0 calc(100% - var(--chamfer)),
+    0 var(--chamfer)
+  );
+}
+
+.flavor {
+  margin: 0 0 24px;
+  font-family: var(--font-body);
+  font-style: italic;
+  font-weight: 400;
+  font-size: 19px;
+  color: var(--ink-600);
+  text-align: center;
+}
+
+.columns {
+  display: grid;
+  grid-template-columns: 1fr 1.3fr 1.6fr;
+  gap: 36px;
+}
+
+@media (max-width: 860px) {
+  .columns {
+    grid-template-columns: 1fr;
+  }
+}
+
+.heading {
+  margin: 0 0 12px;
+  padding-bottom: 6px;
+  border-bottom: 2px solid var(--paper-300);
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 22px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 10px;
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-family: var(--font-body);
+  font-weight: 500;
+  font-size: 17px;
+}
+
+.typeDisplay,
+.typeNumeric,
+.typeBody,
+.typeLore {
+  margin: 0 0 12px;
+}
+
+.typeDisplay {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 24px;
+  text-transform: uppercase;
+}
+
+.typeNumeric {
+  font-family: var(--font-numeric);
+  font-weight: 700;
+  font-size: 24px;
+}
+
+.typeBody {
+  font-family: var(--font-body);
+  font-weight: 500;
+  font-size: 17px;
+}
+
+.typeLore {
+  font-family: var(--font-body);
+  font-style: italic;
+  font-weight: 400;
+  font-size: 17px;
+  color: var(--ink-600);
+}
+
+.version {
+  position: absolute;
+  right: 22px;
+  bottom: 12px;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--ink-600);
+}
+
+.status {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 15px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--frame-edge);
+}
+
+.menu {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  margin-top: -16px;
+}
+
+.menuMain {
+  min-width: 240px;
+  min-height: 46px;
+  font-size: 20px;
+}

@@ -1,0 +1,277 @@
+{
+  "_meta": {
+    "rulesVersion": "1.0.0",
+    "note": "Todo número do jogo vive aqui. Chaves listadas em 'provisional' devem ser calibradas por simulação."
+  },
+  "map": {
+    "edge": 4,
+    "edgeLong": 5,
+    "villageStartRing": 1
+  },
+  "turn": {
+    "actionsPerTurn": 3,
+    "roundLimit": 15
+  },
+  "hex": {
+    "slots": 3
+  },
+  "setup": {
+    "startingResources": {
+      "food": 4,
+      "stone": 4,
+      "iron": 3,
+      "coal": 1,
+      "oil": 0,
+      "gold": 1
+    },
+    "startingHand": 3,
+    "startingHandDeck": "n1",
+    "minFoodHexesPerBoard": 3,
+    "guaranteedGoldSubsoilPerBoard": 1,
+    "noSpecialCompensation": {
+      "choose": [
+        {
+          "resourcesOfChoice": 3
+        },
+        {
+          "drawFromDeck": "n2",
+          "count": 1
+        }
+      ]
+    }
+  },
+  "cards": {
+    "handLimit": 6,
+    "archiveHandLimitPerLevel": 1,
+    "receiveCapPerRound": 2,
+    "deliverPerTurn": 1,
+    "radiusCrossesBorder": true,
+    "universityDraw": {
+      "0": [
+        [
+          {
+            "deck": "n1",
+            "count": 1
+          }
+        ]
+      ],
+      "1": [
+        [
+          {
+            "deck": "n1",
+            "count": 1
+          }
+        ]
+      ],
+      "2": [
+        [
+          {
+            "deck": "n1",
+            "count": 2
+          }
+        ],
+        [
+          {
+            "deck": "n2",
+            "count": 1
+          }
+        ]
+      ],
+      "3": [
+        [
+          {
+            "deck": "n1",
+            "count": 3
+          }
+        ],
+        [
+          {
+            "deck": "n2",
+            "count": 1
+          },
+          {
+            "deck": "n1",
+            "count": 1
+          }
+        ],
+        [
+          {
+            "deck": "n3",
+            "count": 1
+          }
+        ]
+      ]
+    },
+    "ruinBonusDraw": 1,
+    "tutorRevealTop": 6
+  },
+  "permanents": {
+    "slots": 5,
+    "installActions": 1
+  },
+  "bank": {
+    "buyOffset": -1,
+    "sellOffset": 1,
+    "marketSpreadReductionPerLevel": 1,
+    "minSpread": 0,
+    "roundingFavorsBank": true,
+    "spreadReductionOrder": "sellFirst"
+  },
+  "trade": {
+    "requiresAdjacentBoard": false
+  },
+  "production": {
+    "parkYieldByLevel": [
+      1,
+      2,
+      3
+    ],
+    "quarryYieldByLevel": [
+      1,
+      2
+    ],
+    "mineMultiplier": 3,
+    "mineTokens": 4,
+    "mineCoalUpkeep": 1,
+    "occupiedHexYield": 1,
+    "lagoonDualYield": true
+  },
+  "range": {
+    "village": 2,
+    "outpost": 2,
+    "outpostOnMountain": 4,
+    "droneBonusByTier": [
+      1,
+      2,
+      3
+    ],
+    "outpostLimit": "villageLevel + 1",
+    "buildAcrossBorder": false
+  },
+  "village": {
+    "lives": 3,
+    "regenPerLevelUp": 1
+  },
+  "troops": {
+    "line": {
+      "strength": 3,
+      "cost": {
+        "iron": 1,
+        "food": 1
+      },
+      "occupies": true
+    },
+    "artillery": {
+      "strength": 2,
+      "cost": {
+        "iron": 2,
+        "food": 1
+      },
+      "occupies": false,
+      "supportRange": 2
+    },
+    "strengthPerLevel": 1,
+    "maxLevel": 3,
+    "armyCapPerBarracksLevel": 3,
+    "moveFoodPerHex": 1,
+    "moveFoodMountain": 2
+  },
+  "combat": {
+    "maxPositiveModifiers": 4,
+    "maxArtillerySupport": 3,
+    "modifiers": {
+      "defenderHomeBoard": 1,
+      "formation2": 1,
+      "formation3": 2,
+      "wall": 2,
+      "adjacentOutpost": 1,
+      "attackerCrossedBorder": -1
+    },
+    "artilleryInMeleeFactor": 0.5,
+    "tieLossEachSide": 1,
+    "retreatHexes": 1
+  },
+  "border": {
+    "tollPerTroop": 1,
+    "maxModifiers": 2,
+    "changeTariffOnlyAtRoundStart": true
+  },
+  "events": {
+    "perRound": 1,
+    "maxPerCategoryInActiveDeck": 2,
+    "activeDeckSize": 15
+  },
+  "treaties": {
+    "goldCostEach": 1,
+    "maxActivePerPlayer": 2,
+    "pactDurationRounds": 5,
+    "negativeTriggerDeadlineRounds": 1,
+    "pactBreakPenalty": {
+      "discardHand": true,
+      "loseActions": 1
+    },
+    "defaultPenalty": {
+      "loseActions": 1
+    }
+  },
+  "victory": {
+    "resourceThresholds": {
+      "food": 40,
+      "stone": 30,
+      "iron": 25,
+      "coal": 18,
+      "oil": 10,
+      "gold": 10
+    },
+    "expansionHexes": 15,
+    "tribeTarget": {
+      "enabled": true,
+      "targetLives": 1,
+      "holdUntilRoundEnd": true
+    },
+    "elimination": true,
+    "tiebreak": "highestSummedProgress",
+    "finalTie": "shared"
+  },
+  "costPoints": {
+    "food": 1,
+    "stone": 2,
+    "iron": 2,
+    "coal": 3,
+    "oil": 6,
+    "gold": 6,
+    "discardCard": 2,
+    "opponentDraws": 3,
+    "action": 3
+  },
+  "tierBands": {
+    "n1": [
+      0,
+      3
+    ],
+    "n2": [
+      4,
+      8
+    ],
+    "n3": [
+      9,
+      18
+    ]
+  },
+  "provisional": [
+    "turn.actionsPerTurn",
+    "turn.roundLimit",
+    "setup.startingResources",
+    "production.parkYieldByLevel",
+    "production.mineMultiplier",
+    "production.mineTokens",
+    "victory.resourceThresholds",
+    "victory.expansionHexes",
+    "events.activeDeckSize",
+    "combat.maxPositiveModifiers",
+    "bank.spreadReductionOrder",
+    "trade.requiresAdjacentBoard",
+    "victory.finalTie",
+    "cards.radiusCrossesBorder"
+  ]
+}

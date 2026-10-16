@@ -1,0 +1,43 @@
+.shape {
+  display: inline-block;
+  flex: none;
+}
+
+.disc,
+.circle {
+  border-radius: 50%;
+}
+
+.roundedCube {
+  border-radius: 24%;
+}
+
+.square {
+  border-radius: 6%;
+}
+
+.hexPrism,
+.hexagon {
+  clip-path: polygon(25% 5%, 75% 5%, 100% 50%, 75% 95%, 25% 95%, 0 50%);
+}
+
+.rhombus {
+  clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%);
+}
+
+.drop {
+  border-radius: 50% 50% 50% 0;
+  transform: rotate(-45deg) scale(0.82);
+}
+
+.octagon {
+  clip-path: polygon(30% 0, 70% 0, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0 70%, 0 30%);
+}
+
+.triangle {
+  clip-path: polygon(50% 4%, 100% 92%, 0 92%);
+}
+
+.pentagon {
+  clip-path: polygon(50% 0, 100% 38%, 81% 100%, 19% 100%, 0 38%);
+}

@@ -1,0 +1,262 @@
+[
+  {
+    "id": "ev_quake",
+    "name": "Tremor de Terra",
+    "category": "seismic",
+    "effect": "Cada Montanha com estrutura e cada hazard Sísmico sofre desastre (hex + adjacentes).",
+    "effectId": "disasterAtTerrain",
+    "params": {
+      "terrains": [
+        "mountain",
+        "geyser",
+        "thin_crust"
+      ]
+    },
+    "terrainTargets": [
+      "mountain",
+      "geyser",
+      "thin_crust"
+    ],
+    "copies": 2,
+    "art": {
+      "subject": "earthquake splitting a valley with dust clouds"
+    }
+  },
+  {
+    "id": "ev_seismic_collapse",
+    "name": "Colapso Sísmico",
+    "category": "seismic",
+    "effect": "Minas não operam nesta rodada. Quem gastar 1 ação em escoramento mantém suas Minas.",
+    "effectId": "minesOffWithCounter",
+    "params": {
+      "counterActions": 1
+    },
+    "terrainTargets": [],
+    "copies": 2,
+    "art": {
+      "subject": "mine tunnel supports buckling under pressure"
+    }
+  },
+  {
+    "id": "ev_unstable_crust",
+    "name": "Crosta Instável",
+    "category": "seismic",
+    "effect": "Sondar falha nesta rodada, exceto com Drone.",
+    "effectId": "surveyBlocked",
+    "params": {},
+    "terrainTargets": [],
+    "copies": 1,
+    "art": {
+      "subject": "cracked ground with shifting tectonic plates"
+    }
+  },
+  {
+    "id": "ev_eruption",
+    "name": "Erupção Vulcânica",
+    "category": "thermal",
+    "effect": "Desastre no Vulcão. O hex do Vulcão vira Vazio permanentemente.",
+    "effectId": "volcanoErupt",
+    "params": {},
+    "terrainTargets": [
+      "volcano"
+    ],
+    "copies": 1,
+    "art": {
+      "subject": "massive volcanic eruption with lava rivers at dusk"
+    }
+  },
+  {
+    "id": "ev_ash_cloud",
+    "name": "Nuvem de Cinzas",
+    "category": "thermal",
+    "effect": "Hexes adjacentes ao Vulcão não produzem por 2 rodadas.",
+    "effectId": "ashCloud",
+    "params": {
+      "radius": 1,
+      "noProductionRounds": 2
+    },
+    "terrainTargets": [
+      "volcano"
+    ],
+    "copies": 2,
+    "art": {
+      "subject": "ash cloud darkening the sky over a colony"
+    }
+  },
+  {
+    "id": "ev_acid_rain",
+    "name": "Chuva Ácida",
+    "category": "climatic",
+    "effect": "Parques de superfície produzem −1. Quem gastar 1 ação em cobertura fica imune.",
+    "effectId": "parksMinusWithCounter",
+    "params": {
+      "amount": 1,
+      "counterActions": 1
+    },
+    "terrainTargets": [],
+    "copies": 2,
+    "art": {
+      "subject": "green acid rain falling on industrial machines"
+    }
+  },
+  {
+    "id": "ev_fertile_season",
+    "name": "Estação Fértil",
+    "category": "climatic",
+    "effect": "Florestas e Lagoas produzem +1.",
+    "effectId": "terrainYieldBonus",
+    "params": {
+      "terrains": [
+        "forest",
+        "lagoon"
+      ],
+      "amount": 1
+    },
+    "terrainTargets": [
+      "forest",
+      "lagoon"
+    ],
+    "copies": 2,
+    "art": {
+      "subject": "lush blooming alien meadows under golden light"
+    }
+  },
+  {
+    "id": "ev_plague",
+    "name": "Praga",
+    "category": "climatic",
+    "effect": "No fim da rodada, cada jogador perde 2 Comida. Quem gastar 1 ação em contenção fica imune.",
+    "effectId": "loseFoodWithCounter",
+    "params": {
+      "amount": 2,
+      "counterActions": 1
+    },
+    "terrainTargets": [],
+    "copies": 2,
+    "art": {
+      "subject": "quarantine tents and hazmat crews in a colony"
+    }
+  },
+  {
+    "id": "ev_ionization",
+    "name": "Ventos de Ionização",
+    "category": "atmospheric",
+    "effect": "Minas subterrâneas não operam. Superfície não é afetada.",
+    "effectId": "minesOff",
+    "params": {},
+    "terrainTargets": [],
+    "copies": 1,
+    "art": {
+      "subject": "crackling ionized wind storm with lightning over plains"
+    }
+  },
+  {
+    "id": "ev_magnetic_storm",
+    "name": "Tempestade Magnética",
+    "category": "atmospheric",
+    "effect": "Nenhum Drone pode ser usado nesta rodada.",
+    "effectId": "dronesOff",
+    "params": {},
+    "terrainTargets": [],
+    "copies": 2,
+    "art": {
+      "subject": "aurora-like magnetic storm with flickering electronics"
+    }
+  },
+  {
+    "id": "ev_tailwinds",
+    "name": "Correntes Favoráveis",
+    "category": "atmospheric",
+    "effect": "Movimento de tropas custa metade da Comida (arredondado para cima).",
+    "effectId": "halfMoveCost",
+    "params": {},
+    "terrainTargets": [],
+    "copies": 1,
+    "art": {
+      "subject": "strong favorable winds bending grass toward the horizon"
+    }
+  },
+  {
+    "id": "ev_horde",
+    "name": "Horda de Predadores",
+    "category": "horde",
+    "effect": "Uma horda de força 5 emerge na Ruína mais ao norte e ataca o hex adjacente com mais estruturas.",
+    "effectId": "spawnHorde",
+    "params": {
+      "strength": 5
+    },
+    "terrainTargets": [
+      "ruin"
+    ],
+    "copies": 2,
+    "art": {
+      "subject": "pack of alien predators charging out of ancient ruins"
+    }
+  },
+  {
+    "id": "ev_guardians",
+    "name": "Guardiões Despertos",
+    "category": "horde",
+    "effect": "Todo Templo não escavado gera um Guardião de força 4 que ataca tropas adjacentes.",
+    "effectId": "templeGuardians",
+    "params": {
+      "strength": 4
+    },
+    "terrainTargets": [
+      "temple"
+    ],
+    "copies": 1,
+    "art": {
+      "subject": "glowing guardians awakening atop multiple temples"
+    }
+  },
+  {
+    "id": "ev_hot_market",
+    "name": "Mercado Aquecido",
+    "category": "economic",
+    "effect": "O spread da banca cai para 1 nesta rodada.",
+    "effectId": "bankSpread",
+    "params": {
+      "spread": 1
+    },
+    "terrainTargets": [
+      "free_port"
+    ],
+    "copies": 2,
+    "art": {
+      "subject": "busy trading floor with green price holograms"
+    }
+  },
+  {
+    "id": "ev_credit_crash",
+    "name": "Colapso de Crédito",
+    "category": "economic",
+    "effect": "O spread da banca sobe para 3 nesta rodada.",
+    "effectId": "bankSpread",
+    "params": {
+      "spread": 3
+    },
+    "terrainTargets": [
+      "free_port"
+    ],
+    "copies": 2,
+    "art": {
+      "subject": "crashing red price charts over an empty trading floor"
+    }
+  },
+  {
+    "id": "ev_exposed_vein",
+    "name": "Veio Aflorado",
+    "category": "economic",
+    "effect": "O primeiro jogador a Sondar nesta rodada revela o subsolo em raio 2 de graça.",
+    "effectId": "firstSurveyBonus",
+    "params": {
+      "radius": 2
+    },
+    "terrainTargets": [],
+    "copies": 1,
+    "art": {
+      "subject": "fresh mineral vein glinting after a landslide"
+    }
+  }
+]

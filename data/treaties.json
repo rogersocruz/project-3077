@@ -1,0 +1,276 @@
+{
+  "_meta": {
+    "rule": "Só mudam de mão: recurso, carta, permanente. Validação na assinatura."
+  },
+  "pacts": [
+    {
+      "id": "pact_free_passage",
+      "category": "border",
+      "name": "Corredor Livre",
+      "text": "Travessia grátis entre os signatários."
+    },
+    {
+      "id": "pact_double_toll",
+      "category": "border",
+      "name": "Muralha Comercial",
+      "text": "Pedágio dobrado para terceiros nas fronteiras dos signatários."
+    },
+    {
+      "id": "pact_closed_border",
+      "category": "border",
+      "name": "Fronteira Fechada",
+      "text": "Nenhum signatário entra no território do outro."
+    },
+    {
+      "id": "pact_no_sabotage",
+      "category": "cards",
+      "name": "Trégua de Sabotagem",
+      "text": "Os signatários não entregam Sabotagem um ao outro."
+    },
+    {
+      "id": "pact_extra_delivery",
+      "category": "cards",
+      "name": "Canal Aberto",
+      "text": "Entre os signatários, o teto de recebimento sobe em 1."
+    },
+    {
+      "id": "pact_non_aggression",
+      "category": "military",
+      "name": "Não Agressão",
+      "text": "Os signatários não iniciam combate um contra o outro."
+    },
+    {
+      "id": "pact_staging",
+      "category": "military",
+      "name": "Base Avançada",
+      "text": "Tropas de um signatário podem parar no território do outro sem combate."
+    },
+    {
+      "id": "pact_no_spread",
+      "category": "commerce",
+      "name": "Livre Comércio",
+      "text": "Trocas entre os signatários usam valor base, sem spread."
+    },
+    {
+      "id": "pact_fixed_price",
+      "category": "commerce",
+      "name": "Preço Fixo",
+      "text": "Um recurso escolhido tem preço fixo entre os signatários.",
+      "params": [
+        "resource",
+        "price"
+      ]
+    },
+    {
+      "id": "pact_open_survey",
+      "category": "observation",
+      "name": "Céu Aberto",
+      "text": "Os signatários podem sondar o território um do outro."
+    },
+    {
+      "id": "pact_closed_survey",
+      "category": "observation",
+      "name": "Sigilo",
+      "text": "Os signatários não podem sondar o território um do outro."
+    }
+  ],
+  "contract": {
+    "subjects": [
+      "you",
+      "me",
+      "anyone",
+      "third"
+    ],
+    "triggers": [
+      {
+        "verb": "attack",
+        "label": "ATACAR",
+        "objects": [
+          "structure",
+          "troop",
+          "village",
+          "territory"
+        ]
+      },
+      {
+        "verb": "target",
+        "label": "DAR ALVO EM",
+        "objects": [
+          "structure",
+          "troop",
+          "card",
+          "permanent",
+          "resource"
+        ]
+      },
+      {
+        "verb": "destroy",
+        "label": "DESTRUIR",
+        "objects": [
+          "structure",
+          "permanent",
+          "troop"
+        ]
+      },
+      {
+        "verb": "steal",
+        "label": "ROUBAR",
+        "objects": [
+          "resource",
+          "card",
+          "permanent"
+        ]
+      },
+      {
+        "verb": "observe",
+        "label": "OBSERVAR",
+        "objects": [
+          "territory",
+          "subsoil"
+        ]
+      },
+      {
+        "verb": "enter",
+        "label": "ENTRAR EM",
+        "objects": [
+          "territory",
+          "border"
+        ]
+      },
+      {
+        "verb": "collect",
+        "label": "COLETAR",
+        "objects": [
+          "resource",
+          "territory"
+        ]
+      }
+    ],
+    "negation": {
+      "allowed": true,
+      "deadlineRounds": 1
+    },
+    "consequences": [
+      {
+        "verb": "pay",
+        "label": "PAGA",
+        "objects": [
+          "resource",
+          "card"
+        ],
+        "params": [
+          "type",
+          "amount"
+        ]
+      },
+      {
+        "verb": "give",
+        "label": "ENTREGA",
+        "objects": [
+          "card",
+          "permanent"
+        ]
+      },
+      {
+        "verb": "discard",
+        "label": "DESCARTA",
+        "objects": [
+          "card"
+        ],
+        "params": [
+          "amount"
+        ]
+      },
+      {
+        "verb": "loseAction",
+        "label": "PERDE",
+        "objects": [
+          "action"
+        ],
+        "params": [
+          "amount"
+        ]
+      },
+      {
+        "verb": "forbid",
+        "label": "NÃO PODE",
+        "objects": [
+          "attack",
+          "target",
+          "enter"
+        ],
+        "params": [
+          "rounds"
+        ]
+      },
+      {
+        "verb": "overrideToll",
+        "label": "PAGA EM VEZ DA TARIFA",
+        "objects": [
+          "resource"
+        ],
+        "params": [
+          "type",
+          "amount"
+        ]
+      }
+    ],
+    "obligorMustBeSignatory": true
+  },
+  "templates": [
+    {
+      "id": "tpl_preferential_tariff",
+      "name": "Contrato de Tarifa Preferencial",
+      "type": "contract",
+      "if": {
+        "subject": "anySignatory",
+        "verb": "enter",
+        "object": "territory",
+        "of": "otherSignatory"
+      },
+      "then": {
+        "obligor": "invader",
+        "verb": "overrideToll",
+        "object": "resource",
+        "type": "iron",
+        "amount": 1,
+        "perTroop": true
+      },
+      "text": "SE um participante entrar no TERRITÓRIO do outro, ENTÃO o invasor paga apenas 1 de FERRO por tropa (em vez da tarifa declarada).",
+      "art": {
+        "subject": "two holographic diplomats shaking hands in front of a glowing territory map"
+      }
+    },
+    {
+      "id": "tpl_mutual_insurance",
+      "name": "Seguro Mútuo",
+      "type": "contract",
+      "if": {
+        "subject": "third",
+        "verb": "attack",
+        "object": "village",
+        "of": "eitherSignatory"
+      },
+      "then": {
+        "obligor": "otherSignatory",
+        "verb": "pay",
+        "object": "resource",
+        "type": "iron",
+        "amount": 3
+      },
+      "text": "SE um terceiro ATACAR a Vila de um de nós, ENTÃO o outro signatário paga 3 de FERRO à vítima."
+    },
+    {
+      "id": "tpl_non_aggression",
+      "name": "Pacto de Não Agressão",
+      "type": "pact",
+      "pact": "pact_non_aggression"
+    },
+    {
+      "id": "tpl_free_corridor",
+      "name": "Corredor Livre",
+      "type": "pact",
+      "pact": "pact_free_passage"
+    }
+  ]
+}

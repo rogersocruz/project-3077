@@ -1,0 +1,49 @@
+.screen {
+  min-height: 100vh;
+  box-sizing: border-box;
+  padding: 24px 32px 40px;
+  background: radial-gradient(ellipse at 50% 20%, var(--frame-800), var(--frame-900) 70%);
+  color: var(--paper-100);
+  font-family: var(--font-body);
+}
+
+.title {
+  margin: 0 0 20px;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 22px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--paper-300);
+}
+
+.grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 28px;
+  align-items: flex-start;
+}
+
+.item {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.pair {
+  display: flex;
+  gap: 12px;
+}
+
+.pair svg,
+.raster canvas {
+  display: block;
+  filter: drop-shadow(0 10px 18px rgb(0 0 0 / 0.5));
+}
+
+.caption {
+  font-size: 12px;
+  color: var(--frame-edge);
+}

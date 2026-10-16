@@ -1,0 +1,10 @@
+dist
+node_modules
+package-lock.json
+playwright-report
+test-results
+screenshots
+# Fonte da verdade e documentação: não reformatar automaticamente
+data
+docs
+*.md

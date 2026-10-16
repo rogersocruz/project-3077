@@ -1,0 +1,341 @@
+{
+  "_meta": {
+    "note": "Pesos são razões, não contagens. Hazards são sempre 1 de cada no planeta. Sítios escalam com o nº de jogadores: round(copiesFor6 * N / 6). O restante é preenchido por Recurso:Vazio na razão categoryWeights."
+  },
+  "categoryWeights": {
+    "resource": 16,
+    "empty": 16
+  },
+  "surface": [
+    {
+      "id": "empty",
+      "name": "Vazio",
+      "category": "empty",
+      "produces": [],
+      "builder": null,
+      "moveCostFood": 1,
+      "weight": 1,
+      "art": {
+        "terrain": "flat dusty alien plain with sparse pale grass and scattered pebbles"
+      }
+    },
+    {
+      "id": "forest",
+      "name": "Floresta",
+      "category": "resource",
+      "produces": [
+        "food"
+      ],
+      "builder": "park",
+      "moveCostFood": 1,
+      "weight": 3,
+      "art": {
+        "terrain": "dense alien forest canopy with teal and green trees"
+      }
+    },
+    {
+      "id": "lagoon",
+      "name": "Lagoa",
+      "category": "resource",
+      "produces": [
+        "food",
+        "stone"
+      ],
+      "builder": "park",
+      "moveCostFood": 1,
+      "weight": 1,
+      "art": {
+        "terrain": "clear blue lagoon with sandy pebble shores and reeds"
+      }
+    },
+    {
+      "id": "mountain",
+      "name": "Montanha",
+      "category": "resource",
+      "produces": [
+        "stone"
+      ],
+      "builder": "quarry",
+      "moveCostFood": 2,
+      "weight": 4,
+      "rangeBonus": {
+        "outpost": 4
+      },
+      "eventTrigger": "seismic",
+      "art": {
+        "terrain": "rocky gray mountain peaks with snow tips"
+      }
+    },
+    {
+      "id": "vein_iron",
+      "name": "Veio de Ferro",
+      "category": "resource",
+      "produces": [
+        "iron"
+      ],
+      "builder": "park",
+      "moveCostFood": 1,
+      "weight": 3,
+      "art": {
+        "terrain": "exposed rust-colored iron ore vein cutting through rocky ground"
+      }
+    },
+    {
+      "id": "vein_coal",
+      "name": "Veio de Carvão",
+      "category": "resource",
+      "produces": [
+        "coal"
+      ],
+      "builder": "park",
+      "moveCostFood": 1,
+      "weight": 3,
+      "art": {
+        "terrain": "black coal seam exposed in a shallow quarry pit"
+      }
+    },
+    {
+      "id": "vein_gold",
+      "name": "Veio de Ouro",
+      "category": "resource",
+      "produces": [
+        "gold"
+      ],
+      "builder": "park",
+      "moveCostFood": 1,
+      "weight": 1,
+      "art": {
+        "terrain": "glittering gold vein in pale quartz rock"
+      }
+    }
+  ],
+  "subsoil": [
+    {
+      "id": "sub_stone",
+      "resource": "stone",
+      "weight": 3
+    },
+    {
+      "id": "sub_coal",
+      "resource": "coal",
+      "weight": 3
+    },
+    {
+      "id": "sub_iron",
+      "resource": "iron",
+      "weight": 3
+    },
+    {
+      "id": "sub_gold",
+      "resource": "gold",
+      "weight": 3
+    },
+    {
+      "id": "sub_oil",
+      "resource": "oil",
+      "weight": 2
+    },
+    {
+      "id": "sub_empty",
+      "resource": null,
+      "weight": 11
+    }
+  ],
+  "sites": [
+    {
+      "id": "temple",
+      "name": "Templo",
+      "copiesFor6": 8,
+      "action": "excavate",
+      "excavateCost": {
+        "stone": 1
+      },
+      "reward": {
+        "treasureDraw": 2
+      },
+      "afterExcavate": "empty",
+      "risk": "guardian",
+      "art": {
+        "terrain": "ancient overgrown alien temple with glowing glyphs, seen from above"
+      }
+    },
+    {
+      "id": "ruin",
+      "name": "Ruína",
+      "copiesFor6": 8,
+      "action": "excavate",
+      "excavateCost": {
+        "stone": 1
+      },
+      "reward": {
+        "treasureDraw": 1
+      },
+      "passive": {
+        "extraDraw": 1,
+        "unlockDeck": "n3"
+      },
+      "afterExcavate": "keep",
+      "eventTrigger": "horde",
+      "art": {
+        "terrain": "collapsed precursor ruins with broken pillars and scattered metal debris"
+      }
+    }
+  ],
+  "hazards": [
+    {
+      "id": "volcano",
+      "name": "Vulcão",
+      "trigger": "thermal",
+      "bonus": {
+        "effectId": "produce",
+        "params": {
+          "resource": "coal",
+          "amount": 2,
+          "withoutMine": true
+        }
+      },
+      "damage": {
+        "effectId": "ashCloud",
+        "params": {
+          "radius": 1,
+          "noProductionRounds": 2
+        }
+      },
+      "art": {
+        "terrain": "active volcano crater with glowing lava and smoke"
+      }
+    },
+    {
+      "id": "geyser",
+      "name": "Geiser",
+      "trigger": "seismic",
+      "bonus": {
+        "effectId": "freeMineUpkeep",
+        "params": {
+          "radius": 1
+        }
+      },
+      "damage": {
+        "effectId": "geyserDry",
+        "params": {
+          "rounds": 3
+        }
+      },
+      "art": {
+        "terrain": "steaming geyser field with mineral terraces"
+      }
+    },
+    {
+      "id": "acid_swamp",
+      "name": "Pântano Ácido",
+      "trigger": "climatic",
+      "bonus": {
+        "effectId": "doubleFood",
+        "params": {}
+      },
+      "damage": {
+        "effectId": "contaminate",
+        "params": {
+          "cleanActions": 2
+        }
+      },
+      "art": {
+        "terrain": "lush toxic green swamp with bioluminescent plants"
+      }
+    },
+    {
+      "id": "wind_canyon",
+      "name": "Cânion de Ventos",
+      "trigger": "atmospheric",
+      "bonus": {
+        "effectId": "freeDroneFromHere",
+        "params": {}
+      },
+      "damage": {
+        "effectId": "groundDrones",
+        "params": {
+          "rounds": 1
+        }
+      },
+      "art": {
+        "terrain": "deep red rock canyon with swirling wind streaks"
+      }
+    },
+    {
+      "id": "thin_crust",
+      "name": "Crosta Fina",
+      "trigger": "seismic",
+      "bonus": {
+        "effectId": "thinCrust",
+        "params": {
+          "freeSurvey": true,
+          "mineDiscount": {
+            "stone": 1
+          },
+          "multiplierBonus": 1
+        }
+      },
+      "damage": {
+        "effectId": "mineCollapse",
+        "params": {
+          "sealRounds": 3
+        }
+      },
+      "art": {
+        "terrain": "cracked thin rocky crust with glowing fissures"
+      }
+    },
+    {
+      "id": "free_port",
+      "name": "Porto Franco",
+      "trigger": "economic",
+      "bonus": {
+        "effectId": "freePort",
+        "params": {
+          "bankSpread": 0,
+          "tradeIgnoresBorder": true
+        }
+      },
+      "damage": {
+        "effectId": "portClosed",
+        "params": {
+          "rounds": 3,
+          "spreadMultiplier": 2
+        }
+      },
+      "art": {
+        "terrain": "small frontier landing port with cargo pads and cranes, top-down"
+      }
+    },
+    {
+      "id": "magnetic_anomaly",
+      "name": "Anomalia Magnética",
+      "trigger": "atmospheric",
+      "bonus": {
+        "effectId": "sabotageShield",
+        "params": {
+          "radius": 1
+        }
+      },
+      "damage": {
+        "effectId": "sabotageAmplify",
+        "params": {
+          "radius": 1,
+          "factor": 2,
+          "rounds": 1
+        }
+      },
+      "art": {
+        "terrain": "strange purple magnetic distortion field with floating rocks"
+      }
+    }
+  ],
+  "disaster": {
+    "radius": 1,
+    "downgradeLevels": 1,
+    "destroyLevel1": true,
+    "villageImmune": true,
+    "villageLoseLives": 1,
+    "affectsPermanents": false
+  }
+}

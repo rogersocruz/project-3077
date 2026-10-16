@@ -1,0 +1,299 @@
+/*
+ * Linguagem do HUD (ART_DIRECTION 1): placas metálicas chanfradas com filete claro e
+ * rebites, papel creme para texto, laranja só para foco e ação principal.
+ * Cores só por variáveis de tema (tokens.ts → cssVariables).
+ */
+
+/* ── Placa metálica ─────────────────────────────────────────────────────────── */
+/*
+ * O chanfro fica num pseudo-elemento atrás do conteúdo: a placa em si não recorta os
+ * filhos, então popovers (construir, ajustes) podem sair dela.
+ */
+.plate {
+  --chamfer: 10px;
+  --plate-extra: none;
+  position: relative;
+  isolation: isolate;
+  color: var(--paper-100);
+}
+
+.plate::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    var(--plate-extra),
+    repeating-linear-gradient(
+      90deg,
+      color-mix(in srgb, var(--frame-edge) 4%, transparent) 0 1px,
+      transparent 1px 3px
+    ),
+    linear-gradient(180deg, var(--frame-700) 0%, var(--frame-800) 48%, var(--frame-900) 100%);
+  clip-path: polygon(
+    var(--chamfer) 0,
+    calc(100% - var(--chamfer)) 0,
+    100% var(--chamfer),
+    100% calc(100% - var(--chamfer)),
+    calc(100% - var(--chamfer)) 100%,
+    var(--chamfer) 100%,
+    0 calc(100% - var(--chamfer)),
+    0 var(--chamfer)
+  );
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, var(--frame-edge) 70%, transparent),
+    inset 0 -2px 0 var(--frame-900);
+}
+
+/* Rebites discretos nos quatro cantos. */
+.rivets {
+  --rivet: color-mix(in srgb, var(--frame-edge) 60%, transparent);
+  --plate-extra:
+    radial-gradient(circle at 8px 8px, var(--rivet) 0 1.5px, transparent 1.9px),
+    radial-gradient(circle at calc(100% - 8px) 8px, var(--rivet) 0 1.5px, transparent 1.9px),
+    radial-gradient(circle at 8px calc(100% - 8px), var(--rivet) 0 1.5px, transparent 1.9px),
+    radial-gradient(circle at calc(100% - 8px) calc(100% - 8px), var(--rivet) 0 1.5px, transparent 1.9px);
+}
+
+.plateTitle {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 15px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--frame-edge);
+}
+
+/* ── Papel creme ────────────────────────────────────────────────────────────── */
+.paper {
+  --chamfer: 8px;
+  color: var(--ink-900);
+  background: linear-gradient(180deg, var(--paper-100) 0%, var(--paper-100) 78%, var(--paper-300) 100%);
+  clip-path: polygon(
+    var(--chamfer) 0,
+    calc(100% - var(--chamfer)) 0,
+    100% var(--chamfer),
+    100% calc(100% - var(--chamfer)),
+    calc(100% - var(--chamfer)) 100%,
+    var(--chamfer) 100%,
+    0 calc(100% - var(--chamfer)),
+    0 var(--chamfer)
+  );
+}
+
+.paperHeading {
+  margin: 0 0 6px;
+  padding-bottom: 4px;
+  border-bottom: 2px solid var(--paper-300);
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 14px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-600);
+}
+
+/* ── Botões ─────────────────────────────────────────────────────────────────── */
+.btn {
+  --chamfer: 6px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 32px;
+  padding: 4px 12px;
+  border: 0;
+  cursor: pointer;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 15px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--paper-100);
+  background: linear-gradient(180deg, var(--frame-700) 0%, var(--frame-800) 100%);
+  clip-path: polygon(
+    var(--chamfer) 0,
+    100% 0,
+    100% calc(100% - var(--chamfer)),
+    calc(100% - var(--chamfer)) 100%,
+    0 100%,
+    0 var(--chamfer)
+  );
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, var(--frame-edge) 60%, transparent),
+    inset 0 0 0 1px var(--frame-700);
+}
+
+.btn:hover:not(:disabled),
+.btn:focus-visible {
+  outline: none;
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, var(--frame-edge) 60%, transparent),
+    inset 0 0 0 2px var(--accent-orange);
+}
+
+.btn:disabled {
+  cursor: not-allowed;
+  filter: saturate(0.4);
+  opacity: 0.45;
+}
+
+.btnOn {
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, var(--frame-edge) 60%, transparent),
+    inset 0 0 0 2px var(--accent-orange);
+  color: var(--accent-orange);
+}
+
+.btnPrimary {
+  color: var(--frame-900);
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--accent-orange) 88%, var(--paper-100)) 0%,
+    var(--accent-orange) 55%,
+    color-mix(in srgb, var(--accent-orange) 80%, var(--frame-900)) 100%
+  );
+  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--paper-100) 60%, transparent);
+}
+
+.btnPrimary:hover:not(:disabled),
+.btnPrimary:focus-visible {
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, var(--paper-100) 60%, transparent),
+    0 0 0 2px var(--paper-100) inset;
+}
+
+/* Botão sobre papel. */
+.btnInk {
+  color: var(--paper-100);
+  background: linear-gradient(180deg, var(--frame-800) 0%, var(--frame-900) 100%);
+}
+
+.btnIcon {
+  min-width: 34px;
+  padding: 4px 8px;
+}
+
+.kbd {
+  display: inline-block;
+  min-width: 16px;
+  padding: 0 4px;
+  font-family: var(--font-numeric);
+  font-weight: 700;
+  font-size: 11px;
+  line-height: 15px;
+  text-align: center;
+  color: var(--frame-edge);
+  border: 1px solid color-mix(in srgb, var(--frame-edge) 50%, transparent);
+  border-radius: 3px;
+}
+
+.btnPrimary .kbd {
+  color: var(--frame-900);
+  border-color: color-mix(in srgb, var(--frame-900) 45%, transparent);
+}
+
+/* ── Tipografia utilitária ──────────────────────────────────────────────────── */
+.num {
+  font-family: var(--font-numeric);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.label {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--frame-edge);
+}
+
+.muted {
+  color: var(--ink-600);
+}
+
+.danger {
+  color: var(--ui-danger);
+}
+
+.paper .danger {
+  color: color-mix(in srgb, var(--ui-danger) 75%, var(--ink-900));
+}
+
+/* ── Modais e sobreposições ─────────────────────────────────────────────────── */
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  display: grid;
+  place-items: center;
+  padding: 16px;
+  background: color-mix(in srgb, var(--frame-900) 62%, transparent);
+  animation: fadeIn 160ms ease-out;
+}
+
+.modal {
+  width: min(640px, 100%);
+  max-height: calc(100vh - 32px);
+  display: flex;
+  flex-direction: column;
+  padding: 16px 18px 18px;
+  gap: 12px;
+  animation: dropIn 220ms cubic-bezier(0.2, 0.9, 0.3, 1.2);
+}
+
+.modalHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.modalTitle {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 24px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.modalTitle em {
+  font-style: normal;
+  color: var(--accent-orange);
+}
+
+.modalBody {
+  overflow: auto;
+  padding: 12px 14px;
+}
+
+.modalFoot {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes dropIn {
+  from {
+    opacity: 0;
+    transform: translateY(-14px) scale(0.98);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .overlay,
+  .modal {
+    animation: fadeIn 160ms ease-out;
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "_meta": {
+    "note": "Layouts de roseta (GDD 3.1). Cada tabuleiro ocupa uma célula de uma grade hexagonal macro em coordenadas axiais (q, r); células vizinhas = tabuleiros encostados aresta com aresta. A ordem da lista é a ordem dos assentos. Proposta inicial da Fase 0 — ajustável sem mexer no código."
+  },
+  "layouts": {
+    "3": [
+      { "q": 0, "r": 0 },
+      { "q": 1, "r": 0 },
+      { "q": 0, "r": 1 }
+    ],
+    "4": [
+      { "q": 0, "r": 0 },
+      { "q": 1, "r": -1 },
+      { "q": 1, "r": 0 },
+      { "q": 0, "r": 1 }
+    ],
+    "5": [
+      { "q": 0, "r": 0 },
+      { "q": 1, "r": -1 },
+      { "q": 1, "r": 0 },
+      { "q": 0, "r": 1 },
+      { "q": -1, "r": 1 }
+    ],
+    "6": [
+      { "q": 1, "r": 0 },
+      { "q": 1, "r": -1 },
+      { "q": 0, "r": -1 },
+      { "q": -1, "r": 0 },
+      { "q": -1, "r": 1 },
+      { "q": 0, "r": 1 }
+    ]
+  }
+}
