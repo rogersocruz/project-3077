@@ -229,7 +229,13 @@ export function Card({ face, width = 252, blocked = false, version, measurer, cl
         />
         <path d={`M${M},${HEADER.bottom}H${CARD_W - M}`} stroke={palette.frame[900]} strokeWidth={3} />
         <circle cx={66} cy={63} r={29} fill={palette.frame[900]} opacity={0.35} />
-        <CategoryIcon category={face.category} x={66} y={63} size={42} color={palette.paper[100]} />
+        <CategoryIcon
+          category={face.ribbon === 'treasure' ? 'treasure' : face.category}
+          x={66}
+          y={63}
+          size={44}
+          color={palette.paper[100]}
+        />
         <text
           x={104}
           y={63 + titleSize * 0.36}

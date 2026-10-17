@@ -18,7 +18,8 @@
     "versionTag": "v0.3",
     "play": "Nova partida",
     "showcase": "Mesa 3D · vitrine",
-    "lab": "Laboratório"
+    "lab": "Laboratório",
+    "credits": "Créditos"
   },
   "resources": {
     "food": "Comida",
@@ -650,5 +651,12 @@
       "expansion": "Expansão",
       "roundLimit": "Limite de rodadas"
     }
+  },
+  "credits": {
+    "title": "Créditos",
+    "icons": "Ícones",
+    "line": "Icons made by {{author}}. Available on https://game-icons.net",
+    "license": "Licença: {{license}}",
+    "items": "{{count}} ícone(s): {{list}}"
   }
 }

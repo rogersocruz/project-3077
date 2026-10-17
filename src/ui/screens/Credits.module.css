@@ -1,0 +1,49 @@
+.screen {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 32px 16px;
+  background: var(--frame-900);
+  color: var(--paper-100);
+}
+
+.panel {
+  width: min(640px, 100%);
+  padding: 28px 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  align-items: flex-start;
+}
+
+.title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 36px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.line {
+  margin: 0;
+}
+
+.small {
+  margin: 2px 0 0;
+  font-size: 13px;
+  color: var(--frame-edge);
+}
+
+.small a {
+  color: var(--accent-orange);
+}

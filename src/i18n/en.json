@@ -18,7 +18,8 @@
     "versionTag": "v0.3",
     "play": "New game",
     "showcase": "3D table · showcase",
-    "lab": "Laboratory"
+    "lab": "Laboratory",
+    "credits": "Credits"
   },
   "resources": {
     "food": "Food",
@@ -650,5 +651,12 @@
       "expansion": "Expansion",
       "roundLimit": "Round limit"
     }
+  },
+  "credits": {
+    "title": "Credits",
+    "icons": "Icons",
+    "line": "Icons made by {{author}}. Available on https://game-icons.net",
+    "license": "License: {{license}}",
+    "items": "{{count}} icon(s): {{list}}"
   }
 }

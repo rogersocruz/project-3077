@@ -15,7 +15,9 @@
     "typecheck": "tsc --noEmit",
     "sim": "tsx scripts/sim.ts",
     "data:check": "tsx scripts/data-check.ts",
-    "art:check": "tsx scripts/not-implemented.ts art:check"
+    "art:check": "tsx scripts/not-implemented.ts art:check",
+    "assets:build": "tsx scripts/assets-build.ts",
+    "assets:check": "tsx scripts/assets-check.ts"
   },
   "dependencies": {
     "@fontsource/barlow": "^5.3.0",

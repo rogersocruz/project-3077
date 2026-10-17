@@ -1,0 +1,154 @@
+{
+  "_meta": {
+    "description": "Ícones aprovados (docs/ASSET_SHORTLIST.md, coluna A; escopo: recursos e cartas). Só o que está aqui entra no jogo. npm run assets:build processa _inbox → public/assets.",
+    "source": {
+      "repository": "https://github.com/game-icons/icons",
+      "commit": "82d948812bfe3f269ef8f731dcdb07b08160edc4"
+    }
+  },
+  "icons": [
+    {
+      "id": "resource-food",
+      "inbox": "game-icons/lorc/wheat.svg",
+      "name": "wheat",
+      "source": "https://game-icons.net/1x1/lorc/wheat.html",
+      "download": "https://raw.githubusercontent.com/game-icons/icons/82d948812bfe3f269ef8f731dcdb07b08160edc4/lorc/wheat.svg",
+      "author": "Lorc",
+      "license": "CC-BY-3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+      "downloadedAt": "2026-10-17"
+    },
+    {
+      "id": "resource-stone",
+      "inbox": "game-icons/delapouite/stone-pile.svg",
+      "name": "stone-pile",
+      "source": "https://game-icons.net/1x1/delapouite/stone-pile.html",
+      "download": "https://raw.githubusercontent.com/game-icons/icons/82d948812bfe3f269ef8f731dcdb07b08160edc4/delapouite/stone-pile.svg",
+      "author": "Delapouite",
+      "license": "CC-BY-3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+      "downloadedAt": "2026-10-17"
+    },
+    {
+      "id": "resource-iron",
+      "inbox": "game-icons/lorc/metal-bar.svg",
+      "name": "metal-bar",
+      "source": "https://game-icons.net/1x1/lorc/metal-bar.html",
+      "download": "https://raw.githubusercontent.com/game-icons/icons/82d948812bfe3f269ef8f731dcdb07b08160edc4/lorc/metal-bar.svg",
+      "author": "Lorc",
+      "license": "CC-BY-3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+      "downloadedAt": "2026-10-17"
+    },
+    {
+      "id": "resource-coal",
+      "inbox": "game-icons/delapouite/coal-pile.svg",
+      "name": "coal-pile",
+      "source": "https://game-icons.net/1x1/delapouite/coal-pile.html",
+      "download": "https://raw.githubusercontent.com/game-icons/icons/82d948812bfe3f269ef8f731dcdb07b08160edc4/delapouite/coal-pile.svg",
+      "author": "Delapouite",
+      "license": "CC-BY-3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+      "downloadedAt": "2026-10-17"
+    },
+    {
+      "id": "resource-oil",
+      "inbox": "game-icons/delapouite/barrel.svg",
+      "name": "barrel",
+      "source": "https://game-icons.net/1x1/delapouite/barrel.html",
+      "download": "https://raw.githubusercontent.com/game-icons/icons/82d948812bfe3f269ef8f731dcdb07b08160edc4/delapouite/barrel.svg",
+      "author": "Delapouite",
+      "license": "CC-BY-3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+      "downloadedAt": "2026-10-17"
+    },
+    {
+      "id": "resource-gold",
+      "inbox": "game-icons/delapouite/two-coins.svg",
+      "name": "two-coins",
+      "source": "https://game-icons.net/1x1/delapouite/two-coins.html",
+      "download": "https://raw.githubusercontent.com/game-icons/icons/82d948812bfe3f269ef8f731dcdb07b08160edc4/delapouite/two-coins.svg",
+      "author": "Delapouite",
+      "license": "CC-BY-3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+      "downloadedAt": "2026-10-17"
+    },
+    {
+      "id": "card-tech",
+      "inbox": "game-icons/skoll/atom.svg",
+      "name": "atom",
+      "source": "https://game-icons.net/1x1/skoll/atom.html",
+      "download": "https://raw.githubusercontent.com/game-icons/icons/82d948812bfe3f269ef8f731dcdb07b08160edc4/skoll/atom.svg",
+      "author": "Skoll",
+      "license": "CC-BY-3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+      "downloadedAt": "2026-10-17"
+    },
+    {
+      "id": "card-delivered",
+      "inbox": "game-icons/sbed/targeted.svg",
+      "name": "targeted",
+      "source": "https://game-icons.net/1x1/sbed/targeted.html",
+      "download": "https://raw.githubusercontent.com/game-icons/icons/82d948812bfe3f269ef8f731dcdb07b08160edc4/sbed/targeted.svg",
+      "author": "Sbed",
+      "license": "CC-BY-3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+      "downloadedAt": "2026-10-17"
+    },
+    {
+      "id": "card-own",
+      "inbox": "game-icons/delapouite/flag-objective.svg",
+      "name": "flag-objective",
+      "source": "https://game-icons.net/1x1/delapouite/flag-objective.html",
+      "download": "https://raw.githubusercontent.com/game-icons/icons/82d948812bfe3f269ef8f731dcdb07b08160edc4/delapouite/flag-objective.svg",
+      "author": "Delapouite",
+      "license": "CC-BY-3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+      "downloadedAt": "2026-10-17"
+    },
+    {
+      "id": "card-contract",
+      "inbox": "game-icons/delapouite/shaking-hands.svg",
+      "name": "shaking-hands",
+      "source": "https://game-icons.net/1x1/delapouite/shaking-hands.html",
+      "download": "https://raw.githubusercontent.com/game-icons/icons/82d948812bfe3f269ef8f731dcdb07b08160edc4/delapouite/shaking-hands.svg",
+      "author": "Delapouite",
+      "license": "CC-BY-3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+      "downloadedAt": "2026-10-17"
+    },
+    {
+      "id": "card-relic",
+      "inbox": "game-icons/lorc/gem-pendant.svg",
+      "name": "gem-pendant",
+      "source": "https://game-icons.net/1x1/lorc/gem-pendant.html",
+      "download": "https://raw.githubusercontent.com/game-icons/icons/82d948812bfe3f269ef8f731dcdb07b08160edc4/lorc/gem-pendant.svg",
+      "author": "Lorc",
+      "license": "CC-BY-3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+      "downloadedAt": "2026-10-17"
+    },
+    {
+      "id": "card-event",
+      "inbox": "game-icons/lorc/lightning-helix.svg",
+      "name": "lightning-helix",
+      "source": "https://game-icons.net/1x1/lorc/lightning-helix.html",
+      "download": "https://raw.githubusercontent.com/game-icons/icons/82d948812bfe3f269ef8f731dcdb07b08160edc4/lorc/lightning-helix.svg",
+      "author": "Lorc",
+      "license": "CC-BY-3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+      "downloadedAt": "2026-10-17"
+    },
+    {
+      "id": "card-treasure",
+      "inbox": "game-icons/skoll/open-treasure-chest.svg",
+      "name": "open-treasure-chest",
+      "source": "https://game-icons.net/1x1/skoll/open-treasure-chest.html",
+      "download": "https://raw.githubusercontent.com/game-icons/icons/82d948812bfe3f269ef8f731dcdb07b08160edc4/skoll/open-treasure-chest.svg",
+      "author": "Skoll",
+      "license": "CC-BY-3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+      "downloadedAt": "2026-10-17"
+    }
+  ]
+}

@@ -4,9 +4,9 @@
  */
 import { create } from 'zustand';
 
-export type View = 'home' | 'table' | 'newGame' | 'game' | 'cards' | 'lab';
+export type View = 'home' | 'table' | 'newGame' | 'game' | 'cards' | 'lab' | 'credits';
 
-const VIEWS: readonly View[] = ['home', 'table', 'newGame', 'game', 'cards', 'lab'];
+const VIEWS: readonly View[] = ['home', 'table', 'newGame', 'game', 'cards', 'lab', 'credits'];
 
 function viewOf(search: string): View {
   const v = new URLSearchParams(search).get('view');

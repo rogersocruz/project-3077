@@ -1,0 +1,15 @@
+{
+  "card-contract": "assets/icons/card-contract.svg",
+  "card-delivered": "assets/icons/card-delivered.svg",
+  "card-event": "assets/icons/card-event.svg",
+  "card-own": "assets/icons/card-own.svg",
+  "card-relic": "assets/icons/card-relic.svg",
+  "card-tech": "assets/icons/card-tech.svg",
+  "card-treasure": "assets/icons/card-treasure.svg",
+  "resource-coal": "assets/icons/resource-coal.svg",
+  "resource-food": "assets/icons/resource-food.svg",
+  "resource-gold": "assets/icons/resource-gold.svg",
+  "resource-iron": "assets/icons/resource-iron.svg",
+  "resource-oil": "assets/icons/resource-oil.svg",
+  "resource-stone": "assets/icons/resource-stone.svg"
+}

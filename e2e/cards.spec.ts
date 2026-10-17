@@ -80,6 +80,10 @@ test.describe('partida com cartas', () => {
     await expect(page.locator('[data-testid^=hand-card-]').first()).toBeVisible();
     await handCard(page, 'audit').click();
     await expect(page.getByTestId('card-dialog')).toBeVisible();
+    // O alvo só aceita clique depois de destacado (sob carga, o destaque chega um pouco depois).
+    await expect
+      .poll(() => page.evaluate(() => (window as unknown as HookWindow).__p3077.targets()))
+      .toContain('0:0,0');
     await clickHex(page, '0:0,0');
     await page.getByTestId('card-confirm').click();
     await expect(page.getByTestId('intel')).toBeVisible();

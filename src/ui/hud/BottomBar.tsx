@@ -89,7 +89,7 @@ export function BottomBar() {
       <div className={styles.resources} data-testid="resources" aria-label={t('hud.resources')}>
         {RESOURCE_IDS.map((id) => (
           <span key={id} className={styles.res} title={t(`resources.${id}`)} data-testid={`res-${id}`}>
-            <ResourceIcon id={id} size={20} />
+            <ResourceIcon id={id} size={24} />
             <RollingNumber value={res?.[id] ?? 0} instant={instant} />
           </span>
         ))}

@@ -38,6 +38,9 @@ export function Home() {
         <button type="button" className={hud.btn} onClick={() => go('table')}>
           {t('home.showcase')}
         </button>
+        <button type="button" className={hud.btn} onClick={() => go('credits')} data-testid="open-credits">
+          {t('home.credits')}
+        </button>
       </nav>
 
       <section className={styles.paper}>

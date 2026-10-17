@@ -31,3 +31,12 @@ test('página inicial mostra PROJETO 3077 com o tema', async ({ page }) => {
   await page.setViewportSize({ width: 1366, height: 768 });
   await page.screenshot({ path: 'screenshots/phase0-home-1366.png', fullPage: true });
 });
+
+test('créditos: cada autor de ícone CC BY aparece no formato pedido pela licença', async ({ page }) => {
+  await page.goto('/');
+  await page.getByTestId('open-credits').click();
+  const credits = page.getByTestId('credits');
+  for (const author of ['Delapouite', 'Lorc', 'Skoll', 'Sbed'])
+    await expect(credits).toContainText(`Icons made by ${author}. Available on https://game-icons.net`);
+  await page.screenshot({ path: 'screenshots/phase2b-credits.png' });
+});

@@ -11,6 +11,7 @@ import type { ResourceAmounts } from '../../engine/queries';
 import type { Resources } from '../../engine/state';
 import { type FactionKey, palette } from '../theme/tokens';
 import styles from './Bits.module.css';
+import { ResourceGlyph } from '../card/glyphs';
 import { Shape } from './Shape';
 
 export function ResourceIcon({
@@ -25,7 +26,10 @@ export function ResourceIcon({
   const { t } = useTranslation();
   return (
     <span className={`${styles.icon} ${onPaper ? styles.onPaper : ''}`} title={t(`resources.${id}`)}>
-      <Shape kind={palette.resource[id].shape} colorVar={`--resource-${id}-color`} size={size} />
+      {/* O mesmo desenho do token nas cartas (glyphs.tsx): forma, cor e silhueta do ícone. */}
+      <svg width={size} height={size} viewBox="-12 -12 24 24" aria-hidden>
+        <ResourceGlyph id={id} x={0} y={0} size={20} />
+      </svg>
     </span>
   );
 }

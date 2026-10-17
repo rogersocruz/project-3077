@@ -1,6 +1,7 @@
 import { lazy, Suspense, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNav } from './nav';
+import { Credits } from './screens/Credits';
 import { Home } from './screens/Home';
 import { NewGame } from './screens/NewGame';
 
@@ -44,6 +45,8 @@ export function App() {
           <Lab />
         </Suspense>
       );
+    case 'credits':
+      return <Credits />;
     case 'newGame':
       return <NewGame />;
     default:

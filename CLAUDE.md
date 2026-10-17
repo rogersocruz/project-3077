@@ -86,6 +86,8 @@ npm run lint         ESLint
 npm run sim -- --games 200 --players 4 --seed 1   simulação IA × IA sem renderização
 npm run data:check   valida data/*.json contra os esquemas e effectIds
 npm run art:check    lista arte faltante do manifesto
+npm run assets:build processa os ícones aprovados (assets-src → public/assets)
+npm run assets:check confere ícones, créditos, sha256 e licenças
 ```
 
 ## Como trabalhar
@@ -99,6 +101,24 @@ npm run art:check    lista arte faltante do manifesto
 ## Estado atual
 - Fase concluída: 5 — IA básica e Laboratório (fim da rota rápida)
 - Próxima fase: 6 — Eventos, hazards, sítios e tesouro
+- Assets de terceiros (Fase 2B, parcial — decisão do usuário: **só ícones de recursos e
+  de categorias de carta**; interface Tabler e modelos 3D Kenney ficaram de fora):
+  - 13 ícones game-icons.net (CC BY 3.0; Lorc, Delapouite, Skoll, Sbed), coluna A de
+    `docs/ASSET_SHORTLIST.md`, baixados do repositório oficial (commit fixado) para
+    `assets-src/_inbox/game-icons/`. Aprovados = `assets-src/icons.manifest.json`.
+  - `npm run assets:build` (idempotente, sem dependência nova): tira o fundo, currentColor,
+    viewBox 24 → `public/assets/icons/<id>.svg`, `assets/credits.json` (sha256 final e
+    original), `assets/icon-map.json` e `src/ui/icons/gameIcons.generated.ts` (paths para o
+    SVG da carta, que vira textura 3D; fora do Prettier). Formato inesperado falha.
+  - `npm run assets:check`: ícone para cada recurso e as 7 categorias; todo arquivo em
+    public/assets com crédito; sha256 confere; licença na lista aceita.
+  - Integração: `IconSilhouette` em `ui/card/glyphs.tsx` (creme chapado + contorno escuro);
+    `ResourceGlyph` = forma do token na cor do recurso + silhueta (cartas, ilustrações, HUD
+    via `ResourceIcon`, que agora desenha o mesmo SVG); `CategoryIcon` no header da carta
+    (Tesouro usa `card-treasure`; `card-event` espera a Fase 6). HUD de recursos em 24 px.
+    Em ≤16 px (linha de custo) lê-se a forma/cor do token; o desenho é detalhe.
+  - Tela Créditos (Home → Créditos) gerada de credits.json, por autor, no formato do
+    game-icons; `assets/LICENSES.md`.
 - IA e Laboratório (Fase 5):
   - Jogar contra a IA: Nova partida → assento Humano/IA Fácil/Normal/Difícil (ou URL
     `seats=human,normal,hard`); só IA (espectador): `ai=all|easy|normal|hard`. Laboratório:
