@@ -16,6 +16,11 @@ export interface GameOptions {
   readonly seed: Seed;
   readonly layers?: Partial<Omit<RuleLayers, 'economy'>>;
   readonly longMap?: boolean;
+  /**
+   * Só laboratório (calibração): ninguém vence antes do limite de rodadas, para medir a
+   * trajetória até a rodada T. Não é regra do jogo nem aparece na interface.
+   */
+  readonly playToRoundLimit?: boolean;
 }
 
 export interface Tile {
@@ -256,6 +261,7 @@ export function createGame(ctx: EngineContext, options: GameOptions): GameState 
     pendingTrade: null,
     cards,
     pending: null,
+    ...(options.playToRoundLimit ? { variant: { playToRoundLimit: true } } : {}),
     world: { deck: eventDeck, used: [], current: null, braced: [], firstSurveyDone: false, withheld: [] },
     winners: [],
     endReason: null,

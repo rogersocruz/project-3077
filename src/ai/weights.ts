@@ -71,6 +71,12 @@ export interface AiWeights {
   readonly treasureCard: number;
   /** Bônus passivo de Ruína (+1 compra e linha n3), escalado pelo horizonte. */
   readonly ruinBonus: number;
+  /** Bot `investor`: rodada até a qual Universidade 2 / Mina valem o bônus abaixo. */
+  readonly investorUniRound: number;
+  readonly investorMineRound: number;
+  /** Bônus por nível de Universidade (até 2) e por ter Mina, enquanto vale a prioridade. */
+  readonly investorUni: number;
+  readonly investorMine: number;
 }
 
 export const DEFAULT_WEIGHTS: AiWeights = {
@@ -109,6 +115,10 @@ export const DEFAULT_WEIGHTS: AiWeights = {
   hazardRisk: 0.15,
   treasureCard: 5,
   ruinBonus: 14,
+  investorUniRound: 4,
+  investorMineRound: 5,
+  investorUni: 30,
+  investorMine: 70,
 };
 
 export const AI_LEVELS: readonly AiLevel[] = ['easy', 'normal', 'hard'];

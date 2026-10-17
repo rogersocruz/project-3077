@@ -12,8 +12,8 @@ import type { Action, CardUse } from '../engine/actions';
 import type { EngineContext } from '../engine/context';
 import { checkAction, decider, legalActions } from '../engine/legal';
 import { applyAction } from '../engine/reducer';
-import { getPlayer, hexKeyOf } from '../engine/queries';
-import { buildCost, inRange, ownBoardHexes, rarityUnlocked } from '../engine/rules/build';
+import { getPlayer, hexKeyOf, maxLevelOf, ownedStructures } from '../engine/queries';
+import { buildCost, inRange, ownBoardHexes, rarityUnlocked, upgradeCost } from '../engine/rules/build';
 import { cardResourceCost } from '../engine/rules/cards';
 import { drawRows, handLimit } from '../engine/rules/decks';
 import { bankQuote, minBankAmount } from '../engine/rules/economy';
@@ -72,7 +72,25 @@ function focusOf(agent: Agent): AiFocus | null {
 
 /** Avaliação do ponto de vista do próprio agente (com o foco dele). */
 function value(ctx: EngineContext, state: GameState, player: PlayerId, agent: Agent): number {
-  return evaluate(ctx, state, player, agent.weights, { focus: focusOf(agent) });
+  const investing = agent.level === 'investor' && state.round <= agent.weights.investorMineRound;
+  return (
+    evaluate(ctx, state, player, agent.weights, { focus: focusOf(agent), mineRoute: investing }) +
+    investorBonus(state, player, agent)
+  );
+}
+
+/**
+ * Bot investor (experimento): até a rodada N, cada nível de Universidade (até 2) vale
+ * `investorUni`; até a rodada M, ter Mina vale `investorMine`. Depois some (ele segue Normal).
+ */
+function investorBonus(state: GameState, player: PlayerId, agent: Agent): number {
+  if (agent.level !== 'investor') return 0;
+  const w = agent.weights;
+  let bonus = 0;
+  if (state.round <= w.investorUniRound)
+    bonus += Math.min(2, maxLevelOf(state, player, 'university')) * w.investorUni;
+  if (state.round <= w.investorMineRound && maxLevelOf(state, player, 'mine') > 0) bonus += w.investorMine;
+  return bonus;
 }
 
 /** Avaliação com outro estoque, a partir da avaliação atual `now` (só estoque e trilhas mudam). */
@@ -320,7 +338,8 @@ function surveyGain(
   const scale = productionsLeft(ctx, state, player, w.horizon) / w.horizon;
   const unlocked = rarityUnlocked(state, player, ctx.structure('mine').rarity);
   const focus = focusOf(agent);
-  const route = focus && MINE_FOCI.includes(focus) ? w.mineRouteBoost : 1;
+  const investing = agent.level === 'investor' && state.round <= w.investorMineRound;
+  const route = (focus && MINE_FOCI.includes(focus)) || investing ? w.mineRouteBoost : 1;
   const e = expectations(ctx);
   return (
     e.mineChance *
@@ -433,6 +452,20 @@ function buyAndBuild(ctx: EngineContext, state: GameState, player: PlayerId, age
         plans.push({ build: o.build, trades: plan.trades, resources: plan.resources, q: o.q });
       break;
     }
+  }
+  // Melhorias que só esbarram no custo (ex.: Universidade 2 sem o Ouro): mesmo plano de banca.
+  for (const { structure } of ownedStructures(state, player)) {
+    const up: Action = { type: 'upgrade', player, uid: structure.uid };
+    if (!checkAction(ctx, rich, up).ok || checkAction(ctx, state, up).ok) continue;
+    const plan = bankPlan(
+      ctx,
+      state,
+      player,
+      me.resources,
+      upgradeCost(ctx, state, player, structure.uid),
+      agent,
+    );
+    if (plan) plans.push({ build: up, trades: plan.trades, resources: plan.resources, q: 10 - plan.loss });
   }
   const out: Scored[] = [];
   for (const p of plans.sort((a, b) => b.q - a.q).slice(0, w.buyBuildCandidates)) {

@@ -196,7 +196,8 @@
       "human": "Human",
       "easy": "AI Easy",
       "normal": "AI Normal",
-      "hard": "AI Hard"
+      "hard": "AI Hard",
+      "investor": "AI Investor"
     },
     "vsAi": "Me vs the AI",
     "watchAi": "AI only (watch)",

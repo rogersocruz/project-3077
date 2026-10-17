@@ -6,3 +6,4 @@ playwright-report
 screenshots
 *.local
 sim-out
+simulations/experiments/*/records.json

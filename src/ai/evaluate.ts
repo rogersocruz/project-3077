@@ -71,6 +71,8 @@ export interface EvalOptions {
   readonly resources?: Resources;
   /** Foco estratégico do agente (null/ausente = equilibrado). */
   readonly focus?: AiFocus | null;
+  /** Valoriza sítios de Mina como a rota da Mina (bot investor). */
+  readonly mineRoute?: boolean;
 }
 
 /** Partes da avaliação (para depuração e testes). */
@@ -99,7 +101,7 @@ export function evaluateParts(
 
   const focus = opts.focus ?? null;
   const { stock, victory } = resourceTerms(ctx, state, me, w, resources, focus);
-  const mineRoute = focus !== null && MINE_FOCI.includes(focus) ? w.mineRouteBoost : 1;
+  const mineRoute = (focus !== null && MINE_FOCI.includes(focus)) || opts.mineRoute ? w.mineRouteBoost : 1;
 
   // Estruturas: renda, capacidades e o que destravam.
   let income = 0;

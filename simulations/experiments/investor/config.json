@@ -1,0 +1,17 @@
+{
+  "games": 200,
+  "players": 4,
+  "seed": 1,
+  "levels": [
+    "investor",
+    "normal",
+    "normal",
+    "normal"
+  ],
+  "layers": {
+    "cards": true
+  },
+  "longMap": false,
+  "style": "mixed",
+  "rotate": true
+}

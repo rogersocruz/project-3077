@@ -9,3 +9,4 @@ data
 docs
 *.md
 src/ui/icons/gameIcons.generated.ts
+simulations

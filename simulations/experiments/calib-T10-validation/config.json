@@ -1,0 +1,27 @@
+{
+  "games": 200,
+  "players": 4,
+  "seed": 1,
+  "levels": [
+    "normal"
+  ],
+  "layers": {
+    "cards": true
+  },
+  "longMap": false,
+  "style": "mixed",
+  "override": {
+    "balance.json": {
+      "victory": {
+        "resourceThresholds": {
+          "food": 4,
+          "stone": 8,
+          "iron": 6,
+          "coal": 14,
+          "oil": 1,
+          "gold": 3
+        }
+      }
+    }
+  }
+}

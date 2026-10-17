@@ -196,7 +196,8 @@
       "human": "Humano",
       "easy": "IA Fácil",
       "normal": "IA Normal",
-      "hard": "IA Difícil"
+      "hard": "IA Difícil",
+      "investor": "IA Investidora"
     },
     "vsAi": "Eu contra a IA",
     "watchAi": "Só IA (assistir)",

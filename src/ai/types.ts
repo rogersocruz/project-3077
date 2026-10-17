@@ -1,8 +1,12 @@
 /** Tipos da IA (Fase 5). */
-export type AiLevel = 'easy' | 'normal' | 'hard';
+/**
+ * Níveis de IA. `investor` (experimento de balanceamento): igual ao Normal, mas prioriza
+ * Universidade 2 até a rodada `investorUniRound` e uma Mina até `investorMineRound`.
+ */
+export type AiLevel = 'easy' | 'normal' | 'hard' | 'investor';
 
 export function isAiLevel(x: unknown): x is AiLevel {
-  return x === 'easy' || x === 'normal' || x === 'hard';
+  return x === 'easy' || x === 'normal' || x === 'hard' || x === 'investor';
 }
 
 /**

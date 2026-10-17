@@ -1,0 +1,398 @@
+{
+  "T10": {
+    "tables": [
+      {
+        "used": {
+          "food": 40,
+          "stone": 30,
+          "iron": 25,
+          "coal": 18,
+          "oil": 10,
+          "gold": 10
+        },
+        "measured": {
+          "food": {
+            "median": 4,
+            "n": 120
+          },
+          "stone": {
+            "median": 7.5,
+            "n": 102
+          },
+          "iron": {
+            "median": 6,
+            "n": 112
+          },
+          "coal": {
+            "median": 16,
+            "n": 123
+          },
+          "oil": {
+            "median": 0,
+            "n": 114
+          },
+          "gold": {
+            "median": 3,
+            "n": 112
+          },
+          "expansion": {
+            "median": 10,
+            "n": 117
+          }
+        }
+      },
+      {
+        "used": {
+          "food": 4,
+          "stone": 8,
+          "iron": 6,
+          "coal": 16,
+          "oil": 1,
+          "gold": 3
+        },
+        "measured": {
+          "food": {
+            "median": 4,
+            "n": 120
+          },
+          "stone": {
+            "median": 8,
+            "n": 102
+          },
+          "iron": {
+            "median": 6,
+            "n": 112
+          },
+          "coal": {
+            "median": 14,
+            "n": 123
+          },
+          "oil": {
+            "median": 1,
+            "n": 114
+          },
+          "gold": {
+            "median": 3,
+            "n": 112
+          },
+          "expansion": {
+            "median": 8,
+            "n": 117
+          }
+        }
+      },
+      {
+        "used": {
+          "food": 4,
+          "stone": 8,
+          "iron": 6,
+          "coal": 14,
+          "oil": 1,
+          "gold": 3
+        },
+        "measured": {
+          "food": {
+            "median": 4,
+            "n": 120
+          },
+          "stone": {
+            "median": 8,
+            "n": 102
+          },
+          "iron": {
+            "median": 6,
+            "n": 112
+          },
+          "coal": {
+            "median": 14,
+            "n": 123
+          },
+          "oil": {
+            "median": 1,
+            "n": 114
+          },
+          "gold": {
+            "median": 3,
+            "n": 112
+          },
+          "expansion": {
+            "median": 8,
+            "n": 117
+          }
+        }
+      }
+    ],
+    "proposal": {
+      "food": 4,
+      "stone": 8,
+      "iron": 6,
+      "coal": 14,
+      "oil": 1,
+      "gold": 3
+    }
+  },
+  "T12": {
+    "tables": [
+      {
+        "used": {
+          "food": 40,
+          "stone": 30,
+          "iron": 25,
+          "coal": 18,
+          "oil": 10,
+          "gold": 10
+        },
+        "measured": {
+          "food": {
+            "median": 7,
+            "n": 120
+          },
+          "stone": {
+            "median": 14,
+            "n": 102
+          },
+          "iron": {
+            "median": 9,
+            "n": 112
+          },
+          "coal": {
+            "median": 22,
+            "n": 123
+          },
+          "oil": {
+            "median": 0,
+            "n": 114
+          },
+          "gold": {
+            "median": 10,
+            "n": 112
+          },
+          "expansion": {
+            "median": 12,
+            "n": 117
+          }
+        }
+      },
+      {
+        "used": {
+          "food": 7,
+          "stone": 14,
+          "iron": 9,
+          "coal": 22,
+          "oil": 1,
+          "gold": 10
+        },
+        "measured": {
+          "food": {
+            "median": 10,
+            "n": 120
+          },
+          "stone": {
+            "median": 15,
+            "n": 102
+          },
+          "iron": {
+            "median": 9,
+            "n": 112
+          },
+          "coal": {
+            "median": 21,
+            "n": 123
+          },
+          "oil": {
+            "median": 1,
+            "n": 114
+          },
+          "gold": {
+            "median": 3,
+            "n": 112
+          },
+          "expansion": {
+            "median": 12,
+            "n": 117
+          }
+        }
+      },
+      {
+        "used": {
+          "food": 10,
+          "stone": 15,
+          "iron": 9,
+          "coal": 21,
+          "oil": 1,
+          "gold": 3
+        },
+        "measured": {
+          "food": {
+            "median": 10,
+            "n": 120
+          },
+          "stone": {
+            "median": 15,
+            "n": 102
+          },
+          "iron": {
+            "median": 9,
+            "n": 112
+          },
+          "coal": {
+            "median": 19,
+            "n": 123
+          },
+          "oil": {
+            "median": 1,
+            "n": 114
+          },
+          "gold": {
+            "median": 3,
+            "n": 112
+          },
+          "expansion": {
+            "median": 12,
+            "n": 117
+          }
+        }
+      }
+    ],
+    "proposal": {
+      "food": 10,
+      "stone": 15,
+      "iron": 9,
+      "coal": 19,
+      "oil": 1,
+      "gold": 3
+    }
+  },
+  "T15": {
+    "tables": [
+      {
+        "used": {
+          "food": 40,
+          "stone": 30,
+          "iron": 25,
+          "coal": 18,
+          "oil": 10,
+          "gold": 10
+        },
+        "measured": {
+          "food": {
+            "median": 11.5,
+            "n": 120
+          },
+          "stone": {
+            "median": 33,
+            "n": 102
+          },
+          "iron": {
+            "median": 25,
+            "n": 112
+          },
+          "coal": {
+            "median": 30,
+            "n": 123
+          },
+          "oil": {
+            "median": 0,
+            "n": 114
+          },
+          "gold": {
+            "median": 10,
+            "n": 112
+          },
+          "expansion": {
+            "median": 14,
+            "n": 117
+          }
+        }
+      },
+      {
+        "used": {
+          "food": 12,
+          "stone": 33,
+          "iron": 25,
+          "coal": 30,
+          "oil": 1,
+          "gold": 10
+        },
+        "measured": {
+          "food": {
+            "median": 13,
+            "n": 120
+          },
+          "stone": {
+            "median": 32.5,
+            "n": 102
+          },
+          "iron": {
+            "median": 25,
+            "n": 112
+          },
+          "coal": {
+            "median": 26,
+            "n": 123
+          },
+          "oil": {
+            "median": 1,
+            "n": 114
+          },
+          "gold": {
+            "median": 10,
+            "n": 112
+          },
+          "expansion": {
+            "median": 14,
+            "n": 117
+          }
+        }
+      },
+      {
+        "used": {
+          "food": 13,
+          "stone": 33,
+          "iron": 25,
+          "coal": 26,
+          "oil": 1,
+          "gold": 10
+        },
+        "measured": {
+          "food": {
+            "median": 18,
+            "n": 120
+          },
+          "stone": {
+            "median": 28,
+            "n": 102
+          },
+          "iron": {
+            "median": 25,
+            "n": 112
+          },
+          "coal": {
+            "median": 26,
+            "n": 123
+          },
+          "oil": {
+            "median": 1,
+            "n": 114
+          },
+          "gold": {
+            "median": 10,
+            "n": 112
+          },
+          "expansion": {
+            "median": 14,
+            "n": 117
+          }
+        }
+      }
+    ],
+    "proposal": {
+      "food": 18,
+      "stone": 28,
+      "iron": 25,
+      "coal": 26,
+      "oil": 1,
+      "gold": 10
+    }
+  }
+}

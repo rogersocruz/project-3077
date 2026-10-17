@@ -1,0 +1,31 @@
+{
+  "games": 200,
+  "players": 4,
+  "seed": 1,
+  "levels": [
+    "normal"
+  ],
+  "layers": {
+    "cards": true
+  },
+  "longMap": false,
+  "style": "mixed",
+  "playToRoundLimit": true,
+  "override": {
+    "balance.json": {
+      "turn": {
+        "roundLimit": 12
+      },
+      "victory": {
+        "resourceThresholds": {
+          "food": 7,
+          "stone": 14,
+          "iron": 9,
+          "coal": 22,
+          "oil": 1,
+          "gold": 10
+        }
+      }
+    }
+  }
+}

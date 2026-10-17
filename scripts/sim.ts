@@ -1,27 +1,22 @@
 /**
  * npm run sim -- --games 200 --players 4 --seed 1 [--level normal|easy|hard|easy,normal,hard,normal]
  *               [--layers cards,specialHexes | --layers none] [--long] [--balance arquivo.json]
- *               [--style mixed|balanced] [--workers N] [--out sim-out]
+ *               [--style mixed|balanced] [--override patch.json] [--rotate] [--play-to-limit]
+ *               [--workers N] [--out sim-out]
+ * --override: patches em qualquer data/*.json (ex.: {"structures.json":{"mine":{"rarity":1}}}).
+ * --rotate: o primeiro nível gira de assento a cada partida (ex.: --level investor,normal,normal,normal).
+ * --play-to-limit: laboratório — ninguém vence antes do limite de rodadas (calibração).
  * Roda N partidas IA × IA sem renderização, com seeds sequenciais, em paralelo
  * (worker_threads). Grava games.csv, cards.csv e summary.json/.txt em --out e mostra o
  * resumo no terminal (UX_SPEC 2.18, PROMPTS Fase 5).
  */
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
-import { availableParallelism } from 'node:os';
 import { join, resolve } from 'node:path';
-import { Worker } from 'node:worker_threads';
 import { isAiLevel, type AiLevel } from '../src/ai/types';
-import type { GameRecord } from '../src/sim/game';
 import { cardsCsv, gamesCsv, summarize, summaryText } from '../src/sim/report';
-import {
-  DEFAULT_SIM,
-  deckCardIds,
-  seedsOf,
-  SIM_LAYERS,
-  simData,
-  type SimConfig,
-  splitSeeds,
-} from '../src/sim/run';
+import { trajectoryCsv, trajectoryTable } from '../src/sim/trajectory';
+import { defaultWorkers, runBatch } from './sim-lib';
+import { DEFAULT_SIM, deckCardIds, SIM_LAYERS, simData, type SimConfig } from '../src/sim/run';
 import type { LayerName } from '../src/engine/state';
 
 function fail(msg: string): never {
@@ -68,6 +63,10 @@ function parseArgs(argv: readonly string[]): { config: SimConfig; workers: numbe
   if (players > 6) fail('--players vai de 3 a 6');
   const balancePath = args.get('balance');
   const balance = balancePath ? JSON.parse(readFileSync(resolve(balancePath), 'utf8')) : undefined;
+  const overridePath = args.get('override');
+  const override = overridePath
+    ? (JSON.parse(readFileSync(resolve(overridePath), 'utf8')) as Record<string, unknown>)
+    : undefined;
   return {
     config: {
       games: int('games', DEFAULT_SIM.games, 1),
@@ -78,56 +77,35 @@ function parseArgs(argv: readonly string[]): { config: SimConfig; workers: numbe
       longMap: args.has('long'),
       style: style(args.get('style')),
       ...(balance === undefined ? {} : { balance }),
+      ...(override === undefined ? {} : { override }),
+      ...(args.has('rotate') ? { rotate: true } : {}),
+      ...(args.has('play-to-limit') ? { playToRoundLimit: true } : {}),
     },
-    workers: int('workers', Math.max(1, availableParallelism() - 1), 1),
+    workers: int('workers', defaultWorkers(), 1),
     out: args.get('out') ?? 'sim-out',
   };
 }
 
 const { config, workers, out } = parseArgs(process.argv.slice(2));
-const data = simData(config.balance); // falha cedo com balance inválido
-const slices = splitSeeds(seedsOf(config), Math.min(workers, config.games));
-const started = performance.now();
-const records: GameRecord[] = [];
-let done = 0;
+const data = simData(config.balance, config.override); // falha cedo com dado inválido
 
-const progress = () => {
+const progress = (done: number) => {
   if (!process.stdout.isTTY) return;
   const width = 30;
   const fill = Math.round((done / config.games) * width);
   process.stdout.write(`\r[${'#'.repeat(fill)}${'.'.repeat(width - fill)}] ${done}/${config.games}`);
 };
 
-await Promise.all(
-  slices.map(
-    (seeds) =>
-      new Promise<void>((ok, ko) => {
-        const worker = new Worker(new URL('./sim-worker.ts', import.meta.url), {
-          workerData: { config, seeds },
-          execArgv: process.execArgv,
-        });
-        worker.on('message', (m: { type: 'game'; record: GameRecord } | { type: 'done' }) => {
-          if (m.type === 'game') {
-            records.push(m.record);
-            done++;
-            progress();
-          } else ok();
-        });
-        worker.on('error', ko);
-        worker.on('exit', (code) => (code === 0 ? ok() : ko(new Error(`worker saiu com código ${code}`))));
-      }),
-  ),
-);
+const { records, wallMs: wall, workers: used } = await runBatch(config, workers, progress);
 if (process.stdout.isTTY) process.stdout.write('\n');
-
-records.sort((a, b) => a.seed - b.seed);
-const wall = performance.now() - started;
 const summary = summarize(records, deckCardIds(data, config.layers));
 const header =
   `Simulação: ${config.games} partidas · ${config.players} jogadores · seeds ${config.seed}–${config.seed + config.games - 1}` +
   ` · IA ${config.levels.join(',')} (${config.style === 'mixed' ? 'rotas sorteadas' : 'sem foco'}) · camadas: economia${Object.keys(config.layers).length ? ', ' + Object.keys(config.layers).join(', ') : ''}` +
-  `${config.longMap ? ' · mapa longo' : ''}${config.balance ? ' · balance alternativo' : ''}\n` +
-  `Tempo real: ${(wall / 1000).toFixed(1)} s com ${slices.length} workers`;
+  `${config.longMap ? ' · mapa longo' : ''}${config.balance ? ' · balance alternativo' : ''}` +
+  `${config.override ? ' · override' : ''}${config.rotate ? ' · níveis em rodízio' : ''}` +
+  `${config.playToRoundLimit ? ' · até o limite de rodadas' : ''}\n` +
+  `Tempo real: ${(wall / 1000).toFixed(1)} s com ${used} workers`;
 const text = summaryText(summary, header);
 
 mkdirSync(out, { recursive: true });
@@ -135,5 +113,6 @@ writeFileSync(join(out, 'games.csv'), gamesCsv(records));
 writeFileSync(join(out, 'cards.csv'), cardsCsv(summary));
 writeFileSync(join(out, 'summary.json'), JSON.stringify({ config, wallMs: wall, summary }, null, 2));
 writeFileSync(join(out, 'summary.txt'), text + '\n');
+writeFileSync(join(out, 'trajectories.csv'), trajectoryCsv(trajectoryTable(records)));
 console.log(text);
-console.log(`\nRelatório em ${out}/ (games.csv, cards.csv, summary.json, summary.txt)`);
+console.log(`\nRelatório em ${out}/ (games.csv, cards.csv, trajectories.csv, summary.json, summary.txt)`);

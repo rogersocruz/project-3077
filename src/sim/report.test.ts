@@ -15,6 +15,12 @@ const seat = (i: number, won: boolean, extra: Partial<PlayerRecord> = {}): Playe
   resources: res(1),
   produced: res(2),
   structures: { park: 2, village: 1 },
+  trajectory: [],
+  uni2Round: null,
+  mineRound: null,
+  minesBuilt: 0,
+  coalUpkeep: 0,
+  coalSpent: 0,
   ...extra,
 });
 const record = (seed: number, extra: Partial<GameRecord> = {}): GameRecord => ({

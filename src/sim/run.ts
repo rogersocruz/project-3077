@@ -5,7 +5,7 @@
 import type { AiLevel } from '../ai';
 import { RAW_DATA } from '../data';
 import type { GameData } from '../data/schemas';
-import { formatIssue, validateGameData } from '../data/validate';
+import { formatIssue, type RawDataFiles, validateGameData } from '../data/validate';
 import { createContext, type EngineContext } from '../engine/context';
 import { cardEnabled } from '../engine/effects/registry';
 import { DEFAULT_LAYERS, type LayerName, type RuleLayers } from '../engine/state';
@@ -24,6 +24,16 @@ export interface SimConfig {
   readonly style: 'mixed' | 'balanced';
   /** balance.json alternativo (Laboratório / --balance); validado antes de rodar. */
   readonly balance?: unknown;
+  /**
+   * Patches em qualquer arquivo de dados (--override): { "balance.json": {...},
+   * "structures.json": { "mine": { "rarity": 1 } } }. Listas com id recebem o patch por id;
+   * objetos são mesclados (listas internas substituídas). Os arquivos originais não mudam.
+   */
+  readonly override?: Record<string, unknown>;
+  /** Gira os níveis por partida: o nível 0 cai no assento (seed − seed inicial) mod jogadores. */
+  readonly rotate?: boolean;
+  /** Laboratório: sem vitória antes do limite de rodadas (calibração). */
+  readonly playToRoundLimit?: boolean;
 }
 
 export const DEFAULT_SIM: SimConfig = {
@@ -39,9 +49,44 @@ export const DEFAULT_SIM: SimConfig = {
 /** Camadas que a simulação aceita ligar hoje (as outras ainda não têm regra no motor). */
 export const SIM_LAYERS: readonly LayerName[] = ['cards', 'events', 'specialHexes'];
 
-/** Dados validados com o balance.json trocado; lança com a lista de erros. */
-export function simData(balance?: unknown): GameData {
-  const raw = balance === undefined ? RAW_DATA : { ...RAW_DATA, 'balance.json': balance };
+const isObj = (x: unknown): x is Record<string, unknown> => !!x && typeof x === 'object' && !Array.isArray(x);
+
+/** Mescla `patch` sobre `base` (objetos recursivos; o resto substitui). */
+export function deepMerge(base: unknown, patch: unknown): unknown {
+  if (!isObj(base) || !isObj(patch)) return patch;
+  const out: Record<string, unknown> = { ...base };
+  for (const [k, v] of Object.entries(patch)) out[k] = deepMerge(base[k], v);
+  return out;
+}
+
+/** Aplica um override de dados (ver SimConfig.override); falha com id ou arquivo desconhecido. */
+export function applyOverride(
+  raw: RawDataFiles,
+  override: Record<string, unknown> | undefined,
+): RawDataFiles {
+  if (!override) return raw;
+  const out: Record<string, unknown> = { ...raw };
+  for (const [file, patch] of Object.entries(override)) {
+    if (!(file in raw)) throw new Error(`override: arquivo desconhecido "${file}"`);
+    const base = out[file];
+    if (Array.isArray(base) && isObj(patch)) {
+      const ids = new Set(base.map((x) => (isObj(x) ? x['id'] : undefined)));
+      for (const id of Object.keys(patch))
+        if (!ids.has(id)) throw new Error(`override: "${id}" não existe em ${file}`);
+      out[file] = base.map((x) =>
+        isObj(x) && typeof x['id'] === 'string' && x['id'] in patch ? deepMerge(x, patch[x['id']]) : x,
+      );
+    } else out[file] = deepMerge(base, patch);
+  }
+  return out as RawDataFiles;
+}
+
+/** Dados validados com o balance.json trocado e/ou override aplicado; lança com os erros. */
+export function simData(balance?: unknown, override?: Record<string, unknown>): GameData {
+  const raw = applyOverride(
+    balance === undefined ? RAW_DATA : { ...RAW_DATA, 'balance.json': balance },
+    override,
+  );
   const { data, issues } = validateGameData(raw);
   if (!data) {
     const errors = issues.filter((i) => i.severity === 'error').map(formatIssue);
@@ -50,7 +95,10 @@ export function simData(balance?: unknown): GameData {
   return data;
 }
 
-export function simContext(config: SimConfig, data: GameData = simData(config.balance)): EngineContext {
+export function simContext(
+  config: SimConfig,
+  data: GameData = simData(config.balance, config.override),
+): EngineContext {
   return createContext(data, config.players, config.longMap);
 }
 
@@ -73,9 +121,20 @@ export function runSeeds(
 ): GameRecord[] {
   const out: GameRecord[] = [];
   for (const seed of seeds) {
+    const shift = config.rotate
+      ? (((seed - config.seed) % config.players) + config.players) % config.players
+      : 0;
+    const levels = Array.from(
+      { length: config.players },
+      (_, i) =>
+        config.levels[
+          ((((i - shift) % config.players) + config.players) % config.players) % config.levels.length
+        ] ?? 'normal',
+    );
     const r = playSimGame(ctx, {
       seed,
-      levels: config.levels,
+      levels,
+      ...(config.playToRoundLimit ? { playToRoundLimit: true } : {}),
       layers: config.layers,
       longMap: config.longMap,
       style: config.style,

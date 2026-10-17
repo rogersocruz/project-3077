@@ -242,6 +242,8 @@ export interface GameState {
   cards: CardsState;
   pending: PendingChoice | null;
   world: WorldState;
+  /** Variantes de laboratório (GameOptions.playToRoundLimit); ausente em partida normal. */
+  readonly variant?: { readonly playToRoundLimit?: boolean };
   winners: PlayerId[];
   endReason: 'condition' | 'roundLimit' | null;
   log: Action[];

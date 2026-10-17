@@ -1,0 +1,20 @@
+{
+  "games": 200,
+  "players": 4,
+  "seed": 1,
+  "levels": [
+    "normal"
+  ],
+  "layers": {
+    "cards": true
+  },
+  "longMap": false,
+  "style": "mixed",
+  "override": {
+    "structures.json": {
+      "mine": {
+        "rarity": 1
+      }
+    }
+  }
+}

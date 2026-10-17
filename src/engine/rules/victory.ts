@@ -63,7 +63,9 @@ export function checkRoundEnd(ctx: EngineContext, state: GameState): RoundEndVer
   // GDD 13.2: eliminado não vence (D11).
   const all = state.players.filter((p) => !p.eliminated).map((p) => p.id);
   if (all.length === 1) return { winners: all, reason: 'condition' };
-  const achievers = all.filter((p) => progress(ctx, state, p).met.length > 0);
+  // Laboratório (calibração): a partida vai até o limite, sem vitória antecipada.
+  const early = !(state.variant?.playToRoundLimit && state.round < ctx.balance.turn.roundLimit);
+  const achievers = early ? all.filter((p) => progress(ctx, state, p).met.length > 0) : [];
   if (achievers.length > 0) return { winners: pickByProgress(ctx, state, achievers), reason: 'condition' };
   if (state.round >= ctx.balance.turn.roundLimit) {
     return { winners: pickByProgress(ctx, state, all), reason: 'roundLimit' };
