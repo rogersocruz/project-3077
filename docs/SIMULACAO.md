@@ -175,3 +175,45 @@ Ferro (valor 2) custa mais que a tarifa padrão de Comida (valor 1); com tarifa 
 ela passa a valer. Contratos não disparam porque a IA evita o gatilho e quase não ataca
 (DECISOES_ABERTAS: "IA de negociação e tratados", risco alto). Tratados são, hoje, ferramenta
 dos jogadores humanos.
+
+## Fase 9 — Facções (critério de aceite: nenhuma facção acima de 25%)
+
+Comando: `npm run sim -- --games 500 --players 4 --seed 1 --layers cards,events,specialHexes,conflict,treaties,factions --out simulations/phase9`
+(seeds 1–500, IA normal nos 4 assentos, facções sorteadas sem repetir pela seed; cada partida
+usa 4 das 6). Intervalos de 95% de Wilson. Com 4 jogadores, a parte justa é 25%.
+
+| Facção (habilidade) | Partidas | Vitórias [IC 95%] |
+|---|---|---|
+| Consórcio Helix (Eficiência) | 334 | 53,6% [48,2–58,9] |
+| Governo Intergaláctico (Protocolo) | 344 | 22,4% [18,3–27,1] |
+| Nativos de Aurum (Raízes) | 338 | 20,7% [16,7–25,3] |
+| Vantage Dynamics (Aquisição) | 329 | 19,8% [15,8–24,4] |
+| Piratas da Fenda (Saque) | 318 | 17,0% [13,3–21,5] |
+| Revolucionários (Levante) | 337 | 16,3% [12,8–20,6] |
+
+**Critério de aceite NÃO cumprido: Consórcio Helix vence 53,6% [48,2–58,9]**, com o
+intervalo inteiro acima de 25%. As outras cinco ficam entre 16% e 22% (todas com o intervalo
+cobrindo ou abaixo de 25%). Nada foi corrigido (PROMPTS Fase 9: "reportar sem corrigir").
+
+Leitura: Eficiência faz todo Parque nível 1 produzir como nível 2 desde a rodada 1. O Parque é
+a primeira construção de quase toda partida e a IA constrói vários; dobrar a renda de base cedo
+acelera Carvão e Ouro (as duas rotas que decidem 82% das partidas). Sugestões para testar com
+`--balance` (nada aplicado): Eficiência só no primeiro Parque, ou só a partir da rodada 3, ou
+"+1 de produção em Parques nível 1" em vez de "como nível 2".
+
+| Condição | Vitórias [IC 95%] |
+|---|---|
+| Ouro | 42,2% [37,9–46,6] |
+| Carvão | 39,4% [35,2–43,7] |
+| Comida | 6,4% [4,6–8,9] |
+| Ferro | 4,0% [2,6–6,1] |
+| Petróleo | 4,0% [2,6–6,1] |
+| Pedregulho | 2,0% [1,1–3,6] |
+| Alvo de tribo | 1,8% [0,9–3,4] |
+| Expansão | 1,6% [0,8–3,1] |
+| Limite de rodadas | 0,2% [0,0–1,1] |
+| Eliminação | 0,0% [0,0–0,8] |
+
+Duração média 8.52 rodadas (mediana 9, faixa 1–15). As
+partidas de 1–2 rodadas são vitórias de Ouro pelo Cofre Precursor (achado da Fase 6). O alvo de
+tribo decide 1,8% das partidas: a IA quase não ataca Vilas (0,24 ataques por partida).

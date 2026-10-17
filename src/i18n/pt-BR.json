@@ -147,7 +147,8 @@
       "notCommercePact": "Esse pacto não é de comércio.",
       "treatyUsed": "Você já usou esse pacto neste turno.",
       "treatyForbids": "Um tratado proíbe isso contra esse jogador.",
-      "treatyGold": "Falta Ouro para assinar: cada participante paga 1 no aceite."
+      "treatyGold": "Falta Ouro para assinar: cada participante paga 1 no aceite.",
+      "protocolBand": "Protocolo: só cartas na faixa de custo n1."
     }
   },
   "terrain": {
@@ -210,7 +211,6 @@
     "seed": "Seed",
     "randomSeed": "Sortear",
     "privacy": "Tela de privacidade entre jogadores",
-    "layersNote": "Tratados e facções entram nas próximas fases.",
     "start": "Iniciar",
     "cards": "Camada de cartas (baralhos n1/n2/n3, entrega e permanentes)",
     "seatLabel": "Quem joga como {{player}}",
@@ -227,7 +227,13 @@
     "events": "Eventos globais (um por rodada; desastres atingem a Vila)",
     "special": "Hexes especiais (Templo, Ruína e hazards únicos)",
     "conflict": "Tropas e combate (Quartel, movimento, fronteira, ataque à Vila)",
-    "treaties": "Tratados (contratos SE/ENTÃO e pactos)"
+    "treaties": "Tratados (contratos SE/ENTÃO e pactos)",
+    "factions": "Facções assimétricas (uma habilidade por facção)",
+    "factionLabel": "Facção do assento {{n}}",
+    "factionRandom": "Aleatória",
+    "eliminated": "Jogador eliminado:",
+    "elimLeave": "Sai da partida",
+    "elimNeutral": "Vira facção neutra (IA, não vence)"
   },
   "phases": {
     "reveal": "Revelação",
@@ -334,7 +340,10 @@
     "aiThinking": "{{name}} está pensando…",
     "armyTariff": "Exército: {{n}} tropa(s) · tarifa de fronteira: {{resource}}",
     "armyShort": "⚔ {{n}}",
-    "treatyHint": "Propor tratado ou ver os ativos"
+    "treatyHint": "Propor tratado ou ver os ativos",
+    "trackTribe": "Tribo: {{name}}",
+    "neutral": "Neutra",
+    "eliminated": "Fora"
   },
   "noTargets": {
     "explore": "Não há hex para explorar: só vizinhos de hexes revelados do seu tabuleiro.",
@@ -441,7 +450,27 @@
     "rounds": "A partida durou {{round}} rodadas.",
     "rematch": "Revanche (mesma seed)",
     "newGame": "Nova partida",
-    "menu": "Menu principal"
+    "menu": "Menu principal",
+    "tribe": "Alvo de tribo ({{name}})",
+    "elimination": "Eliminação total",
+    "neutral": "neutra",
+    "eliminated": "eliminado",
+    "round": "Rodada {{n}}",
+    "tab": {
+      "standings": "Classificação",
+      "charts": "Gráficos",
+      "timeline": "Linha do tempo",
+      "export": "Exportar"
+    },
+    "chartStock": "Estoque",
+    "chartMilitary": "Força militar",
+    "chartCards": "Cartas jogadas",
+    "chartProgress": "Progresso somado",
+    "unitPoints": "pontos de valor",
+    "unitStrength": "força",
+    "unitCards": "acumulado",
+    "export": "Baixar o log (JSON)",
+    "exportHint": "Seed, versão das regras, opções e as {{n}} ações da partida: o suficiente para refazê-la."
   },
   "pause": {
     "title": "Pausa",
@@ -585,7 +614,15 @@
     "treatyExpired": "Tratado nº {{id}} expirou.",
     "pactBroken": "{{name}} rompeu o pacto {{pact}}: descarta a mão e perde 1 ação.",
     "treatyTrade": "{{from}} trocou {{give}} por {{receive}} com {{to}} (pacto de comércio).",
-    "actionDebtPaid": "{{name}} perde {{count}} ação(ões) por tratado."
+    "actionDebtPaid": "{{name}} perde {{count}} ação(ões) por tratado.",
+    "ability": {
+      "underdogAction": "Levante: {{name}} está em último e ganha {{count}} ação(ões).",
+      "protocol": "Protocolo: {{name}} compra {{count}} carta(s) a mais.",
+      "freeSurvey": "Raízes: {{name}} sonda sem gastar ação.",
+      "parkEfficiency": "Eficiência: {{name}}.",
+      "betterBank": "Aquisição: {{name}}.",
+      "ignoreDiscardOnSabotage": "Saque: {{name}}."
+    }
   },
   "cards": {
     "deck": {
@@ -718,7 +755,8 @@
       "specialHexes": "Hexes especiais",
       "events": "Eventos globais",
       "conflict": "Tropas e combate",
-      "treaties": "Tratados"
+      "treaties": "Tratados",
+      "factions": "Facções"
     },
     "layersNote": "Facções entram no simulador com a Fase 9.",
     "invalid": "balance inválido — corrija antes de simular:",
@@ -749,10 +787,13 @@
     "cardsLeast": "Cartas menos jogadas",
     "track": {
       "expansion": "Expansão",
-      "roundLimit": "Limite de rodadas"
+      "roundLimit": "Limite de rodadas",
+      "tribe": "Alvo de tribo"
     },
     "hazards": "Hazards atingidos (D15)",
-    "hazardTitle": "{{n}} vezes por partida"
+    "hazardTitle": "{{n}} vezes por partida",
+    "winsByFaction": "Vitórias por facção",
+    "factionTitle": "{{seats}} partidas com essa facção"
   },
   "credits": {
     "title": "Créditos",

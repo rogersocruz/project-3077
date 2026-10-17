@@ -21,6 +21,45 @@ export interface GameOptions {
    * trajetória até a rodada T. Não é regra do jogo nem aparece na interface.
    */
   readonly playToRoundLimit?: boolean;
+  /**
+   * GDD 12: facção por assento (id de factions.json); null ou ausente = sorteio sem repetir
+   * pela seed. Sem a camada de facções, assento N = facção N (só visual).
+   */
+  readonly factions?: readonly (string | null)[];
+  /** GDD 13.2 / D11 (padrão: balance.victory.eliminatedRule). */
+  readonly eliminatedRule?: 'leave' | 'neutral';
+}
+
+/**
+ * Sorteios de setup que não podem mexer no RNG da partida (partidas antigas continuam iguais):
+ * um RNG próprio derivado da seed e do assunto.
+ */
+const sideRng = (seed: Seed, topic: string): Rng => Rng.fromSeed(`${String(seed)}:${topic}`);
+
+/** GDD 12: facções por assento; escolhidas ficam, as livres vêm sorteadas sem repetir. */
+export function assignFactions(ctx: EngineContext, options: GameOptions, layersOn: boolean): string[] {
+  const all = ctx.data.factions.map((f) => f.id);
+  const n = ctx.playerCount;
+  if (!layersOn) return Array.from({ length: n }, (_, i) => all[i % all.length] as string);
+  const wanted = Array.from({ length: n }, (_, i) => options.factions?.[i] ?? null);
+  const taken = new Set(wanted.filter((f): f is string => f !== null && all.includes(f)));
+  if (taken.size !== wanted.filter((f) => f !== null).length)
+    throw new Error('setup: facção repetida ou inválida');
+  const free = sideRng(options.seed, 'factions').shuffle(all.filter((f) => !taken.has(f)));
+  return wanted.map((f) => f ?? (free.shift() as string));
+}
+
+/**
+ * GDD 13.1 Alvo de tribo: cada jogador recebe um alvo diferente dele mesmo e dos alvos dos
+ * outros (permutação sem ponto fixo), sorteado pela seed.
+ */
+export function drawTribeTargets(seed: Seed, n: number): number[] {
+  const rng = sideRng(seed, 'tribe');
+  const ids = Array.from({ length: n }, (_, i) => i);
+  for (;;) {
+    const p = rng.shuffle(ids);
+    if (p.every((t, i) => t !== i)) return p;
+  }
 }
 
 export interface Tile {
@@ -223,6 +262,11 @@ export function createGame(ctx: EngineContext, options: GameOptions): GameState 
   const eventDeck = buildEventDeck(ctx, { layers }, (items) => rng.shuffle(items));
 
   const start = ctx.balance.setup.startingResources;
+  const factions = assignFactions(ctx, options, layers.factions);
+  const tribe =
+    layers.conflict && ctx.balance.victory.tribeTarget.enabled
+      ? drawTribeTargets(options.seed, ctx.playerCount)
+      : null;
   const players: PlayerState[] = ctx.planet.boards.map((b) => {
     const resources = emptyResources();
     for (const id of RESOURCE_IDS) resources[id] = start[id] ?? 0;
@@ -247,6 +291,12 @@ export function createGame(ctx: EngineContext, options: GameOptions): GameState 
       tariffMods: [],
       treatyRound: 0,
       actionDebt: 0,
+      faction: factions[b.id] as string,
+      tribeTarget: tribe ? (tribe[b.id] ?? null) : null,
+      lastHitBy: [],
+      neutral: false,
+      freeSurveyRound: 0,
+      freeSurveyUsed: 0,
     };
   });
 
@@ -272,6 +322,7 @@ export function createGame(ctx: EngineContext, options: GameOptions): GameState 
     ...(options.playToRoundLimit ? { variant: { playToRoundLimit: true } } : {}),
     combat: null,
     world: { deck: eventDeck, used: [], current: null, braced: [], firstSurveyDone: false, withheld: [] },
+    eliminatedRule: options.eliminatedRule ?? ctx.balance.victory.eliminatedRule,
     winners: [],
     endReason: null,
     log: [],

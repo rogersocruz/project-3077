@@ -1,0 +1,111 @@
+/* Tela de fim (UX_SPEC 2.16): fundo mais leve para a órbita do tabuleiro vencedor aparecer. */
+.overlay {
+  background: color-mix(in srgb, var(--frame-900) 35%, transparent);
+}
+
+.modal {
+  width: min(880px, 100%);
+}
+
+.tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.body {
+  min-height: 240px;
+  max-height: 52vh;
+}
+
+.charts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 12px;
+}
+
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 8px;
+  font-size: 13px;
+}
+
+.legendItem {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.chart {
+  margin: 0;
+}
+
+.chartTitle {
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  font-size: 13px;
+  margin-bottom: 2px;
+}
+
+.unit {
+  font-weight: 400;
+  text-transform: none;
+  color: var(--ink-600);
+}
+
+.grid {
+  stroke: var(--ink-600);
+  stroke-opacity: 0.25;
+  stroke-width: 1;
+}
+
+.tick {
+  fill: var(--ink-600);
+  font-family: var(--font-numeric);
+  font-size: 10px;
+}
+
+.hit {
+  fill: transparent;
+}
+
+.hit:hover {
+  fill: var(--ink-900);
+  fill-opacity: 0.25;
+}
+
+.timeline {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.tlItem {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 14px;
+}
+
+.tlRound {
+  margin-top: 8px;
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent-orange);
+}
+
+.export {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+}

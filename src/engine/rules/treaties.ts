@@ -252,7 +252,7 @@ export function treatyGoldCost(ctx: EngineContext, state: GameState, player: Pla
 function partiesReason(ctx: EngineContext, state: GameState, from: PlayerId, to: PlayerId): Reason | null {
   const partner = state.players[to];
   if (!partner || to === from) return { key: 'invalidTradePartner' };
-  if (partner.eliminated) return { key: 'playerEliminated' };
+  if (partner.eliminated && !partner.neutral) return { key: 'playerEliminated' };
   const max = ctx.balance.treaties.maxActivePerPlayer;
   if (activeCount(state, from) >= max || activeCount(state, to) >= max)
     return { key: 'treatyLimit', params: { max } };

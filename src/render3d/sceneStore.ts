@@ -34,6 +34,9 @@ interface SceneStore {
   /** Jogador deste dispositivo (Espaço = "meu tabuleiro"). */
   localPlayer: number;
   focus: FocusRequest | null;
+  /** Fim de partida (UX_SPEC 2.16): órbita lenta em volta do foco. */
+  orbit: boolean;
+  setOrbit(on: boolean): void;
   /** Hexes válidos para a ação escolhida; os demais escurecem (ART_DIRECTION 8). */
   targets: TargetSet | null;
   /** Hexes que um evento global atingiu: contorno pulsante na cor da categoria (UX_SPEC 2.14). */
@@ -76,6 +79,8 @@ export const useSceneStore = create<SceneStore>()((set) => ({
     set({ selected });
     for (const l of listeners) l(selected);
   },
+  orbit: false,
+  setOrbit: (orbit) => set({ orbit }),
   requestFocus: (target, instant = false) => set({ focus: { target, instant, nonce: ++nonce } }),
   setLocalPlayer: (localPlayer) => set({ localPlayer }),
   setTargets: (targets) => set({ targets }),

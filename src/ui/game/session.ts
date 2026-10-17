@@ -3,6 +3,7 @@
  * aplica na hora, e o lote (antes/depois/eventos) vai para o diretor de animação.
  * O save futuro (Fase 10) é exatamente `options` + `state.log`.
  */
+import { setSeatFactions } from '../../render3d/model';
 import { create } from 'zustand';
 import { type Agent, chooseAction, createAgent } from '../../ai';
 import { director, usePresentation } from '../../anim';
@@ -60,13 +61,17 @@ export const useSession = create<SessionStore>()((set, get) => ({
         specialHexes: setup.specialHexes,
         conflict: setup.conflict,
         treaties: setup.treaties,
+        factions: setup.factions,
       },
+      ...(setup.factions ? { factions: setup.factionPicks } : {}),
+      ...(setup.eliminatedRule ? { eliminatedRule: setup.eliminatedRule } : {}),
     };
     const state = createGame(ctx, options);
     // Agentes determinísticos pela seed da partida e pelo assento (Rng, nunca Math.random).
     const agents = setup.seats.map((kind, i) =>
       kind === 'human' ? null : createAgent(kind, `${setup.seed}:seat:${i}`),
     );
+    setSeatFactions(state.players.map((p) => p.faction));
     set({ setup, ctx, options, state, agents });
     director.setHumans(setup.seats.map((k) => k === 'human'));
     director.reset(ctx, state);
@@ -79,6 +84,15 @@ export const useSession = create<SessionStore>()((set, get) => ({
     if (!check.ok) return check;
     const { state: next, events } = applyAction(ctx, state, action);
     set({ state: next });
+    // D11 "facção neutra": o eliminado passa a ser jogado pela IA.
+    if (events.some((e) => e.type === 'playerEliminated') && next.players.some((p) => p.neutral)) {
+      const { agents } = get();
+      const list = next.players.map(
+        (p, i) => agents[i] ?? (p.neutral ? createAgent('normal', `${next.seed}:neutral:${i}`) : null),
+      );
+      set({ agents: list });
+      director.setHumans(list.map((a) => a === null));
+    }
     director.enqueue({ before: state, after: next, events });
     return check;
   },
@@ -116,12 +130,17 @@ export const useSession = create<SessionStore>()((set, get) => ({
     if (setup) get().start(setup);
   },
 
-  quit: () => set({ setup: null, ctx: null, options: null, state: null, agents: [] }),
+  quit: () => {
+    setSeatFactions(null);
+    set({ setup: null, ctx: null, options: null, state: null, agents: [] });
+  },
 }));
 
 /** O assento é de uma pessoa (sem partida, todos contam como pessoa). */
 export function isHuman(player: PlayerId): boolean {
-  const seats = useSession.getState().setup?.seats;
+  const { setup, state } = useSession.getState();
+  if (state?.players[player]?.neutral) return false;
+  const seats = setup?.seats;
   return !seats || seats[player] === undefined || seats[player] === 'human';
 }
 

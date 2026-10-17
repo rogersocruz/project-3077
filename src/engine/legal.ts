@@ -2,6 +2,7 @@
  * Ações legais. Única fonte de "o que é permitido" para o reducer, a interface e a IA
  * (CLAUDE.md, regra de arquitetura 5). Toda recusa vem com motivo.
  */
+import { discardNeed, freeSurveyAvailable } from './rules/factions';
 import { RESOURCE_IDS, type ResourceId } from '../data/schemas';
 import { ACTION_COST, type Action, type CardUse } from './actions';
 import type { EngineContext } from './context';
@@ -102,7 +103,9 @@ export function actionCost(ctx: EngineContext, state: GameState, action: Action)
       return state.hexes[action.hex]?.status.contaminated ?? 0;
     case 'survey':
       // Crosta Fina: sondar o próprio hex é grátis enquanto o bônus vale.
-      return freeSurveyAt(ctx, state, action.hex) ? 0 : ACTION_COST.survey;
+      if (freeSurveyAt(ctx, state, action.hex)) return 0;
+      // Raízes (Nativos): o primeiro Sondar do turno não gasta ação.
+      return freeSurveyAvailable(ctx, state, action.player) ? 0 : ACTION_COST.survey;
     default:
       return ACTION_COST[action.type];
   }
@@ -146,7 +149,7 @@ function checkOffer(
 ): CheckResult {
   const partner = state.players[to];
   if (!partner || to === from) return no('invalidTradePartner');
-  if (partner.eliminated) return no('playerEliminated');
+  if (partner.eliminated && !partner.neutral) return no('playerEliminated');
   if (!isValidAmounts(give) || !isValidAmounts(receive)) return no('invalidAmounts');
   if (amountTotal(give) + amountTotal(receive) === 0) return no('emptyTrade');
   if (
@@ -394,7 +397,11 @@ function cardUses(
   used: readonly CardUid[] = [],
 ): CardUse[] {
   const def = cardDefOf(ctx, state, card);
-  const discard = firstOthers(getPlayer(state, player).hand, [...used, card], def.cost.discard ?? 0);
+  const discard = firstOthers(
+    getPlayer(state, player).hand,
+    [...used, card],
+    discardNeed(ctx, state, player, def),
+  );
   if (!discard) return [];
   const payments = def.cost.resourcesAny ? def.cost.resourcesAny.map((_, i) => i) : [undefined];
   return payments

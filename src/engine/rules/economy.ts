@@ -1,6 +1,7 @@
 /**
  * Economia: produção (GDD 4.1, 4.2, 6.2 fase 3), manutenção (6.2 fase 4) e banca (5.2).
  */
+import { ability, parkLevel } from './factions';
 import { RESOURCE_IDS, type ResourceId } from '../../data/schemas';
 import type { EngineContext } from '../context';
 import type { GameEvent } from '../events';
@@ -53,7 +54,8 @@ export function bankPrices(
 ): BankPrices {
   const bank = ctx.balance.bank;
   let buyOffset = bank.buyOffset;
-  let sellOffset = bank.sellOffset;
+  // Aquisição (Vantage): a banca vende ao jogador por um preço menor.
+  let sellOffset = ability(ctx, state, player, 'betterBank')?.sellOffset ?? bank.sellOffset;
   // Fase 6: evento muda o spread da rodada (o lado da venda absorve, como na interpretação A);
   // Porto Franco aberto zera o spread; fechado, dobra o de quem tem estrutura nele.
   const event = eventParams<{ spread: number }>(ctx, state, 'bankSpread');
@@ -242,7 +244,13 @@ export function structureYield(
   automation: ReadonlyMap<number, number> = new Map(),
   state: GameState | null = null,
 ): ResourceAmounts {
-  const level = levelDef(ctx, structure);
+  // Eficiência (Helix): Parque de nível baixo produz como nível maior.
+  const level = levelDef(
+    ctx,
+    structure.type === 'park' && state
+      ? { type: 'park', level: parkLevel(ctx, state, structure.owner, structure.level) }
+      : structure,
+  );
   const out: ResourceAmounts = {};
   if (structure.type === 'mine') {
     const resource = ctx.subsoil(hex.subsoil).resource;

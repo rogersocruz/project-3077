@@ -8,7 +8,10 @@
     "ability": {
       "name": "Levante",
       "text": "Quando estiver em último lugar no progresso de vitória, ganhe +1 ação por turno.",
-      "effectId": "underdogAction"
+      "effectId": "underdogAction",
+      "params": {
+        "actions": 1
+      }
     },
     "advisor": {
       "name": "Tenente Inara Vex",
@@ -28,7 +31,12 @@
     "ability": {
       "name": "Protocolo",
       "text": "Só pode jogar cartas cujo custo esteja na faixa n1 de pontos, mas compra +1 carta por turno.",
-      "effectId": "protocol"
+      "effectId": "protocol",
+      "params": {
+        "band": "n1",
+        "extraDraw": 1,
+        "deck": "n1"
+      }
     },
     "advisor": {
       "name": "Comissário Aldren Hale",
@@ -48,7 +56,11 @@
     "ability": {
       "name": "Eficiência",
       "text": "Seus Parques de nível 1 produzem como nível 2.",
-      "effectId": "parkEfficiency"
+      "effectId": "parkEfficiency",
+      "params": {
+        "fromLevel": 1,
+        "asLevel": 2
+      }
     },
     "advisor": {
       "name": "Diretora Selene Okafor",
@@ -68,7 +80,10 @@
     "ability": {
       "name": "Aquisição",
       "text": "Sua banca compra pelo valor −1 e vende pelo valor (spread 1).",
-      "effectId": "betterBank"
+      "effectId": "betterBank",
+      "params": {
+        "sellOffset": 0
+      }
     },
     "advisor": {
       "name": "Dr. Marlow Kade",
@@ -88,7 +103,8 @@
     "ability": {
       "name": "Saque",
       "text": "Ignore o descarte exigido no custo de cartas de Sabotagem.",
-      "effectId": "ignoreDiscardOnSabotage"
+      "effectId": "ignoreDiscardOnSabotage",
+      "params": {}
     },
     "advisor": {
       "name": "Capitã Rook \"Ferrugem\" Daly",
@@ -108,7 +124,10 @@
     "ability": {
       "name": "Raízes",
       "text": "Sondar não custa ação (máximo 1 vez por turno).",
-      "effectId": "freeSurvey"
+      "effectId": "freeSurvey",
+      "params": {
+        "perTurn": 1
+      }
     },
     "advisor": {
       "name": "Guardiã Teyra",

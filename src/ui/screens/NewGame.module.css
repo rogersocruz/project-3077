@@ -69,6 +69,15 @@
   font-size: 14px;
 }
 
+/* Com a escolha de facção cada assento tem dois seletores: uma coluna só. */
+.seatsWide {
+  grid-template-columns: 1fr;
+}
+
+.seatName {
+  flex: 1;
+}
+
 .seats li {
   display: flex;
   align-items: center;
@@ -76,7 +85,6 @@
 }
 
 .seatKind {
-  margin-left: auto;
   font-size: 12px;
 }
 

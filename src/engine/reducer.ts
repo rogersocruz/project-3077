@@ -2,6 +2,8 @@
  * applyAction(ctx, state, action) → { state, events }. Puro: não altera o estado de
  * entrada; trabalha numa cópia. Ação ilegal lança IllegalActionError com o motivo.
  */
+import { freeSurveyAvailable, spendFreeSurvey } from './rules/factions';
+import { freeSurveyAt } from './rules/specials';
 import type { Action } from './actions';
 import type { EngineContext } from './context';
 import type { GameEvent } from './events';
@@ -83,6 +85,11 @@ function apply(ctx: EngineContext, s: GameState, action: Action, cost: number, e
       const hex = s.hexes[action.hex];
       if (!hex) return;
       if (action.drone) applyModifier(ctx, s, player.id, action.drone, events);
+      // Raízes: Sondar sem custo que não veio da Crosta Fina consome a habilidade.
+      if (cost === 0 && !freeSurveyAt(ctx, s, action.hex) && freeSurveyAvailable(ctx, s, player.id)) {
+        spendFreeSurvey(s, player.id);
+        events.push({ type: 'factionAbility', player: player.id, ability: 'freeSurvey', amount: 1 });
+      }
       hex.surveyedBy.push(player.id);
       events.push({ type: 'subsoilSurveyed', hex: action.hex, player: player.id, subsoil: hex.subsoil });
       // Veio Exposto: o primeiro a Sondar na rodada revela o subsolo em raio N de graça.

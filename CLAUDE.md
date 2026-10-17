@@ -99,8 +99,44 @@ npm run assets:check confere ícones, créditos, sha256 e licenças
 - Se uma regra do GDD parecer contraditória, **pare e pergunte** — não invente.
 
 ## Estado atual
-- Fase concluída: 8 — Tratados e negociação
-- Próxima fase: 9 — Facções, vitória completa e fim de partida
+- Fase concluída: 9 — Facções, vitória completa e fim de partida
+- Próxima fase: 10 — Menus, configurações, save e áudio
+- Facções e encerramento (Fase 9):
+  - Jogar: Nova partida (Facções ligado por padrão; facção por assento ou "Aleatória"; regra
+    do eliminado) ou URL `factions=1&fac=pirates,random,…&elim=neutral`. Sem a camada, assento
+    N = facção N só como visual. A cena e o HUD usam a facção do jogador
+    (`render3d/model.ts → setSeatFactions`, chamado pela sessão).
+  - Motor: `player.faction` (setup: escolhidas ficam, livres sorteadas sem repetir com RNG
+    próprio derivado da seed — `setup.ts → assignFactions`; não mexe no RNG da partida);
+    habilidades em `rules/factions.ts → ability()`, parâmetros em `factions.json →
+    ability.params` (validados em `effects/world.ts`). Ganchos: Levante (`phases.startTurn`),
+    Protocolo (`checkCardBasics` + compra extra em `continueTurn`), Eficiência
+    (`economy.structureYield`), Aquisição (`bankPrices`), Saque (`discardNeed`), Raízes
+    (`actionCost` + `spendFreeSurvey`). Evento `factionAbility`.
+  - Alvo de tribo (decisão do usuário): alvos sorteados sem repetir e sem si mesmo (com o
+    conflito; `drawTribeTargets`), público; vence quem deixou a Vila-alvo com 1 vida e deu o
+    último dano (`player.lastHitBy`); alvo eliminado = trilha impossível. Trilha "Tribo" no
+    HUD (ícone = facção-alvo).
+  - Regra do eliminado (D11, `balance.victory.eliminatedRule`, opção no setup): `leave`
+    (padrão) ou `neutral` = segue jogando pela IA (`player.neutral`; a sessão cria o agente),
+    negocia, não vence.
+  - Interpretações provisórias (isoladas em rules/factions.ts; **revisar com o usuário**):
+    BG) Levante = menor progresso somado no início do turno, empatados ganham;
+    BH) Protocolo vale para jogar, instalar e entregar (pontos de costPoints), carta extra n1
+        depois da linha da Universidade; BI) Eficiência só na produção;
+    BJ) Aquisição: venda da banca pelo valor, Mercado ainda reduz; BK) Saque só em valência
+        sabotagem; BL) Raízes: 1º Sondar do turno grátis (o grátis da Crosta não consome).
+  - Fim de partida (`ui/end/`): placa VITÓRIA — condição, órbita lenta no tabuleiro vencedor
+    (`sceneStore.setOrbit`), abas Classificação · Gráficos (estoque em pontos, força militar,
+    cartas jogadas, progresso — `LineChart`) · Linha do tempo · Exportar JSON. O histórico refaz
+    a partida pelo log (`history.ts → gameHistory`).
+  - Simulador/Laboratório: facções sorteadas por partida, "Vitórias por facção" com IC de
+    Wilson (relatório e gráfico do Laboratório); trilha `tribe` nas vitórias.
+  - **Critério de aceite NÃO cumprido (reportado, nada corrigido):** em 500 partidas de 4
+    jogadores, Consórcio Helix (Eficiência) vence 53,6% [48,2–58,9]; as outras 16–22%.
+    Detalhes e sugestões em `docs/SIMULACAO.md`.
+  - Testes: `rules/factions.test.ts` (montagem, uma por habilidade, tribo, neutra),
+    `ui/end/history.test.ts`, `e2e/factions.spec.ts` (capturas `screenshots/phase9-*`).
 - Tratados (Fase 8):
   - Jogar: Nova partida (Tratados ligado por padrão) ou URL `treaties=1`. Botão "Tratado" / tecla
     Y abre o construtor (`ui/treaty/TreatyModal.tsx`): parceiro, modelos prontos, Contrato

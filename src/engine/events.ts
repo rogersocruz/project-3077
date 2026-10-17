@@ -192,4 +192,6 @@ export type GameEvent =
     }
   /** Ações cobradas no começo do turno (dívida de inadimplência ou quebra). */
   | { type: 'actionDebtPaid'; player: PlayerId; amount: number }
+  // ── Facções e fim (Fase 9) ──
+  | { type: 'factionAbility'; player: PlayerId; ability: string; amount: number }
   | { type: 'gameOver'; winners: PlayerId[]; reason: 'condition' | 'roundLimit' };

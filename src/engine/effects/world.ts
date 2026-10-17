@@ -309,12 +309,26 @@ export const WORLD_EFFECTS: Readonly<Record<string, WorldEffect>> = {
   }),
 
   // ── factions.json (Fase 9) ───────────────────────────────────────────────
-  betterBank: world({ layer: 'factions', implemented: false, params: z.unknown() }),
-  freeSurvey: world({ layer: 'factions', implemented: false, params: z.unknown() }),
-  ignoreDiscardOnSabotage: world({ layer: 'factions', implemented: false, params: z.unknown() }),
-  parkEfficiency: world({ layer: 'factions', implemented: false, params: z.unknown() }),
-  protocol: world({ layer: 'factions', implemented: false, params: z.unknown() }),
-  underdogAction: world({ layer: 'factions', implemented: false, params: z.unknown() }),
+  // Habilidades passivas: as regras leem os parâmetros por rules/factions.ts → ability().
+  betterBank: world({ layer: 'factions', params: z.strictObject({ sellOffset: z.number().int() }) }),
+  freeSurvey: world({ layer: 'factions', params: z.strictObject({ perTurn: z.number().int().positive() }) }),
+  ignoreDiscardOnSabotage: world({ layer: 'factions', params: z.strictObject({}) }),
+  parkEfficiency: world({
+    layer: 'factions',
+    params: z.strictObject({ fromLevel: z.number().int().positive(), asLevel: z.number().int().positive() }),
+  }),
+  protocol: world({
+    layer: 'factions',
+    params: z.strictObject({
+      band: z.enum(['n1', 'n2', 'n3']),
+      extraDraw: z.number().int().nonnegative(),
+      deck: z.enum(['n1', 'n2', 'n3']),
+    }),
+  }),
+  underdogAction: world({
+    layer: 'factions',
+    params: z.strictObject({ actions: z.number().int().positive() }),
+  }),
 };
 
 export function worldEffect(effectId: string): WorldEffect {

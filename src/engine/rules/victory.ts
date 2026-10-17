@@ -1,13 +1,48 @@
 /**
- * Vitória (GDD 13.1) nas trilhas da Camada 0: acúmulo de recurso e expansão.
- * Alvo de tribo e eliminação entram com o conflito (Fase 7/9).
+ * Vitória (GDD 13.1): acúmulo de recurso, expansão, alvo de tribo (com o conflito) e
+ * eliminação total (phases.ts → finishIfDecided).
+ *
+ * Interpretação (Fase 9, decisão do usuário): alvo de tribo cumprido = no fim da rodada a Vila
+ * do alvo está viva com `targetLives` vidas (ou menos) e o último dano foi do jogador
+ * ("por mão própria"); alvo eliminado = trilha impossível (sem novo sorteio). Progresso da
+ * trilha = vidas tiradas / vidas a tirar (fica abaixo de 100% enquanto não está cumprida).
  */
 import { RESOURCE_IDS, type ResourceId } from '../../data/schemas';
 import type { EngineContext } from '../context';
 import { getPlayer, ownedStructures } from '../queries';
 import type { GameState, PlayerId } from '../state';
 
-export type TrackId = ResourceId | 'expansion';
+export type TrackId = ResourceId | 'expansion' | 'tribe';
+
+/** Trilhas do jogador (Tribo só com alvo sorteado). */
+export function playerTracks(state: GameState, player: PlayerId): TrackId[] {
+  const t: TrackId[] = [...RESOURCE_IDS, 'expansion'];
+  return getPlayer(state, player).tribeTarget !== null ? [...t, 'tribe'] : t;
+}
+
+/** GDD 13.1 Alvo de tribo: cumprido agora? */
+export function tribeMet(ctx: EngineContext, state: GameState, player: PlayerId): boolean {
+  const target = getPlayer(state, player).tribeTarget;
+  if (target === null || !ctx.balance.victory.tribeTarget.enabled) return false;
+  const t = getPlayer(state, target);
+  return (
+    !t.eliminated &&
+    t.villageLives <= ctx.balance.victory.tribeTarget.targetLives &&
+    t.lastHitBy.includes(player)
+  );
+}
+
+/** Fração da trilha de tribo (0 se o alvo saiu da partida). */
+function tribeFraction(ctx: EngineContext, state: GameState, player: PlayerId): number {
+  const target = getPlayer(state, player).tribeTarget;
+  if (target === null) return 0;
+  const t = getPlayer(state, target);
+  if (t.eliminated) return 0;
+  if (tribeMet(ctx, state, player)) return 1;
+  const max = ctx.balance.village.lives;
+  const need = Math.max(1, max - ctx.balance.victory.tribeTarget.targetLives);
+  return Math.min(0.99, (max - t.villageLives) / need);
+}
 
 export interface Progress {
   /** Fração de cada trilha, com teto 1 (interpretação L da Fase 1). */
@@ -27,6 +62,7 @@ export function progress(ctx: EngineContext, state: GameState, player: PlayerId)
   const raw = {} as Record<TrackId, number>;
   for (const id of RESOURCE_IDS) raw[id] = res[id] / v.resourceThresholds[id];
   raw.expansion = expansionCount(state, player) / v.expansionHexes;
+  raw.tribe = tribeFraction(ctx, state, player);
 
   const tracks = {} as Record<TrackId, number>;
   const met: TrackId[] = [];
@@ -34,7 +70,7 @@ export function progress(ctx: EngineContext, state: GameState, player: PlayerId)
   for (const [id, value] of Object.entries(raw) as [TrackId, number][]) {
     tracks[id] = Math.min(1, value);
     total += tracks[id];
-    if (value >= 1) met.push(id);
+    if (id === 'tribe' ? tribeMet(ctx, state, player) : value >= 1) met.push(id);
   }
   return { tracks, total, met };
 }

@@ -45,4 +45,6 @@ export const CAMERA = {
   hexPolar: (52 * Math.PI) / 180,
   hexDistance: 3.4,
   panSpeed: 9,
+  /** Órbita lenta do fim de partida (rad/s). */
+  orbitSpeed: 0.12,
 } as const;

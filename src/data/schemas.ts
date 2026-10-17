@@ -175,6 +175,8 @@ export const BalanceFile = z.strictObject({
     tiebreak: z.enum(['highestSummedProgress']),
     /** Empate que persiste após o desempate (interpretação D da Fase 1). */
     finalTie: z.enum(['shared', 'seatOrder']),
+    /** GDD 13.2 / D11: eliminado sai da partida ou vira facção neutra jogada pela IA. */
+    eliminatedRule: z.enum(['leave', 'neutral']),
   }),
   costPoints: z.strictObject({
     food: Count,
@@ -340,7 +342,7 @@ export const FactionsFile = z.array(
     alignment: Text,
     color: HexColor,
     symbol: z.enum(['circle', 'square', 'triangle', 'rhombus', 'hexagon', 'pentagon']),
-    ability: z.strictObject({ name: Text, text: Text, effectId: EffectId }),
+    ability: z.strictObject({ name: Text, text: Text, effectId: EffectId, params: Params }),
     advisor: z.strictObject({ name: Text, voice: Text }),
     lore: Text,
     art: ArtSubject,

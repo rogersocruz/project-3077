@@ -104,8 +104,23 @@ export interface SceneModel {
 
 export const SEAT_FACTIONS = Object.keys(palette.faction) as FactionKey[];
 
+/** Facção de cada assento na partida atual (GDD 12); sem partida, assento N = facção N. */
+let seatMap: readonly FactionKey[] | null = null;
+
+/** A sessão informa as facções da partida (state.players[i].faction). */
+export function setSeatFactions(factions: readonly string[] | null): void {
+  seatMap = factions
+    ? factions.map((f, i) =>
+        SEAT_FACTIONS.includes(f as FactionKey) ? (f as FactionKey) : defaultFaction(i),
+      )
+    : null;
+}
+
+const defaultFaction = (seat: number): FactionKey =>
+  SEAT_FACTIONS[seat % SEAT_FACTIONS.length] ?? 'revolutionaries';
+
 export function seatFaction(seat: number): FactionKey {
-  return SEAT_FACTIONS[seat % SEAT_FACTIONS.length] ?? 'revolutionaries';
+  return seatMap?.[seat] ?? defaultFaction(seat);
 }
 
 /** Hexes da cena. `viewer` = quem está diante da tela (hotseat: quem decide agora). */

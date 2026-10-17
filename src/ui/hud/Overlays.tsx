@@ -1,13 +1,11 @@
 /**
  * Sobreposições da partida: tela de privacidade do hotseat (UX_SPEC 2.15), fim de
- * partida simples (2.16), pausa mínima, regras rápidas (F1), faixa de rodada e avisos.
+ * pausa mínima, regras rápidas (F1), faixa de rodada e avisos.
  */
-import { useEffect, useMemo, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { director, usePresentation } from '../../anim';
-import { RESOURCE_IDS } from '../../data/schemas';
 import { TURN_PHASES } from '../../engine';
-import { progress, type TrackId } from '../../engine/rules/victory';
 import { seatFaction } from '../../render3d/model';
 import { FactionBadge, Icon } from '../components/Bits';
 import { useNav } from '../nav';
@@ -49,105 +47,6 @@ export function PrivacyScreen() {
         >
           {t('privacy.ready')}
         </button>
-      </div>
-    </div>
-  );
-}
-
-const TRACKS: TrackId[] = [...RESOURCE_IDS, 'expansion'];
-
-export function EndScreen() {
-  const { t } = useTranslation();
-  const ctx = useSession((s) => s.ctx);
-  const rematch = useSession((s) => s.rematch);
-  const shown = usePresentation((s) => s.shown);
-  const go = useNav((s) => s.go);
-  const standings = useMemo(() => {
-    if (!ctx || !shown) return [];
-    return shown.players
-      .map((p) => ({ id: p.id, prog: progress(ctx, shown, p.id) }))
-      .sort((a, b) => b.prog.total - a.prog.total);
-  }, [ctx, shown]);
-  if (!ctx || !shown || shown.stage !== 'over') return null;
-
-  const trackName = (k: TrackId) =>
-    k === 'expansion' ? t('end.expansion') : t('end.hoard', { resource: t(`resources.${k}`) });
-  const winners = shown.winners;
-  const condition =
-    shown.endReason === 'roundLimit'
-      ? t('end.roundLimit')
-      : [...new Set(winners.flatMap((w) => standings.find((s) => s.id === w)?.prog.met ?? []))]
-          .map(trackName)
-          .join(' · ');
-
-  return (
-    <div
-      className={hud.overlay}
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="end-title"
-      data-testid="end"
-    >
-      <div className={`${hud.plate} ${hud.rivets} ${hud.modal} ${styles.endModal}`}>
-        <h2 id="end-title" className={styles.endTitle}>
-          {t('end.victory')} <span>—</span> <em>{condition}</em>
-        </h2>
-        <div className={styles.winners}>
-          {winners.map((w) => (
-            <span key={w} className={styles.winner}>
-              <FactionBadge faction={seatFaction(w)} size={34} />
-              {playerName(t, w)}
-            </span>
-          ))}
-          {winners.length > 1 && <span className={hud.label}>{t('end.shared')}</span>}
-        </div>
-        <div className={`${hud.paper} ${hud.modalBody}`}>
-          <h3 className={hud.paperHeading}>{t('end.standings')}</h3>
-          <table className={styles.standings}>
-            <thead>
-              <tr>
-                <th>#</th>
-                <th>{t('end.player')}</th>
-                <th>{t('end.progress')}</th>
-                <th>{t('end.best')}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {standings.map((s, i) => {
-                const best = TRACKS.reduce((a, b) => (s.prog.tracks[b] > s.prog.tracks[a] ? b : a));
-                return (
-                  <tr key={s.id} className={winners.includes(s.id) ? styles.winRow : ''}>
-                    <td className={hud.num}>{i + 1}</td>
-                    <td>
-                      <FactionBadge faction={seatFaction(s.id)} size={14} /> {playerName(t, s.id)}
-                    </td>
-                    <td className={hud.num}>{Math.round(s.prog.total * 100)}%</td>
-                    <td>
-                      {trackName(best)} {Math.round(s.prog.tracks[best] * 100)}%
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-          <p className={hud.muted}>{t('end.rounds', { round: shown.round })}</p>
-        </div>
-        <div className={hud.modalFoot}>
-          <button type="button" className={hud.btn} onClick={() => go('home')}>
-            {t('end.menu')}
-          </button>
-          <button type="button" className={hud.btn} onClick={() => go('newGame')}>
-            {t('end.newGame')}
-          </button>
-          <button
-            type="button"
-            className={`${hud.btn} ${hud.btnPrimary}`}
-            onClick={rematch}
-            data-testid="rematch"
-          >
-            {t('end.rematch')}
-          </button>
-        </div>
       </div>
     </div>
   );

@@ -353,7 +353,9 @@
 
 .tracks {
   display: grid;
-  grid-template-columns: repeat(7, 1fr);
+  /* 7 trilhas (6 recursos + expansão) ou 8 com o alvo de tribo. */
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
   gap: 4px;
   height: 40px;
 }

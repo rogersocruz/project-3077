@@ -3,6 +3,7 @@
  * posição de turno e por nível, duração, recursos produzidos e trocados, cartas mais e
  * menos jogadas, % no limite de rodadas. Mais o CSV por partida e por carta.
  */
+import { wilson } from './stats';
 import { RESOURCE_IDS, type ResourceId } from '../data/schemas';
 import type { TrackId } from '../engine/rules/victory';
 import type { GameRecord } from './game';
@@ -24,6 +25,8 @@ export interface SimSummary {
   /** Vitórias por assento (empate conta para cada vencedor). */
   readonly winsBySeat: number[];
   readonly winsByLevel: Record<string, { readonly seats: number; readonly wins: number }>;
+  /** GDD 12 / PROMPTS Fase 9: por facção, assentos e vitórias (empate conta para cada vencedor). */
+  readonly winsByFaction: Record<string, { readonly seats: number; readonly wins: number }>;
   /** Por rota perseguida: assentos, vitórias e vitórias pela própria rota. */
   readonly winsByFocus: Record<
     string,
@@ -65,6 +68,7 @@ export interface SimSummary {
 const TRACKS: readonly (TrackId | 'elimination' | 'roundLimit')[] = [
   ...RESOURCE_IDS,
   'expansion',
+  'tribe',
   'elimination',
   'roundLimit',
 ];
@@ -78,6 +82,7 @@ export function summarize(records: readonly GameRecord[], allCardIds: readonly s
   >;
   const winsBySeat = Array.from({ length: players }, () => 0);
   const winsByLevel: Record<string, { seats: number; wins: number }> = {};
+  const winsByFaction: Record<string, { seats: number; wins: number }> = {};
   const winsByFocus: Record<string, { seats: number; wins: number; onFocus: number }> = {};
   const produced = zero();
   const bank = zero();
@@ -107,6 +112,11 @@ export function summarize(records: readonly GameRecord[], allCardIds: readonly s
     if (r.winners.length > 1) shared++;
     for (const w of r.winners) winsBySeat[w] = (winsBySeat[w] ?? 0) + 1;
     for (const s of r.seats) {
+      if (s.faction) {
+        const fa = (winsByFaction[s.faction] ??= { seats: 0, wins: 0 });
+        fa.seats++;
+        if (s.won) fa.wins++;
+      }
       const lv = (winsByLevel[s.level] ??= { seats: 0, wins: 0 });
       lv.seats++;
       if (s.won) lv.wins++;
@@ -168,6 +178,7 @@ export function summarize(records: readonly GameRecord[], allCardIds: readonly s
     totalMs,
     winsByTrack,
     winsBySeat,
+    winsByFaction,
     winsByLevel,
     winsByFocus,
     rounds: {
@@ -297,6 +308,16 @@ export function summaryText(s: SimSummary, header = ''): string {
   );
   s.winsBySeat.forEach((w, i) => out.push(`  assento ${i}   ${String(w).padStart(5)}  ${pct(w / n)}`));
   const levels = Object.entries(s.winsByLevel);
+  const factions = Object.entries(s.winsByFaction);
+  if (factions.length > 1) {
+    out.push('', 'Vitórias por facção (% das partidas em que a facção jogou, IC 95% de Wilson):');
+    for (const [f, v] of factions.sort((a, b) => b[1].wins / b[1].seats - a[1].wins / a[1].seats)) {
+      const ci = wilson(v.wins, v.seats);
+      out.push(
+        `  ${f.padEnd(16)} ${String(v.seats).padStart(4)} partidas  ${pct(ci.value).padStart(6)}  [${pct(ci.lo)}–${pct(ci.hi)}]`,
+      );
+    }
+  }
   if (levels.length > 1) {
     out.push('', 'Vitórias por nível de IA:');
     for (const [lv, v] of levels)

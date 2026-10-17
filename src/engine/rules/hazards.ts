@@ -122,10 +122,18 @@ export function disaster(
 }
 
 /** GDD 13.2: a Vila perde vidas; com 0, o jogador sai da partida (D11). */
-export function loseVillageLives(state: GameState, player: PlayerId, n: number, events: GameEvent[]): void {
+export function loseVillageLives(
+  state: GameState,
+  player: PlayerId,
+  n: number,
+  events: GameEvent[],
+  by: readonly PlayerId[] = [],
+): void {
   const p = getPlayer(state, player);
   if (p.eliminated || n <= 0) return;
   p.villageLives = Math.max(0, p.villageLives - n);
+  // GDD 13.1 Alvo de tribo: "por mão própria" = quem deu o último dano (vazio = desastre).
+  p.lastHitBy = [...by];
   events.push({ type: 'villageDamaged', player, lives: p.villageLives });
   if (p.villageLives === 0) eliminate(state, player, events);
 }
@@ -134,6 +142,8 @@ export function eliminate(state: GameState, player: PlayerId, events: GameEvent[
   const p = getPlayer(state, player);
   if (p.eliminated) return;
   p.eliminated = true;
+  // D11 (opção do setup): "facção neutra" segue jogando pela IA, sem poder vencer.
+  if (state.eliminatedRule === 'neutral') p.neutral = true;
   // Propostas e entregas pendentes com ele deixam de valer.
   if (state.pendingTrade && (state.pendingTrade.from === player || state.pendingTrade.to === player)) {
     state.pendingTrade = null;

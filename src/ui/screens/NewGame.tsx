@@ -3,6 +3,8 @@
  * tamanho do mapa e a camada de Cartas (Fase 4). Todos IA = modo espectador. O setup
  * completo (UX_SPEC 2.3) é da Fase 10.
  */
+import { SEAT_FACTIONS as FACTIONS } from '../../render3d/model';
+import type { FactionKey } from '../theme/tokens';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { freshSeed } from '../../engine/rng';
@@ -32,6 +34,11 @@ export function NewGame() {
   const [special, setSpecial] = useState(true);
   const [conflict, setConflict] = useState(true);
   const [treaties, setTreaties] = useState(true);
+  // Fase 9: facções assimétricas, escolha por assento ('random' = sorteio pela seed).
+  const [factions, setFactions] = useState(true);
+  const [picks, setPicks] = useState<string[]>(() => Array.from({ length: MAX }, () => 'random'));
+  const [elim, setElim] = useState<'leave' | 'neutral'>('leave');
+  const setPick = (i: number, f: string) => setPicks((list) => list.map((k, j) => (j === i ? f : k)));
   // Assentos guardados para 6: mudar a contagem não perde a escolha.
   const [seats, setSeats] = useState<SeatKind[]>(() => Array.from({ length: MAX }, () => 'human'));
   const active = seats.slice(0, players);
@@ -52,6 +59,9 @@ export function NewGame() {
             special,
             conflict,
             treaties,
+            factions,
+            fac: picks.slice(0, players).join(','),
+            elim,
             seats: active.join(','),
           });
         }}
@@ -77,11 +87,36 @@ export function NewGame() {
               </button>
             ))}
           </div>
-          <ul className={styles.seats}>
+          <ul className={`${styles.seats} ${factions ? styles.seatsWide : ''}`}>
             {active.map((kind, i) => (
               <li key={i}>
-                <FactionBadge faction={seatFaction(i)} size={16} />
-                <span>{playerName(t, i)}</span>
+                <FactionBadge
+                  faction={factions && picks[i] !== 'random' ? (picks[i] as FactionKey) : seatFaction(i)}
+                  size={16}
+                />
+                <span className={styles.seatName}>
+                  {factions && picks[i] !== 'random' ? t(`factions.${picks[i]}`) : playerName(t, i)}
+                </span>
+                {factions && (
+                  <select
+                    className={styles.seatKind}
+                    value={picks[i]}
+                    onChange={(e) => setPick(i, e.target.value)}
+                    aria-label={t('newGame.factionLabel', { n: i + 1 })}
+                    data-testid={`faction-${i}`}
+                  >
+                    <option value="random">{t('newGame.factionRandom')}</option>
+                    {FACTIONS.map((f) => (
+                      <option
+                        key={f}
+                        value={f}
+                        disabled={picks.slice(0, players).some((p, j) => j !== i && p === f)}
+                      >
+                        {t(`factions.${f}`)}
+                      </option>
+                    ))}
+                  </select>
+                )}
                 <select
                   className={styles.seatKind}
                   value={kind}
@@ -201,12 +236,32 @@ export function NewGame() {
         <label className={styles.option}>
           <input
             type="checkbox"
+            checked={factions}
+            onChange={(e) => setFactions(e.target.checked)}
+            data-testid="layer-factions"
+          />
+          {t('newGame.factions')}
+        </label>
+        <label className={styles.option}>
+          {t('newGame.eliminated')}
+          <select
+            className={styles.seatKind}
+            value={elim}
+            onChange={(e) => setElim(e.target.value as 'leave' | 'neutral')}
+            data-testid="eliminated-rule"
+          >
+            <option value="leave">{t('newGame.elimLeave')}</option>
+            <option value="neutral">{t('newGame.elimNeutral')}</option>
+          </select>
+        </label>
+        <label className={styles.option}>
+          <input
+            type="checkbox"
             checked={privacy}
             onChange={(e) => setGameplay({ privacyScreen: e.target.checked })}
           />
           {t('newGame.privacy')}
         </label>
-        <p className={styles.note}>{t('newGame.layersNote')}</p>
 
         <div className={styles.actions}>
           <button type="button" className={hud.btn} onClick={() => go('home')}>

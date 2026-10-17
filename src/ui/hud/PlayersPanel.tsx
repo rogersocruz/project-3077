@@ -11,24 +11,33 @@ import { useTranslation } from 'react-i18next';
 import { usePresentation } from '../../anim';
 import { RESOURCE_IDS } from '../../data/schemas';
 import type { GameState, PlayerId } from '../../engine';
-import { expansionCount, progress, type TrackId } from '../../engine/rules/victory';
+import { expansionCount, playerTracks, progress, type TrackId } from '../../engine/rules/victory';
 import { seatFaction } from '../../render3d/model';
 import { useSceneStore } from '../../render3d/sceneStore';
 import { FactionBadge, Icon, ResourceIcon, RollingNumber } from '../components/Bits';
 import { Shape } from '../components/Shape';
 import { useInstantCounters } from '../game/hooks';
 import { useSession } from '../game/session';
-import { playerName } from '../game/text';
+import { playerName, trackLabel } from '../game/text';
 import { MiniCard } from '../hand/MiniCard';
 import styles from './Game.module.css';
 import hud from './Hud.module.css';
 
-const TRACKS: TrackId[] = [...RESOURCE_IDS, 'expansion'];
 /** UX_SPEC 2.5: alerta quando um jogador passa de 80% de uma trilha. */
 const ALERT_AT = 0.8;
 
-export function TrackIcon({ track, size = 12 }: { track: TrackId; size?: number }) {
+/** Ícone da trilha; Tribo mostra o símbolo da facção-alvo. */
+export function TrackIcon({
+  track,
+  size = 12,
+  target = null,
+}: {
+  track: TrackId;
+  size?: number;
+  target?: PlayerId | null;
+}) {
   if (track === 'expansion') return <Shape kind="hexagon" colorVar="--paper-300" size={size} />;
+  if (track === 'tribe') return <FactionBadge faction={seatFaction(target ?? 0)} size={size} />;
   return <ResourceIcon id={track} size={size} />;
 }
 
@@ -45,9 +54,14 @@ function PlayerCard({ state, id }: { state: GameState; id: PlayerId }) {
   if (!ctx || !player || !prog) return null;
 
   const active = turn?.stage !== 'setup' && turn?.activePlayer === id;
+  const TRACKS = playerTracks(state, id);
+  // GDD 12: habilidade da facção (texto de factions.json) com a camada ligada.
+  const ability = state.layers.factions
+    ? ctx.data.factions.find((f) => f.id === player.faction)?.ability
+    : null;
   const lead = TRACKS.reduce((a, b) => (prog.tracks[b] > prog.tracks[a] ? b : a));
   const alert = TRACKS.filter((k) => prog.tracks[k] >= ALERT_AT);
-  const trackName = (k: TrackId) => (k === 'expansion' ? t('hud.trackExpansion') : t(`resources.${k}`));
+  const trackName = (k: TrackId) => trackLabel(t, state, id, k);
   const pct = (k: TrackId) => Math.round(prog.tracks[k] * 100);
   const maxLives = ctx.balance.village.lives;
   const alertText = t('hud.alert', {
@@ -89,6 +103,16 @@ function PlayerCard({ state, id }: { state: GameState; id: PlayerId }) {
           </span>
         )}
         {viewer === id && kind === 'human' && <span className={styles.badgeYou}>{t('hud.you')}</span>}
+        {player.eliminated && (
+          <span className={styles.badgeAi} data-testid={`out-${id}`}>
+            {t(player.neutral ? 'hud.neutral' : 'hud.eliminated')}
+          </span>
+        )}
+        {ability && (
+          <span className={styles.badgeYou} title={ability.text} data-testid={`ability-${id}`}>
+            {ability.name}
+          </span>
+        )}
         {state.layers.cards && (
           <span className={styles.cardCounts}>
             <span title={t('hud.handCount', { count: player.hand.length })} data-testid={`hand-count-${id}`}>
@@ -122,7 +146,7 @@ function PlayerCard({ state, id }: { state: GameState; id: PlayerId }) {
             <span className={styles.meter}>
               <span className={styles.fill} style={{ height: `${pct(k)}%` }} />
             </span>
-            <TrackIcon track={k} />
+            <TrackIcon track={k} target={player.tribeTarget} />
           </div>
         ))}
       </div>

@@ -4,6 +4,7 @@
  * (fase 5) e Entrega (fase 7). Revelação, Compra e Entrega só agem com a camada de
  * cartas; Combate entra na Fase 7.
  */
+import { protocolDraw, underdogBonus } from './rules/factions';
 import type { EngineContext } from './context';
 import type { GameEvent } from './events';
 import { revealIncoming } from './rules/cards';
@@ -53,7 +54,10 @@ export function startRound(ctx: EngineContext, state: GameState, events: GameEve
 
 /** Próximo assento na partida depois de `after` nesta rodada (null = acabou a rodada). */
 function nextAlive(state: GameState, after: PlayerId): PlayerId | null {
-  for (let p = after + 1; p < state.players.length; p++) if (!state.players[p]?.eliminated) return p;
+  for (let p = after + 1; p < state.players.length; p++) {
+    const pl = state.players[p];
+    if (pl && (!pl.eliminated || pl.neutral)) return p;
+  }
   return null;
 }
 
@@ -84,6 +88,8 @@ export function startTurn(ctx: EngineContext, state: GameState, player: PlayerId
   events.push({ type: 'turnStarted', player, round: state.round });
   // Inadimplência ou quebra de pacto fora do próprio turno: as ações saem agora.
   payActionDebt(state, player, events);
+  // Levante (Revolucionários): +ação a quem está em último no progresso.
+  underdogBonus(ctx, state, player, events);
 
   enterPhase(state, 'reveal', events);
   if (state.layers.cards) revealIncoming(ctx, state, player, events);
@@ -99,6 +105,8 @@ export function startTurn(ctx: EngineContext, state: GameState, player: PlayerId
 /** Depois da Compra: Produção e Manutenção automáticas, e para nas Ações. */
 export function continueTurn(ctx: EngineContext, state: GameState, events: GameEvent[]): void {
   const player = state.activePlayer;
+  // Protocolo (Governo): carta extra na Compra, depois da linha da Universidade.
+  protocolDraw(ctx, state, player, events);
   enterPhase(state, 'production', events);
   runProduction(ctx, state, player, events);
   enterPhase(state, 'upkeep', events);

@@ -23,6 +23,10 @@ export interface PlayerRecord {
   /** Rota perseguida pelo agente (null = equilibrado). */
   readonly focus: AiFocus | null;
   readonly won: boolean;
+  /** GDD 12: facção do assento (sorteada com a camada de facções). */
+  readonly faction?: string;
+  /** Terminou eliminado (fora ou neutro). */
+  readonly eliminated?: boolean;
   /** Trilhas cumpridas no fim (vitória por condição). */
   readonly met: TrackId[];
   readonly progressTotal: number;
@@ -341,6 +345,8 @@ export function playSimGame(ctx: EngineContext, opts: SimGameOptions): GameRecor
       level: agents[p.id]?.level ?? 'normal',
       focus: agents[p.id]?.focus ?? null,
       won: winners.includes(p.id),
+      faction: p.faction,
+      eliminated: p.eliminated,
       met: prog.met,
       progressTotal: prog.total,
       resources: { ...p.resources },

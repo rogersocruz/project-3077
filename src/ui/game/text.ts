@@ -9,6 +9,7 @@ import { RESOURCE_IDS } from '../../data/schemas';
 import type { CardTarget, CardUid, GameEvent, GameState, HexKey, PlayerId } from '../../engine';
 import { findStructure, type ResourceAmounts } from '../../engine/queries';
 import { seatFaction } from '../../render3d/model';
+import type { TrackId } from '../../engine/rules/victory';
 import { pactDef, treatyText } from '../treaty/describe';
 
 export const playerName = (t: TFunction, id: PlayerId) => t(`factions.${seatFaction(id)}`);
@@ -139,6 +140,7 @@ export const LOG_KEYS: Record<GameEvent['type'], string> = {
   pactBroken: 'pactBroken',
   treatyTrade: 'treatyTrade',
   actionDebtPaid: 'actionDebtPaid',
+  factionAbility: 'factionAbility',
 };
 
 /** Detalhes que poluem o registro; ficam atrás do filtro "detalhes". */
@@ -489,5 +491,16 @@ export function logLine(
       });
     case 'actionDebtPaid':
       return t(key, { name: name(e.player), count: e.amount });
+    // ── Facções (Fase 9) ──
+    case 'factionAbility':
+      return t(`log.ability.${e.ability}`, { name: name(e.player), count: e.amount });
   }
+}
+
+/** Nome da trilha no HUD. */
+export function trackLabel(t: TFunction, state: GameState, player: PlayerId, k: TrackId): string {
+  if (k === 'expansion') return t('hud.trackExpansion');
+  if (k === 'tribe')
+    return t('hud.trackTribe', { name: playerName(t, state.players[player]?.tribeTarget ?? 0) });
+  return t(`resources.${k}`);
 }

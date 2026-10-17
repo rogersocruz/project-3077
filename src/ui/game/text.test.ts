@@ -134,6 +134,9 @@ const SAMPLES: GameEvent[] = [
   { type: 'pactBroken', treaty: 4, by: 0, pact: 'pact_closed_border' },
   { type: 'treatyTrade', treaty: 5, from: 0, to: 1, give: { gold: 1 }, receive: { food: 6 } },
   { type: 'actionDebtPaid', player: 1, amount: 1 },
+  { type: 'factionAbility', player: 0, ability: 'underdogAction', amount: 1 },
+  { type: 'factionAbility', player: 1, ability: 'protocol', amount: 1 },
+  { type: 'factionAbility', player: 2, ability: 'freeSurvey', amount: 1 },
 ];
 
 describe.each([

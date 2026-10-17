@@ -433,8 +433,9 @@ export function villageAttacks(ctx: EngineContext, state: GameState, events: Gam
     if (!hex) continue;
     const attackers = hex.troops.filter((t) => t.owner !== p.id);
     if (attackers.length === 0 || hex.troops.some((t) => t.owner === p.id)) continue;
-    events.push({ type: 'villageAttacked', player: p.id, by: [...new Set(attackers.map((t) => t.owner))] });
-    loseVillageLives(state, p.id, ctx.balance.combat.villageDamagePerRound, events);
+    const by = [...new Set(attackers.map((t) => t.owner))];
+    events.push({ type: 'villageAttacked', player: p.id, by });
+    loseVillageLives(state, p.id, ctx.balance.combat.villageDamagePerRound, events, by);
   }
 }
 

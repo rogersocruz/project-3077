@@ -157,6 +157,17 @@ export interface PlayerState {
   treatyRound: number;
   /** Ações a perder no próximo turno (inadimplência e quebra de pacto fora do próprio turno). */
   actionDebt: number;
+  /** GDD 12: facção (id de factions.json). Sem a camada de facções, só identidade visual. */
+  readonly faction: string;
+  /** GDD 13.1 Alvo de tribo: jogador-alvo sorteado (público); null sem a condição. */
+  readonly tribeTarget: PlayerId | null;
+  /** Quem deu o último dano à Vila ("por mão própria"; vazio = desastre/horda). */
+  lastHitBy: PlayerId[];
+  /** D11 "facção neutra": eliminado que segue jogando pela IA, sem poder vencer. */
+  neutral: boolean;
+  /** Raízes: rodada e quantos Sondar grátis já usou nela. */
+  freeSurveyRound: number;
+  freeSurveyUsed: number;
 }
 
 // ── Cartas (GDD 7) ───────────────────────────────────────────────────────────
@@ -380,6 +391,8 @@ export interface GameState {
   combat: CombatPhase | null;
   /** Variantes de laboratório (GameOptions.playToRoundLimit); ausente em partida normal. */
   readonly variant?: { readonly playToRoundLimit?: boolean };
+  /** GDD 13.2 / D11: o que acontece com o eliminado (opção do setup). */
+  readonly eliminatedRule: 'leave' | 'neutral';
   winners: PlayerId[];
   endReason: 'condition' | 'roundLimit' | null;
   log: Action[];

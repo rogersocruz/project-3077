@@ -116,6 +116,8 @@ export const REASON_KEYS = [
   'treatyUsed',
   'treatyForbids',
   'treatyGold',
+  // Facções (Fase 9)
+  'protocolBand',
 ] as const;
 
 export type ReasonKey = (typeof REASON_KEYS)[number];

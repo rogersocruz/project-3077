@@ -233,7 +233,8 @@
     },
     "elimination": true,
     "tiebreak": "highestSummedProgress",
-    "finalTie": "shared"
+    "finalTie": "shared",
+    "eliminatedRule": "leave"
   },
   "costPoints": {
     "food": 1,
@@ -274,6 +275,7 @@
     "bank.spreadReductionOrder",
     "trade.requiresAdjacentBoard",
     "victory.finalTie",
-    "cards.radiusCrossesBorder"
+    "cards.radiusCrossesBorder",
+    "victory.eliminatedRule"
   ]
 }

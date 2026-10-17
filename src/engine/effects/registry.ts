@@ -125,7 +125,9 @@ export function effectIssues(data: GameData): EffectIssue[] {
     world('tiles.json', `.hazards[${i}].bonus`, h.bonus.effectId, h.bonus.params);
     world('tiles.json', `.hazards[${i}].damage`, h.damage.effectId, h.damage.params);
   });
-  data.factions.forEach((f, i) => world('factions.json', `[${i}].ability`, f.ability.effectId));
+  data.factions.forEach((f, i) =>
+    world('factions.json', `[${i}].ability`, f.ability.effectId, f.ability.params),
+  );
   return issues;
 }
 

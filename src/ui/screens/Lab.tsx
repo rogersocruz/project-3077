@@ -199,6 +199,17 @@ function Results({ s }: { s: SimSummary }) {
     value: v / n,
     display: pct(v / n),
   }));
+  // Fase 9: vitória por facção (% das partidas em que jogou).
+  const byFaction: BarRow[] = Object.entries(s.winsByFaction)
+    .map(([f, v]) => ({ f, rate: v.wins / Math.max(1, v.seats), v }))
+    .sort((a, b) => b.rate - a.rate)
+    .map(({ f, rate, v }) => ({
+      key: f,
+      label: t(`factions.${f}`),
+      value: rate,
+      display: pct(rate),
+      title: t('lab.factionTitle', { seats: v.seats }),
+    }));
   const foci = Object.entries(s.winsByFocus);
   const byFocus: BarRow[] = AI_FOCI.filter((f) => s.winsByFocus[f]).map((f) => {
     const v = s.winsByFocus[f]!;
@@ -297,6 +308,12 @@ function Results({ s }: { s: SimSummary }) {
           <figure>
             <figcaption className={hud.label}>{t('lab.winsByFocus')}</figcaption>
             <BarList rows={byFocus} label={t('lab.winsByFocus')} />
+          </figure>
+        )}
+        {byFaction.length > 1 && (
+          <figure>
+            <figcaption className={hud.label}>{t('lab.winsByFaction')}</figcaption>
+            <BarList rows={byFaction} label={t('lab.winsByFaction')} testId="chart-factions" />
           </figure>
         )}
         <figure>

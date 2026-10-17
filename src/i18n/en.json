@@ -147,7 +147,8 @@
       "notCommercePact": "That pact is not a commerce pact.",
       "treatyUsed": "You already used that pact this turn.",
       "treatyForbids": "A treaty forbids that against this player.",
-      "treatyGold": "Not enough Gold to sign: each party pays 1 on acceptance."
+      "treatyGold": "Not enough Gold to sign: each party pays 1 on acceptance.",
+      "protocolBand": "Protocol: only cards in the n1 cost band."
     }
   },
   "terrain": {
@@ -210,7 +211,6 @@
     "seed": "Seed",
     "randomSeed": "Roll",
     "privacy": "Privacy screen between players",
-    "layersNote": "Treaties and factions come in the next phases.",
     "start": "Start",
     "cards": "Card layer (n1/n2/n3 decks, deliveries and permanents)",
     "seatLabel": "Who plays as {{player}}",
@@ -227,7 +227,13 @@
     "events": "Global events (one per round; disasters hit the Village)",
     "special": "Special hexes (Temple, Ruin and unique hazards)",
     "conflict": "Troops and combat (Barracks, movement, borders, Village attacks)",
-    "treaties": "Treaties (IF/THEN contracts and pacts)"
+    "treaties": "Treaties (IF/THEN contracts and pacts)",
+    "factions": "Asymmetric factions (one ability each)",
+    "factionLabel": "Seat {{n}} faction",
+    "factionRandom": "Random",
+    "eliminated": "Eliminated player:",
+    "elimLeave": "Leaves the game",
+    "elimNeutral": "Becomes a neutral faction (AI, cannot win)"
   },
   "phases": {
     "reveal": "Reveal",
@@ -334,7 +340,10 @@
     "aiThinking": "{{name}} is thinking…",
     "armyTariff": "Army: {{n}} troop(s) · border tariff: {{resource}}",
     "armyShort": "⚔ {{n}}",
-    "treatyHint": "Propose a treaty or see active ones"
+    "treatyHint": "Propose a treaty or see active ones",
+    "trackTribe": "Tribe: {{name}}",
+    "neutral": "Neutral",
+    "eliminated": "Out"
   },
   "noTargets": {
     "explore": "No hex to explore: only neighbours of revealed hexes on your board.",
@@ -441,7 +450,27 @@
     "rounds": "The match lasted {{round}} rounds.",
     "rematch": "Rematch (same seed)",
     "newGame": "New game",
-    "menu": "Main menu"
+    "menu": "Main menu",
+    "tribe": "Tribe target ({{name}})",
+    "elimination": "Total elimination",
+    "neutral": "neutral",
+    "eliminated": "eliminated",
+    "round": "Round {{n}}",
+    "tab": {
+      "standings": "Standings",
+      "charts": "Charts",
+      "timeline": "Timeline",
+      "export": "Export"
+    },
+    "chartStock": "Stock",
+    "chartMilitary": "Military strength",
+    "chartCards": "Cards played",
+    "chartProgress": "Summed progress",
+    "unitPoints": "value points",
+    "unitStrength": "strength",
+    "unitCards": "cumulative",
+    "export": "Download the log (JSON)",
+    "exportHint": "Seed, rules version, options and the game's {{n}} actions: enough to replay it."
   },
   "pause": {
     "title": "Paused",
@@ -585,7 +614,15 @@
     "treatyExpired": "Treaty #{{id}} expired.",
     "pactBroken": "{{name}} broke the pact {{pact}}: discards the hand and loses 1 action.",
     "treatyTrade": "{{from}} traded {{give}} for {{receive}} with {{to}} (commerce pact).",
-    "actionDebtPaid": "{{name}} loses {{count}} action(s) to a treaty."
+    "actionDebtPaid": "{{name}} loses {{count}} action(s) to a treaty.",
+    "ability": {
+      "underdogAction": "Uprising: {{name}} is last and gains {{count}} action(s).",
+      "protocol": "Protocol: {{name}} draws {{count}} extra card(s).",
+      "freeSurvey": "Roots: {{name}} surveys without spending an action.",
+      "parkEfficiency": "Efficiency: {{name}}.",
+      "betterBank": "Acquisition: {{name}}.",
+      "ignoreDiscardOnSabotage": "Plunder: {{name}}."
+    }
   },
   "cards": {
     "deck": {
@@ -718,7 +755,8 @@
       "specialHexes": "Special hexes",
       "events": "Global events",
       "conflict": "Troops and combat",
-      "treaties": "Treaties"
+      "treaties": "Treaties",
+      "factions": "Factions"
     },
     "layersNote": "Factions join the simulator in Phase 9.",
     "invalid": "Invalid balance — fix it before simulating:",
@@ -749,10 +787,13 @@
     "cardsLeast": "Least played cards",
     "track": {
       "expansion": "Expansion",
-      "roundLimit": "Round limit"
+      "roundLimit": "Round limit",
+      "tribe": "Tribe target"
     },
     "hazards": "Hazards hit (D15)",
-    "hazardTitle": "{{n}} times per game"
+    "hazardTitle": "{{n}} times per game",
+    "winsByFaction": "Wins by faction",
+    "factionTitle": "{{seats}} games with this faction"
   },
   "credits": {
     "title": "Credits",

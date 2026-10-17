@@ -122,7 +122,10 @@ export function CameraRig({ layout, hexes, keys, smoothTime, invertOrbit, reduce
 
   useFrame((_, dt) => {
     const c = ref.current;
-    if (!c || pressed.current.size === 0) return;
+    if (!c) return;
+    if (useSceneStore.getState().orbit && !reducedMotion)
+      void c.rotate(Math.min(dt, 0.05) * CAMERA.orbitSpeed, 0, false);
+    if (pressed.current.size === 0) return;
     const any = (l: string[]) => l.some((k) => pressed.current.has(k));
     const fwd = (any(keys.panForward) ? 1 : 0) - (any(keys.panBack) ? 1 : 0);
     const side = (any(keys.panRight) ? 1 : 0) - (any(keys.panLeft) ? 1 : 0);

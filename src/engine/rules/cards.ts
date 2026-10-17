@@ -4,6 +4,7 @@
  * Cada função `check*` devolve o motivo da ilegalidade ou null; as `apply*` mudam a
  * cópia de trabalho do reducer.
  */
+import { discardNeed, protocolAllows } from './factions';
 import { receiveCapBonus } from './treatyQueries';
 import { RESOURCE_IDS } from '../../data/schemas';
 import type { Action, CardUse } from '../actions';
@@ -132,13 +133,15 @@ export function addAmounts(...list: readonly ResourceAmounts[]): ResourceAmounts
 
 /** Descarte como custo: exatamente `cost.discard` cartas distintas da mão, fora as já usadas. */
 export function checkDiscard(
+  ctx: EngineContext,
   state: GameState,
   player: PlayerId,
   def: CardDef,
   discard: readonly CardUid[] | undefined,
   used: readonly CardUid[],
 ): Reason | null {
-  const need = def.cost.discard ?? 0;
+  // Saque (Piratas): Sabotagem sem o descarte do custo.
+  const need = discardNeed(ctx, state, player, def);
   const list = discard ?? [];
   const hand = getPlayer(state, player).hand;
   const ok =
@@ -211,7 +214,9 @@ function checkCardBasics(
   if (!cardEnabled(def, state.layers)) return { key: 'layerDisabled', params: { layer: 'cards' } };
   const cost = cardResourceCost(ctx, state, player, def, use.payment);
   if (!cost) return { key: 'invalidPayment' };
-  const discard = checkDiscard(state, player, def, use.discard, [card]);
+  // Protocolo (Governo): só cartas na faixa de custo da habilidade.
+  if (!protocolAllows(ctx, state, player, def)) return { key: 'protocolBand' };
+  const discard = checkDiscard(ctx, state, player, def, use.discard, [card]);
   if (discard) return discard;
   if (actions > state.actionsLeft) return { key: 'noActionsLeft' };
   return canAfford(p.resources, cost) ? null : { key: 'cannotAfford' };
@@ -278,7 +283,8 @@ export function checkModifier(
   if (kind === 'drone' && (eventParams(ctx, state, 'dronesOff') || dronesGroundedFor(state, player)))
     return { key: 'dronesGrounded' };
   if (!cardResourceCost(ctx, state, player, def, use.payment)) return { key: 'invalidPayment' };
-  return checkDiscard(state, player, def, use.discard, [...used, use.card]);
+  if (!protocolAllows(ctx, state, player, def)) return { key: 'protocolBand' };
+  return checkDiscard(ctx, state, player, def, use.discard, [...used, use.card]);
 }
 
 /** Recursos que a carta modificadora custa (0 se a alternativa for inválida). */
@@ -375,7 +381,7 @@ export function checkDeliver(
   if (p.deliveredThisTurn >= ctx.balance.cards.deliverPerTurn) return { key: 'alreadyDelivered' };
   const to = state.players[a.to];
   if (!to || a.to === a.player) return { key: 'invalidRecipient' };
-  if (to.eliminated) return { key: 'playerEliminated' };
+  if (to.eliminated && !to.neutral) return { key: 'playerEliminated' };
   // Anomalia Magnética: Sabotagem não alveja o hex nem os vizinhos (sem a inversão).
   const target = targetHex(state, a.target);
   const def0 = cardDefOf(ctx, state, a.card);

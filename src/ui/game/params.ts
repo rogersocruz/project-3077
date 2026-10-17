@@ -24,6 +24,12 @@ export interface GameSetup {
   readonly conflict: boolean;
   /** Tratados (Fase 8; na URL `treaties=1`). */
   readonly treaties: boolean;
+  /** Facções assimétricas (Fase 9; na URL `factions=1`, `fac=pirates,random,…`, `elim=neutral`). */
+  readonly factions: boolean;
+  /** Facção escolhida por assento; null = aleatória. */
+  readonly factionPicks: readonly (string | null)[];
+  /** GDD 13.2 / D11: regra do eliminado (null = padrão do balance.json). */
+  readonly eliminatedRule: 'leave' | 'neutral' | null;
   /** Um por jogador (Fase 5). */
   readonly seats: readonly SeatKind[];
 }
@@ -70,6 +76,12 @@ export function parseGameParams(search: string): GameParams {
       specialHexes: p.get('special') === '1',
       conflict: p.get('conflict') === '1',
       treaties: p.get('treaties') === '1',
+      factions: p.get('factions') === '1',
+      factionPicks: (p.get('fac') ?? '')
+        .split(',')
+        .filter((x) => x !== '')
+        .map((x) => (x === 'random' ? null : x)),
+      eliminatedRule: p.get('elim') === 'neutral' ? 'neutral' : p.get('elim') === 'leave' ? 'leave' : null,
       seats: parseSeats(players, p.get('seats'), p.get('ai')),
     },
     speed:
@@ -91,4 +103,7 @@ export const sameSetup = (a: GameSetup | null, b: GameSetup) =>
   a.specialHexes === b.specialHexes &&
   a.conflict === b.conflict &&
   a.treaties === b.treaties &&
+  a.factions === b.factions &&
+  a.factionPicks.join() === b.factionPicks.join() &&
+  a.eliminatedRule === b.eliminatedRule &&
   a.seats.join() === b.seats.join();
