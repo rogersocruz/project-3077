@@ -97,8 +97,43 @@ npm run art:check    lista arte faltante do manifesto
 - Se uma regra do GDD parecer contraditória, **pare e pergunte** — não invente.
 
 ## Estado atual
-- Fase concluída: 3 — HUD e partida jogável (vertical slice)
-- Próxima fase: 4 — Cartas
+- Fase concluída: 4 — Cartas
+- Próxima fase: 5 — IA básica e Laboratório (fim da rota rápida)
+- Cartas (Fase 4):
+  - Jogar: `/?view=game&players=3&seed=1` (camada de cartas ligada por padrão; `cards=0`
+    desliga; também na Nova partida). Galeria de desenvolvimento: `/?view=cards`
+    (`set=ref|all|backs`, `blocked=1`, `raster=1`).
+  - Motor: `engine/rules/cards.ts` (compra pela tabela da Universidade com escolha de linha,
+    jogar, instalar, entregar com teto de recebimento, revelar na fase 1 do alvo),
+    `rules/decks.ts` (baralhos n1/n2/n3 por cópias, limite de mão, descarte),
+    `rules/permanents.ts` (5 slots). Efeitos em `engine/effects/` por arquivo
+    (resources, structures, permanents, info, modifiers, decks, world); efeitos de
+    camadas futuras em `effects/gated.ts` (recusam com "camada desligada").
+  - Face da carta: `ui/card/Card.tsx` (SVG, anatomia de ART_DIRECTION 4), versos em
+    `CardBack.tsx`, ilustração substituta procedural por categoria em `Illustration.tsx`;
+    o mesmo SVG vira textura 3D (`ui/card/rasterize.ts`, `texture.tsx`).
+  - Interface: mão em leque (`ui/hand/`), zoom com paralaxe, diálogo de alvo/entrega,
+    voos de carta, envelope + drone na entrega, revelação com virada (`anim/cues.ts`).
+  - Interpretações provisórias da Fase 4 (isoladas; **revisar com o usuário**):
+    S) Demolição: Muro/Posto no hex absorvem e sofrem downgrade (`absorbedBy`);
+    T) RAIO N de carta = área a partir da Vila/Posto, atravessa fronteira
+       (`cards.radiusCrossesBorder`); DRONE entregue = tabuleiro do alvo; GLOBAL = qualquer;
+    U) cartas de camadas desligadas (tropas, tratados, eventos) ficam fora do baralho;
+    V) baralho vazio rebaralha o próprio descarte; W) mão inicial do
+       `setup.startingHandDeck` (n1); X) alvo escolhido na entrega; se deixou de valer
+       até a Revelação, a carta "falha" (`cardFizzled`); Y) Pilhagem: remetente escolhe o
+       recurso, alvo perde o que tiver até 2, remetente ganha 1 se houve perda;
+    Z) Sobrecarga: produz de novo na hora e fica inativa na próxima Produção;
+    AA) Colapso de Galeria: dono limpa gastando 2 ações; AB) Bomba de Íons desliga
+       estruturas com manutenção em Carvão de qualquer dono até o fim da rodada;
+    AC) Terraformação: +N em cada recurso que o hex produz; AD) Pesquisa Avançada ainda
+       exige Oficina; AE) Silos: empate vai para o recurso de maior valor;
+    AF) Espionagem sem slot livre: o remetente descarta o permanente escolhido na entrega;
+    AG) Arquivo amplia o limite pelo maior nível; AH) Contrato de Obra: metade de cada
+       recurso, arredondado para cima; AI) desfazer cobre Instalar, não Jogar/Entregar.
+  - Testes: `effects/effects.test.ts` (um por efeito), `rules/cards.test.ts`,
+    `e2e/cards.spec.ts` (galeria, duas rodadas pela interface, partida inteira com
+    cartas até o fim, capturas `screenshots/phase4-*`).
 - Partida jogável (Fase 3):
   - Jogar: `npm run dev` → Home → "Nova partida", ou direto `/?view=game&players=3&seed=1`
     (`long=1` aresta 5; para capturas/testes: `speed=0.5|1|2|instant`, `privacy=0|1`,
