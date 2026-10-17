@@ -32,6 +32,12 @@ const record = (seed: number, extra: Partial<GameRecord> = {}): GameRecord => ({
   tradesAccepted: 1,
   cardsPlayed: { convoy: 2 },
   cardsDrawn: { convoy: 4, audit: 1 },
+  hazardsPresent: ['volcano', 'geyser'],
+  hazardHits: { volcano: 2 },
+  eventsRevealed: { ev_quake: 1 },
+  disasters: 1,
+  eliminations: 0,
+  excavations: 2,
   ...extra,
 });
 
@@ -68,6 +74,13 @@ describe('summarize', () => {
     expect(byId['convoy']).toMatchObject({ played: 4, drawn: 8, rate: 0.5 });
     expect(byId['dossier']).toMatchObject({ played: 0, drawn: 0 });
     expect(s.cards[0]?.id).toBe('convoy');
+  });
+
+  it('hazards atingidos (D15) e números do planeta', () => {
+    expect(s.hazards['volcano']).toEqual({ games: 2, hitGames: 2, hits: 4 });
+    expect(s.hazards['geyser']).toEqual({ games: 2, hitGames: 0, hits: 0 });
+    expect(s.disastersPerGame).toBe(1);
+    expect(summaryText(s)).toContain('Hazards atingidos');
   });
 
   it('vitórias por rota perseguida', () => {

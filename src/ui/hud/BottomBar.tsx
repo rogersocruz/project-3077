@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next';
 import { usePresentation } from '../../anim';
 import { RESOURCE_IDS } from '../../data/schemas';
 import { type ActionTemplate, canUndo, decider } from '../../engine';
+import { braceActions } from '../../engine/rules/world';
 import { useSettings } from '../../settings';
 import { Icon, ResourceIcon, RollingNumber } from '../components/Bits';
 import {
@@ -18,9 +19,9 @@ import {
   openTreaty,
   undoLast,
 } from '../game/commands';
-import { useCanDecide, useInstantCounters } from '../game/hooks';
+import { perform, useCanDecide, useInstantCounters } from '../game/hooks';
 import { useSession } from '../game/session';
-import { playerName } from '../game/text';
+import { eventName, playerName } from '../game/text';
 import { useUi } from '../game/uiStore';
 import { cardFace } from '../card/faces';
 import { MiniCard } from '../hand/MiniCard';
@@ -53,6 +54,9 @@ export function BottomBar() {
   if (!ctx || !state || !turn) return null;
 
   const me = viewer ?? turn.activePlayer;
+  // Contra-ação do evento da rodada (GDD 9): "quem gastar N ações fica imune".
+  const braceN = braceActions(ctx, state);
+  const braced = state.world.braced.includes(state.activePlayer);
   // Vez de um assento de IA: a barra diz quem está pensando (a entrada fica travada).
   const who = state.stage === 'over' ? null : decider(state);
   const aiName =
@@ -170,6 +174,18 @@ export function BottomBar() {
         >
           {t('hud.trade')} <span className={hud.kbd}>T</span>
         </button>
+        {braceN > 0 && (
+          <button
+            type="button"
+            className={`${hud.btn} ${braced ? hud.btnOn : ''}`}
+            disabled={!inActions || braced || turn.actionsLeft < braceN}
+            onClick={() => perform({ type: 'brace', player: state.activePlayer })}
+            title={t('events.braceHint', { n: braceN, event: eventName(state.world.current ?? '') })}
+            data-testid="brace"
+          >
+            {braced ? t('events.braced') : t('events.brace')}
+          </button>
+        )}
         <button
           type="button"
           className={hud.btn}

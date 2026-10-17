@@ -14,6 +14,8 @@ import { decider } from '../engine/legal';
 import { amountTotal, findStructure, type ResourceAmounts } from '../engine/queries';
 import type { CardTarget, GameState, PlayerId, Resources } from '../engine/state';
 import { type FxAnchor, useFxStore } from '../render3d/fxStore';
+import { useSceneStore } from '../render3d/sceneStore';
+import { palette } from '../ui/theme/tokens';
 import type { AnimationSpeed } from '../settings';
 import { type CardFlight, type FlightPoint, useCardFlights } from './cardFlights';
 import { type Batch, buildCues, type CardRef, type Cue } from './cues';
@@ -292,6 +294,26 @@ export class Director {
     const ctx = this.ctx;
     if (!ctx) return;
     switch (cue.kind) {
+      case 'worldEvent': {
+        // UX_SPEC 2.14: a mesa escurece, a carta vem ao centro com a cor da categoria e
+        // os hexes atingidos pulsam; depois a carta encolhe para o topo do HUD.
+        const color =
+          palette.event[cue.category as keyof typeof palette.event]?.color ?? palette.accent.orange;
+        useSceneStore.getState().setPulse(cue.hexes.length ? { keys: new Set(cue.hexes), color } : null);
+        if (this.instant) {
+          useSceneStore.getState().setPulse(null);
+          return;
+        }
+        usePresentation.setState({ eventReveal: { event: cue.event, category: cue.category } });
+        await this.wait(this.deps.reducedMotion() ? T.eventRevealReduced : T.eventReveal);
+        if (epoch !== this.epoch) return;
+        usePresentation.setState({ eventReveal: null });
+        // O pulso fica um pouco mais, enquanto o dano anima.
+        const pulseOff = () => useSceneStore.getState().setPulse(null);
+        setTimeout(pulseOff, (T.eventPulse * 1000) / Math.max(0.5, Number(this.deps.speed()) || 1));
+        return;
+      }
+
       case 'round':
         if (this.instant) return;
         usePresentation.setState({ banner: { round: cue.round } });

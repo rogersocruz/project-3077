@@ -99,8 +99,56 @@ npm run assets:check confere ícones, créditos, sha256 e licenças
 - Se uma regra do GDD parecer contraditória, **pare e pergunte** — não invente.
 
 ## Estado atual
-- Fase concluída: 5 — IA básica e Laboratório (fim da rota rápida)
-- Próxima fase: 6 — Eventos, hazards, sítios e tesouro
+- Fase concluída: 6 — Eventos, hazards, sítios e tesouro
+- Próxima fase: 7 — Tropas e combate
+- O planeta reage (Fase 6):
+  - Jogar: Nova partida (Eventos e Hexes especiais ligados por padrão) ou URL
+    `events=1&special=1` (na URL ficam desligados por padrão, para não mudar as partidas dos
+    testes antigos). Simulador/Laboratório: camada `events`.
+  - Motor: `rules/world.ts` (baralho de eventos, revelação no início da rodada, gatilho dos
+    hazards, fim de rodada, Escavar, Tesouro, contra-ação `brace`, limpar `cleanHex`),
+    `rules/hazards.ts` (desastre GDD 4.4, vidas da Vila, eliminação, defesa contra horda),
+    `rules/specials.ts` (bônus passivos dos hazards), `effects/world.ts` (registro dos 15
+    eventos + 7 bônus + 7 danos, parâmetros validados na carga), `effects/world-cards.ts`
+    (Guardião Desperto, Blindagem Sísmica). Estado: `world`, `hex.status`, `hex.guardian`,
+    `hex.excavatedBy`, `player.eliminated`, `cards.treasure`. O reducer desconta ações por
+    `actionCost` (mesma conta do legal.ts). Parque pode ir em Vulcão e Pântano (structures.json).
+  - Decisões do usuário (Fase 6): baralho de 12 que rebaralha; bônus do hazard para quem tem
+    estrutura nele; Horda/Guardião viram desastre/bloqueio até a Fase 7; Vila a 0 vidas elimina.
+  - Interpretações provisórias da Fase 6 (isoladas; **revisar com o usuário**):
+    AJ) baralho ativo = cópias embaralhadas com no máx. `maxPerCategoryInActiveDeck` por
+       categoria até `activeDeckSize` (dá 12); acabou, os usados voltam embaralhados;
+    AK) Horda: sai da Ruína de menor r global e ataca o vizinho com mais estruturas — desastre
+       só nesse hex, salvo defesa (Muro + Postos adjacentes) ≥ força; Guardião fica parado,
+       bloqueia escavar e construir; Ventos de Cauda fora do baralho até a Fase 7;
+    AL) bônus do hazard: Parque em Vulcão = 2 Carvão + (nível−1); Pântano = 2× Comida do
+       nível; Geiser: Minas a ≤1 de qualquer dono sem Carvão; Cânion: Drones grátis de quem
+       tem estrutura nele; Crosta Fina: sondar o hex é grátis para qualquer um, Mina −1
+       Pedregulho e ×+1; Porto Franco: spread 0 (fechado: spread ×2) para quem tem estrutura;
+       Anomalia: Sabotagem não alveja hex e vizinhos (invertida: efeito aplicado 2×);
+    AM) Blindagem Sísmica: desastre só rebaixa as estruturas do dono;
+    AN) Ruína: escavada uma vez; o bônus (+1 n1 em toda linha e linha n3) é de quem escavou;
+    AO) Tesouro "instant" vai para a mão e se joga como carta própria; Guardião resolve na
+       hora no hex escavado; a IA avalia Escavar pelo valor esperado (não espia o topo);
+    AP) todo hazard da categoria do evento sofre o próprio dano (idempotente), antes do efeito;
+    AQ) contra-ação nas Ações devolve o que o evento tirou na Produção do turno (Minas
+       produzem e pagam Carvão; o corte da Chuva Ácida volta) — o evento é revelado antes da
+       Produção, mas o jogador só decide depois;
+    Eventos "nesta rodada" valem para todos os turnos da rodada; "N rodadas" contam a atual.
+  - Interface: cinemática do evento (`ui/event/EventReveal.tsx`, CSS por categoria, fade com
+    movimento reduzido), carta horizontal em DOM (`EventCard.tsx`), chip no topo com zoom,
+    pulso nos hexes atingidos (`sceneStore.pulse`), botão "Proteger-se" na barra, inspetor com
+    estados/Guardião/Ruína e botões Escavar/Limpar, escolha de compensação de setup
+    (`CompensationChoice`), marcas 3D de estado e Guardião (`CardMarkers.tsx`).
+  - IA: Escavar por valor esperado, contra-ação (inclui a perda da Praga), risco de hazard
+    (`hazardRisk`) na renda de Montanha e vizinhança de hazards sísmicos/térmicos.
+  - Simulação (D15): cada hazard é atingido em 85–94% das partidas; Cofre Precursor leva o
+    Ouro a 32% das vitórias (partidas de 2–4 rodadas). Detalhes e sugestões em
+    `docs/SIMULACAO.md` (balance.json intocado).
+  - Testes: `rules/world.test.ts` (um por effectId de events/tiles, baralho, desastre,
+    eliminação, sítios, Tesouro, AQ, partida aleatória com tudo ligado), `e2e/world.spec.ts`
+    (cinemática, chip/zoom, contra-ação, Escavar pelo inspetor, Tremor a 0,5×, partida só de
+    IA com todas as camadas até o fim; capturas `screenshots/phase6-*`).
 - Assets de terceiros (Fase 2B, parcial — decisão do usuário: **só ícones de recursos e
   de categorias de carta**; interface Tabler e modelos 3D Kenney ficaram de fora):
   - 13 ícones game-icons.net (CC BY 3.0; Lorc, Delapouite, Skoll, Sbed), coluna A de

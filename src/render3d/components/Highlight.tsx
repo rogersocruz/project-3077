@@ -23,12 +23,15 @@ function Targets({
   keys,
   color: override,
   reducedMotion,
+  dim = true,
 }: {
   hexes: readonly SceneHex[];
   kind: TargetKind;
   keys: ReadonlySet<string>;
   color?: string;
   reducedMotion: boolean;
+  /** Escurece os hexes fora do conjunto (alvos de ação); o pulso de evento não escurece. */
+  dim?: boolean;
 }) {
   const ringGeo = useMemo(() => createHexRingGeometry(TILE_R * 0.97, TILE_R * 0.86), []);
   // Hexágono pointy-top cobrindo o topo do tile.
@@ -60,10 +63,11 @@ function Targets({
     const on: InstanceXform[] = [];
     const off: InstanceXform[] = [];
     for (const h of hexes) {
-      (keys.has(h.key) ? on : off).push({ x: h.world.x, y: TILE_TOP_Y + 0.007, z: h.world.z });
+      if (keys.has(h.key)) on.push({ x: h.world.x, y: TILE_TOP_Y + 0.007, z: h.world.z });
+      else if (dim) off.push({ x: h.world.x, y: TILE_TOP_Y + 0.007, z: h.world.z });
     }
     return { on, off };
-  }, [hexes, keys]);
+  }, [hexes, keys, dim]);
   const onRef = useInstanceMatrices(on);
   const offRef = useInstanceMatrices(off);
 
@@ -100,6 +104,7 @@ export function Highlight({ hexes, reducedMotion }: { hexes: readonly SceneHex[]
   const hovered = useSceneStore((s) => s.hovered);
   const selected = useSceneStore((s) => s.selected);
   const targets = useSceneStore((s) => s.targets);
+  const pulse = useSceneStore((s) => s.pulse);
   // Tile animado (fora do lote): o contorno não fica boiando no lugar vazio.
   const hidden = useFxStore((s) => s.hiddenHexes);
   const hoverGeo = useMemo(() => createHexRingGeometry(TILE_R, TILE_R * 0.9), []);
@@ -124,6 +129,16 @@ export function Highlight({ hexes, reducedMotion }: { hexes: readonly SceneHex[]
           keys={targets.keys}
           color={targets.color}
           reducedMotion={reducedMotion}
+        />
+      )}
+      {pulse && (
+        <Targets
+          hexes={hexes}
+          kind="card"
+          keys={pulse.keys}
+          color={pulse.color}
+          reducedMotion={reducedMotion}
+          dim={false}
         />
       )}
       {h && h.key !== s?.key && (

@@ -73,6 +73,12 @@ export type Action =
       payment?: number;
       discard?: readonly CardUid[];
     }
+  /** GDD 4.3: escava Templo ou Ruína em alcance (Fase 6). */
+  | { type: 'excavate'; player: PlayerId; hex: HexKey }
+  /** GDD 9: contra-ação do evento da rodada ("quem gastar N ações fica imune"). */
+  | { type: 'brace'; player: PlayerId }
+  /** Pântano Ácido contaminado: limpar gastando ações. */
+  | { type: 'cleanHex'; player: PlayerId; hex: HexKey }
   /** Colapso de Galeria: o dono do tabuleiro remove o selo gastando ações. */
   | { type: 'clearSeal'; player: PlayerId; hex: HexKey }
   /** GDD 6.2 fase 7: entrega 1 carta a outro jogador (alvo escolhido na entrega). */
@@ -95,8 +101,8 @@ export type Action =
 export type ActionType = Action['type'];
 
 /**
- * Ações que gastam ações do turno com custo fixo (GDD 6.3). Instalar permanente e
- * Limpar galeria têm custo variável (legal.ts → actionCost).
+ * Ações que gastam ações do turno com custo fixo (GDD 6.3). Instalar permanente,
+ * Limpar galeria, contra-ação e limpar contaminação têm custo variável (legal.ts → actionCost).
  */
 export const ACTION_COST: Record<ActionType, number> = {
   chooseCompensation: 0,
@@ -115,6 +121,9 @@ export const ACTION_COST: Record<ActionType, number> = {
   playCard: 0,
   installPermanent: 0,
   clearSeal: 0,
+  excavate: 1,
+  brace: 0,
+  cleanHex: 0,
   deliverCard: 0,
   discardCards: 0,
   resolveChoice: 0,

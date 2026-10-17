@@ -115,7 +115,17 @@
       "noYield": "Esse hex não produz recurso.",
       "resourceNotAllowed": "Essa carta não dá esse recurso.",
       "deckNotAllowed": "Essa carta não usa esse baralho.",
-      "deckEmpty": "Esse baralho acabou."
+      "deckEmpty": "Esse baralho acabou.",
+      "noCounterAction": "O evento desta rodada não tem contra-ação.",
+      "alreadyBraced": "Você já fez a contra-ação nesta rodada.",
+      "notContaminated": "Este hex não está contaminado.",
+      "notASite": "Só Templo ou Ruína podem ser escavados.",
+      "guardianBlocks": "Um Guardião guarda este hex.",
+      "alreadyExcavated": "Este sítio já foi escavado.",
+      "surveyBlocked": "Crosta Instável: Sondar falha nesta rodada (só com Drone).",
+      "dronesGrounded": "Drones estão no chão nesta rodada.",
+      "shielded": "A Anomalia Magnética protege este alvo.",
+      "playerEliminated": "Esse jogador saiu da partida."
     }
   },
   "terrain": {
@@ -178,7 +188,7 @@
     "seed": "Seed",
     "randomSeed": "Sortear",
     "privacy": "Tela de privacidade entre jogadores",
-    "layersNote": "Eventos, tropas, tratados e facções entram nas próximas fases.",
+    "layersNote": "Tropas, tratados e facções entram nas próximas fases.",
     "start": "Iniciar",
     "cards": "Camada de cartas (baralhos n1/n2/n3, entrega e permanentes)",
     "seatLabel": "Quem joga como {{player}}",
@@ -190,7 +200,9 @@
     },
     "vsAi": "Eu contra a IA",
     "watchAi": "Só IA (assistir)",
-    "allHuman": "Todos humanos"
+    "allHuman": "Todos humanos",
+    "events": "Eventos globais (um por rodada; desastres atingem a Vila)",
+    "special": "Hexes especiais (Templo, Ruína e hazards únicos)"
   },
   "phases": {
     "reveal": "Revelação",
@@ -330,7 +342,10 @@
     "sealedInfo": "Subsolo selado (limpar: {{n}} ações)",
     "yieldBonus": "Rende +{{n}} (Terraformação)",
     "offline": "parada nesta rodada (carta)",
-    "overloaded": "inativa na próxima Produção (Sobrecarga)"
+    "overloaded": "inativa na próxima Produção (Sobrecarga)",
+    "excavate": "Escavar {{site}}",
+    "clean": "Limpar contaminação ({{n}} ações)",
+    "untilRound": "até a rodada {{n}}"
   },
   "bank": {
     "title": "Banca",
@@ -490,7 +505,25 @@
       "thisTurn": "não produz neste turno",
       "thisRound": "fica desligada nesta rodada",
       "nextProduction": "fica inativa na próxima Produção"
-    }
+    },
+    "eventRevealed": "Evento da rodada: {{event}} ({{category}}).",
+    "eventDeckReshuffled": "O baralho de eventos foi reembaralhado ({{size}} cartas).",
+    "hazardTriggered": "{{hazard}} em {{hex}} reagiu ao evento.",
+    "hexStatus": "{{hex}}: {{status}} até a rodada {{round}}.",
+    "hexContaminated": "{{hex}} contaminado: {{n}} ações para limpar.",
+    "hexCleaned": "{{name}} limpou {{hex}}.",
+    "disaster": "Desastre em {{hex}} e arredores.",
+    "volcanoErupted": "O Vulcão em {{hex}} entrou em erupção e se apagou.",
+    "villageDamaged": "A Vila de {{name}} perdeu uma vida (restam {{lives}}).",
+    "playerEliminated": "{{name}} saiu da partida: a Vila caiu.",
+    "guardianSpawned": "Um Guardião de força {{strength}} despertou em {{hex}}.",
+    "hordeAttack": "Uma horda (força {{strength}}) saiu de {{from}} e devastou {{to}} (defesa {{defense}}).",
+    "hordeRepelled": "Uma horda (força {{strength}}) saiu de {{from}} e foi repelida em {{to}} (defesa {{defense}}).",
+    "excavated": "{{name}} escavou {{site}} em {{hex}}.",
+    "treasureDrawn": "{{name}} encontrou um tesouro.",
+    "treasureDrawnOwn": "{{name}} encontrou {{card}} no Tesouro.",
+    "braced": "{{name}} se protegeu contra {{event}}.",
+    "eventFoodLoss": "{{name}} perdeu {{n}} Comida para a praga."
   },
   "cards": {
     "deck": {
@@ -574,7 +607,9 @@
     "tutorHint": "Pegue uma carta: ela vai para a sua mão revelada a todos; o baralho é embaralhado.",
     "discardTitle": "Mão acima do limite de {{limit}}: descarte {{n}}",
     "discardHint": "Escolhidas: {{chosen}} de {{n}}.",
-    "discardConfirm": "Descartar e encerrar turno"
+    "discardConfirm": "Descartar e encerrar turno",
+    "compTitle": "Compensação de setup",
+    "compHint": "Seu tabuleiro não tem hex especial. Escolha uma compensação."
   },
   "reveal": {
     "title": "Carta recebida",
@@ -618,9 +653,10 @@
     "layer": {
       "economy": "Economia",
       "cards": "Cartas",
-      "specialHexes": "Hexes especiais (inertes até a Fase 6)"
+      "specialHexes": "Hexes especiais",
+      "events": "Eventos globais"
     },
-    "layersNote": "Eventos, tropas, tratados e facções entram no simulador com as fases deles.",
+    "layersNote": "Tropas, tratados e facções entram no simulador com as fases deles.",
     "invalid": "balance inválido — corrija antes de simular:",
     "run": "Simular",
     "stop": "Parar",
@@ -650,7 +686,9 @@
     "track": {
       "expansion": "Expansão",
       "roundLimit": "Limite de rodadas"
-    }
+    },
+    "hazards": "Hazards atingidos (D15)",
+    "hazardTitle": "{{n}} vezes por partida"
   },
   "credits": {
     "title": "Créditos",
@@ -658,5 +696,33 @@
     "line": "Icons made by {{author}}. Available on https://game-icons.net",
     "license": "Licença: {{license}}",
     "items": "{{count}} ícone(s): {{list}}"
+  },
+  "events": {
+    "category": {
+      "seismic": "Sísmico",
+      "thermal": "Térmico",
+      "climatic": "Climático",
+      "atmospheric": "Atmosférico",
+      "horde": "Horda",
+      "economic": "Econômico"
+    },
+    "status": {
+      "ashUntil": "cinzas, sem produção",
+      "dryUntil": "Geiser seco",
+      "groundedUntil": "drones no chão",
+      "closedUntil": "porto fechado",
+      "amplifiedUntil": "anomalia invertida",
+      "sealedUntil": "subsolo selado"
+    },
+    "round": "Evento da rodada",
+    "none": "Sem evento",
+    "brace": "Proteger-se",
+    "braceHint": "Gasta {{n}} ação(ões): {{event}} não te atinge nesta rodada.",
+    "braced": "Protegido",
+    "excavate": "Escavar",
+    "clean": "Limpar",
+    "guardian": "Guardião (força {{n}})",
+    "contaminated": "Contaminado: {{n}} ações para limpar",
+    "ruinBonus": "Ruína escavada por {{name}}: +1 compra e linha n3"
   }
 }

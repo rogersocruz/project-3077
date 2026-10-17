@@ -50,7 +50,9 @@
       "lagoon",
       "vein_iron",
       "vein_coal",
-      "vein_gold"
+      "vein_gold",
+      "volcano",
+      "acid_swamp"
     ],
     "levels": [
       {

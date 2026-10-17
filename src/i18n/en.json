@@ -115,7 +115,17 @@
       "noYield": "That hex produces no resource.",
       "resourceNotAllowed": "That card does not give this resource.",
       "deckNotAllowed": "That card does not use this deck.",
-      "deckEmpty": "That deck is empty."
+      "deckEmpty": "That deck is empty.",
+      "noCounterAction": "This round's event has no counter-action.",
+      "alreadyBraced": "You already took the counter-action this round.",
+      "notContaminated": "This hex is not contaminated.",
+      "notASite": "Only a Temple or a Ruin can be excavated.",
+      "guardianBlocks": "A Guardian guards this hex.",
+      "alreadyExcavated": "This site was already excavated.",
+      "surveyBlocked": "Unstable Crust: surveying fails this round (only with a Drone).",
+      "dronesGrounded": "Drones are grounded this round.",
+      "shielded": "The Magnetic Anomaly shields this target.",
+      "playerEliminated": "That player is out of the game."
     }
   },
   "terrain": {
@@ -178,7 +188,7 @@
     "seed": "Seed",
     "randomSeed": "Roll",
     "privacy": "Privacy screen between players",
-    "layersNote": "Events, troops, treaties and factions come in the next phases.",
+    "layersNote": "Troops, treaties and factions come in the next phases.",
     "start": "Start",
     "cards": "Card layer (n1/n2/n3 decks, deliveries and permanents)",
     "seatLabel": "Who plays as {{player}}",
@@ -190,7 +200,9 @@
     },
     "vsAi": "Me vs the AI",
     "watchAi": "AI only (watch)",
-    "allHuman": "All human"
+    "allHuman": "All human",
+    "events": "Global events (one per round; disasters hit the Village)",
+    "special": "Special hexes (Temple, Ruin and unique hazards)"
   },
   "phases": {
     "reveal": "Reveal",
@@ -330,7 +342,10 @@
     "sealedInfo": "Subsoil sealed (clear: {{n}} actions)",
     "yieldBonus": "Yields +{{n}} (Terraforming)",
     "offline": "stopped this round (card)",
-    "overloaded": "idle in the next Production (Overload)"
+    "overloaded": "idle in the next Production (Overload)",
+    "excavate": "Excavate the {{site}}",
+    "clean": "Clean contamination ({{n}} actions)",
+    "untilRound": "until round {{n}}"
   },
   "bank": {
     "title": "Bank",
@@ -490,7 +505,25 @@
       "thisTurn": "does not produce this turn",
       "thisRound": "is switched off this round",
       "nextProduction": "stays idle in the next Production"
-    }
+    },
+    "eventRevealed": "Round event: {{event}} ({{category}}).",
+    "eventDeckReshuffled": "The event deck was reshuffled ({{size}} cards).",
+    "hazardTriggered": "{{hazard}} at {{hex}} reacted to the event.",
+    "hexStatus": "{{hex}}: {{status}} until round {{round}}.",
+    "hexContaminated": "{{hex}} contaminated: {{n}} actions to clean.",
+    "hexCleaned": "{{name}} cleaned {{hex}}.",
+    "disaster": "Disaster at {{hex}} and surroundings.",
+    "volcanoErupted": "The Volcano at {{hex}} erupted and went dormant.",
+    "villageDamaged": "{{name}}'s Village lost a life ({{lives}} left).",
+    "playerEliminated": "{{name}} is out of the game: the Village fell.",
+    "guardianSpawned": "A strength {{strength}} Guardian awoke at {{hex}}.",
+    "hordeAttack": "A horde (strength {{strength}}) left {{from}} and ravaged {{to}} (defense {{defense}}).",
+    "hordeRepelled": "A horde (strength {{strength}}) left {{from}} and was repelled at {{to}} (defense {{defense}}).",
+    "excavated": "{{name}} excavated the {{site}} at {{hex}}.",
+    "treasureDrawn": "{{name}} found a treasure.",
+    "treasureDrawnOwn": "{{name}} found {{card}} in the Treasure.",
+    "braced": "{{name}} braced against {{event}}.",
+    "eventFoodLoss": "{{name}} lost {{n}} Food to the plague."
   },
   "cards": {
     "deck": {
@@ -574,7 +607,9 @@
     "tutorHint": "Take one card: it goes to your hand revealed to everyone; the deck is shuffled.",
     "discardTitle": "Hand above the limit of {{limit}}: discard {{n}}",
     "discardHint": "Chosen: {{chosen}} of {{n}}.",
-    "discardConfirm": "Discard and end turn"
+    "discardConfirm": "Discard and end turn",
+    "compTitle": "Setup compensation",
+    "compHint": "Your board has no special hex. Choose a compensation."
   },
   "reveal": {
     "title": "Card received",
@@ -618,9 +653,10 @@
     "layer": {
       "economy": "Economy",
       "cards": "Cards",
-      "specialHexes": "Special hexes (inert until Phase 6)"
+      "specialHexes": "Special hexes",
+      "events": "Global events"
     },
-    "layersNote": "Events, troops, treaties and factions join the simulator with their phases.",
+    "layersNote": "Troops, treaties and factions join the simulator with their phases.",
     "invalid": "Invalid balance — fix it before simulating:",
     "run": "Simulate",
     "stop": "Stop",
@@ -650,7 +686,9 @@
     "track": {
       "expansion": "Expansion",
       "roundLimit": "Round limit"
-    }
+    },
+    "hazards": "Hazards hit (D15)",
+    "hazardTitle": "{{n}} times per game"
   },
   "credits": {
     "title": "Credits",
@@ -658,5 +696,33 @@
     "line": "Icons made by {{author}}. Available on https://game-icons.net",
     "license": "License: {{license}}",
     "items": "{{count}} icon(s): {{list}}"
+  },
+  "events": {
+    "category": {
+      "seismic": "Seismic",
+      "thermal": "Thermal",
+      "climatic": "Climatic",
+      "atmospheric": "Atmospheric",
+      "horde": "Horde",
+      "economic": "Economic"
+    },
+    "status": {
+      "ashUntil": "ash, no production",
+      "dryUntil": "Geyser dry",
+      "groundedUntil": "drones grounded",
+      "closedUntil": "port closed",
+      "amplifiedUntil": "anomaly inverted",
+      "sealedUntil": "subsoil sealed"
+    },
+    "round": "Round event",
+    "none": "No event",
+    "brace": "Brace",
+    "braceHint": "Spend {{n}} action(s): {{event}} does not hit you this round.",
+    "braced": "Braced",
+    "excavate": "Excavate",
+    "clean": "Clean",
+    "guardian": "Guardian (strength {{n}})",
+    "contaminated": "Contaminated: {{n}} actions to clean",
+    "ruinBonus": "Ruin excavated by {{name}}: +1 draw and n3 row"
   }
 }

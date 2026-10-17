@@ -42,6 +42,8 @@ interface PresentationStore {
   gate: Gate | null;
   /** Faixa "RODADA N" no início de cada rodada. */
   banner: { readonly round: number } | null;
+  /** Cinemática do evento global (UX_SPEC 2.14) enquanto toca. */
+  eventReveal: { readonly event: string; readonly category: string } | null;
   /** Relatório de carta de informação: só para quem jogou; a fila espera o "Entendi". */
   intel: { readonly player: PlayerId; readonly card: string; readonly report: IntelReport } | null;
   log: readonly LogEntry[];
@@ -55,6 +57,7 @@ export const usePresentation = create<PresentationStore>()(() => ({
   busy: false,
   gate: null,
   banner: null,
+  eventReveal: null,
   intel: null,
   log: [],
 }));

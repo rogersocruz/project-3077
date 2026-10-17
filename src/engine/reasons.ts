@@ -81,6 +81,17 @@ export const REASON_KEYS = [
   'resourceNotAllowed',
   'deckNotAllowed',
   'deckEmpty',
+  // Eventos, hazards e sítios (Fase 6)
+  'noCounterAction',
+  'alreadyBraced',
+  'notContaminated',
+  'notASite',
+  'guardianBlocks',
+  'alreadyExcavated',
+  'surveyBlocked',
+  'dronesGrounded',
+  'shielded',
+  'playerEliminated',
 ] as const;
 
 export type ReasonKey = (typeof REASON_KEYS)[number];

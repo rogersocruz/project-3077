@@ -9,6 +9,8 @@ import { TURN_PHASES } from '../../engine';
 import { seatFaction } from '../../render3d/model';
 import { ANIMATION_SPEEDS, type AnimationSpeed, type Quality, useSettings } from '../../settings';
 import { FactionBadge, Icon } from '../components/Bits';
+import eventStyles from '../event/Event.module.css';
+import { EventCard } from '../event/EventCard';
 import { useSession } from '../game/session';
 import { playerName } from '../game/text';
 import { useUi } from '../game/uiStore';
@@ -86,6 +88,8 @@ function QuickSettings({ onClose }: { onClose: () => void }) {
 export function TopBar() {
   const { t } = useTranslation();
   const turn = usePresentation((s) => s.turn);
+  // Evento da rodada no topo (UX_SPEC 2.5): aparece quando a cinemática termina.
+  const shownEvent = usePresentation((s) => (s.eventReveal ? null : (s.shown?.world.current ?? null)));
   const ctx = useSession((s) => s.ctx);
   const speed = useSettings((s) => s.gameplay.animationSpeed);
   const setGameplay = useSettings((s) => s.setGameplay);
@@ -124,6 +128,18 @@ export function TopBar() {
           );
         })}
       </ol>
+
+      {shownEvent && (
+        <button
+          type="button"
+          className={eventStyles.chip}
+          onClick={() => open({ kind: 'event' })}
+          title={t('events.round')}
+          data-testid="event-chip"
+        >
+          <EventCard id={shownEvent} size="mini" />
+        </button>
+      )}
 
       <div className={`${hud.plate} ${styles.turnOf}`} data-testid="turn-of">
         <FactionBadge faction={seatFaction(turn.activePlayer)} size={18} />

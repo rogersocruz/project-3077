@@ -46,6 +46,13 @@ export interface GameRecord {
   readonly cardsPlayed: Record<string, number>;
   /** id da carta → vezes comprada (para a taxa de uso). */
   readonly cardsDrawn: Record<string, number>;
+  /** Fase 6 (D15): hazards no planeta e quantas vezes cada um sofreu dano. */
+  readonly hazardsPresent: string[];
+  readonly hazardHits: Record<string, number>;
+  readonly eventsRevealed: Record<string, number>;
+  readonly disasters: number;
+  readonly eliminations: number;
+  readonly excavations: number;
 }
 
 export interface SimGameOptions {
@@ -89,8 +96,20 @@ export function playSimGame(ctx: EngineContext, opts: SimGameOptions): GameRecor
   const cardsPlayed: Record<string, number> = {};
   const cardsDrawn: Record<string, number> = {};
   let tradesAccepted = 0;
+  const hazardHits: Record<string, number> = {};
+  const eventsRevealed: Record<string, number> = {};
+  let disasters = 0;
+  let eliminations = 0;
+  let excavations = 0;
 
   let state: GameState = createGame(ctx, options);
+  const hazardsPresent = [
+    ...new Set(
+      Object.values(state.hexes)
+        .filter((h) => ctx.terrain(h.surface).kind === 'hazard')
+        .map((h) => h.surface),
+    ),
+  ];
   // Mão inicial conta como compra (o setup não emite eventos).
   for (const p of state.players) for (const c of p.hand) bump(cardsDrawn, state.cards.defs[c] ?? '?');
   let steps = 0;
@@ -129,7 +148,23 @@ export function playSimGame(ctx: EngineContext, opts: SimGameOptions): GameRecor
           break;
         case 'cardDrawn':
         case 'cardTaken':
+        case 'treasureDrawn':
           bump(cardsDrawn, next.cards.defs[e.card] ?? '?');
+          break;
+        case 'hazardTriggered':
+          bump(hazardHits, e.hazard);
+          break;
+        case 'eventRevealed':
+          bump(eventsRevealed, e.event);
+          break;
+        case 'disaster':
+          disasters++;
+          break;
+        case 'playerEliminated':
+          eliminations++;
+          break;
+        case 'excavated':
+          excavations++;
           break;
       }
     }
@@ -171,6 +206,12 @@ export function playSimGame(ctx: EngineContext, opts: SimGameOptions): GameRecor
     tradesAccepted,
     cardsPlayed,
     cardsDrawn,
+    hazardsPresent,
+    hazardHits,
+    eventsRevealed,
+    disasters,
+    eliminations,
+    excavations,
   };
 }
 

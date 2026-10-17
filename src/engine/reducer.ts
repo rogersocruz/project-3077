@@ -2,17 +2,19 @@
  * applyAction(ctx, state, action) → { state, events }. Puro: não altera o estado de
  * entrada; trabalha numa cópia. Ação ilegal lança IllegalActionError com o motivo.
  */
-import { ACTION_COST, type Action } from './actions';
+import type { Action } from './actions';
 import type { EngineContext } from './context';
 import type { GameEvent } from './events';
-import { checkAction } from './legal';
+import { actionCost, checkAction } from './legal';
 import { advanceSetup, continueTurn, endCurrentPhase } from './phases';
 import { gain, getPlayer, pay, sameBoardNeighbors } from './queries';
 import { IllegalActionError } from './reasons';
-import { buildCost, raiseLevel, upgradeCost } from './rules/build';
+import { buildCostAt, raiseLevel, upgradeCost } from './rules/build';
+import { hexesAround } from './rules/hazards';
+import { applyBrace, applyCleanHex, applyExcavate, eventParams } from './rules/world';
 import { applyDeliver, applyInstall, applyModifier, applyPlayCard, applyResolveChoice } from './rules/cards';
 import { discardFromHand, drawCards, drawRow, drawRows } from './rules/decks';
-import { bankQuote } from './rules/economy';
+import { bankQuote, produceWithheldMine } from './rules/economy';
 import { autoSurveyAdjacent, permanentsWith, sumParam } from './rules/permanents';
 import { createGame, type GameOptions } from './setup';
 import type { GameState, HexKey, PlayerId } from './state';
@@ -29,9 +31,10 @@ function reveal(state: GameState, key: HexKey, by: PlayerId | null, events: Game
   events.push({ type: 'hexRevealed', hex: key, surface: hex.surface, by });
 }
 
-function apply(ctx: EngineContext, s: GameState, action: Action, events: GameEvent[]): void {
+/** `cost` = ações do turno que a ação gasta (legal.ts → actionCost, no estado de entrada). */
+function apply(ctx: EngineContext, s: GameState, action: Action, cost: number, events: GameEvent[]): void {
   const player = getPlayer(s, action.player);
-  s.actionsLeft -= ACTION_COST[action.type];
+  s.actionsLeft -= cost;
 
   switch (action.type) {
     case 'chooseCompensation': {
@@ -72,6 +75,17 @@ function apply(ctx: EngineContext, s: GameState, action: Action, events: GameEve
       if (action.drone) applyModifier(ctx, s, player.id, action.drone, events);
       hex.surveyedBy.push(player.id);
       events.push({ type: 'subsoilSurveyed', hex: action.hex, player: player.id, subsoil: hex.subsoil });
+      // Veio Exposto: o primeiro a Sondar na rodada revela o subsolo em raio N de graça.
+      const vein = eventParams<{ radius: number }>(ctx, s, 'firstSurveyBonus');
+      if (vein && !s.world.firstSurveyDone) {
+        s.world.firstSurveyDone = true;
+        for (const k of hexesAround(ctx, s, hex, vein.radius)) {
+          const h = s.hexes[k];
+          if (!h || h.surveyedBy.includes(player.id)) continue;
+          h.surveyedBy.push(player.id);
+          events.push({ type: 'subsoilSurveyed', hex: k, player: player.id, subsoil: h.subsoil });
+        }
+      }
       return;
     }
     case 'build': {
@@ -79,9 +93,9 @@ function apply(ctx: EngineContext, s: GameState, action: Action, events: GameEve
       if (!hex) return;
       if (action.drone) applyModifier(ctx, s, player.id, action.drone, events);
       if (action.halfCost) applyModifier(ctx, s, player.id, action.halfCost, events);
-      const cost = buildCost(ctx, action.structure, !!action.halfCost);
-      pay(player.resources, cost);
-      events.push({ type: 'resourcesSpent', player: player.id, resources: cost });
+      const price = buildCostAt(ctx, s, action.structure, action.hex, !!action.halfCost);
+      pay(player.resources, price);
+      events.push({ type: 'resourcesSpent', player: player.id, resources: price });
       const def = ctx.structure(action.structure);
       const uid = s.nextUid++;
       // Perfuração Profunda: Minas novas ganham tokens extras.
@@ -172,7 +186,6 @@ function apply(ctx: EngineContext, s: GameState, action: Action, events: GameEve
     case 'clearSeal': {
       const hex = s.hexes[action.hex];
       if (!hex?.seal) return;
-      s.actionsLeft -= hex.seal.clearActions;
       hex.seal = null;
       events.push({ type: 'subsoilCleared', hex: action.hex, player: player.id });
       return;
@@ -185,6 +198,15 @@ function apply(ctx: EngineContext, s: GameState, action: Action, events: GameEve
       return;
     case 'resolveChoice':
       applyResolveChoice(s, action, events);
+      return;
+    case 'excavate':
+      applyExcavate(ctx, s, action, events);
+      return;
+    case 'brace':
+      applyBrace(s, action, events, (uid) => produceWithheldMine(ctx, s, uid, events));
+      return;
+    case 'cleanHex':
+      applyCleanHex(s, action, events);
       return;
     case 'endPhase':
       endCurrentPhase(ctx, s, events);
@@ -199,7 +221,7 @@ export function applyAction(ctx: EngineContext, state: GameState, action: Action
   // entradas (copiar o histórico inteiro a cada ação deixava a partida O(n²)).
   const next = structuredClone<GameState>({ ...state, log: [] });
   const events: GameEvent[] = [];
-  apply(ctx, next, action, events);
+  apply(ctx, next, action, actionCost(ctx, state, action), events);
   next.log = [...state.log, structuredClone(action)];
   return { state: next, events };
 }

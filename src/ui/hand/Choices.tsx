@@ -7,7 +7,9 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { usePresentation } from '../../anim';
 import { type CardUid, decider, drawRows, handLimit } from '../../engine';
+import { RESOURCE_IDS } from '../../data/schemas';
 import { maxLevelOf } from '../../engine/queries';
+import { ResourceIcon } from '../components/Bits';
 import { CardBack } from '../card/CardBack';
 import { perform, useCanDecide } from '../game/hooks';
 import { useSession } from '../game/session';
@@ -67,6 +69,72 @@ export function DrawChoice() {
               ))}
             </button>
           ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/**
+ * GDD 3.2 passo 6 (Fase 6): quem ficou sem hex especial escolhe a compensação de setup —
+ * recursos à escolha ou uma carta n2 (balance.json → noSpecialCompensation).
+ */
+export function CompensationChoice() {
+  const { t } = useTranslation();
+  const ctx = useSession((s) => s.ctx);
+  const state = useSession((s) => s.state);
+  const me = useMyDecision();
+  if (!ctx || !state || me === null || state.stage !== 'setup') return null;
+  if (state.players[me]?.compensation !== 'pending') return null;
+  const options = ctx.balance.setup.noSpecialCompensation.choose;
+  return (
+    <div className={hud.overlay} role="presentation">
+      <div
+        className={`${hud.plate} ${hud.rivets} ${hud.modal} ${styles.choiceModal}`}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="comp-title"
+        data-testid="compensation-choice"
+      >
+        <h2 id="comp-title" className={hud.modalTitle}>
+          {t('hand.compTitle')}
+        </h2>
+        <p className={hud.muted}>{t('hand.compHint')}</p>
+        <div className={styles.drawRows}>
+          {options.flatMap((o, i) =>
+            'resourcesOfChoice' in o
+              ? RESOURCE_IDS.map((id) => (
+                  <button
+                    key={`${i}-${id}`}
+                    type="button"
+                    className={`${hud.btn} ${styles.drawRow}`}
+                    onClick={() =>
+                      perform({
+                        type: 'chooseCompensation',
+                        player: me,
+                        option: i,
+                        resources: { [id]: o.resourcesOfChoice },
+                      })
+                    }
+                    data-testid={`comp-${id}`}
+                  >
+                    <ResourceIcon id={id} size={20} /> {o.resourcesOfChoice} {t(`resources.${id}`)}
+                  </button>
+                ))
+              : [
+                  <button
+                    key={`${i}-draw`}
+                    type="button"
+                    className={`${hud.btn} ${styles.drawRow}`}
+                    disabled={!state.layers.cards}
+                    onClick={() => perform({ type: 'chooseCompensation', player: me, option: i })}
+                    data-testid="comp-draw"
+                  >
+                    <CardBack kind={o.drawFromDeck} width={44} />
+                    {t('hand.drawCount', { count: o.count, deck: t(`cards.deck.${o.drawFromDeck}`) })}
+                  </button>,
+                ],
+          )}
         </div>
       </div>
     </div>

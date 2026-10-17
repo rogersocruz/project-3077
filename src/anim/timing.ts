@@ -33,6 +33,10 @@ export const T = {
   revealHold: 0.8,
   steal: 0.75,
   sink: 0.5,
+  // Eventos globais (Fase 6): cinemática 900–1600 ms (ART_DIRECTION 7).
+  eventReveal: 1.6,
+  eventRevealReduced: 0.7,
+  eventPulse: 2.5,
   /** IA (Fase 5): pausa antes de cada decisão, para a mesa ser legível. */
   aiThink: 0.35,
 } as const;

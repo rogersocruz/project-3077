@@ -65,6 +65,12 @@ export interface AiWeights {
   readonly buildCandidates: number;
   /** Candidatos de Banca + Construir simulados por decisão. */
   readonly buyBuildCandidates: number;
+  /** Fase 6: desconto da renda de estrutura em área de desastre (Montanha, Vulcão, sísmicos). */
+  readonly hazardRisk: number;
+  /** Valor de uma carta de Tesouro na mão (o nível delas é nulo). */
+  readonly treasureCard: number;
+  /** Bônus passivo de Ruína (+1 compra e linha n3), escalado pelo horizonte. */
+  readonly ruinBonus: number;
 }
 
 export const DEFAULT_WEIGHTS: AiWeights = {
@@ -100,6 +106,9 @@ export const DEFAULT_WEIGHTS: AiWeights = {
   hardBranching: 5,
   buildCandidates: 10,
   buyBuildCandidates: 4,
+  hazardRisk: 0.15,
+  treasureCard: 5,
+  ruinBonus: 14,
 };
 
 export const AI_LEVELS: readonly AiLevel[] = ['easy', 'normal', 'hard'];

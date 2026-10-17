@@ -1,0 +1,343 @@
+.card {
+  --event-color: var(--accent-orange);
+  display: flex;
+  flex-direction: column;
+  background: var(--frame-800);
+  border: 2px solid var(--frame-edge);
+  clip-path: polygon(4% 0, 96% 0, 100% 6%, 100% 94%, 96% 100%, 4% 100%, 0 94%, 0 6%);
+  color: var(--ink-900);
+  overflow: hidden;
+}
+
+.normal {
+  width: 352px;
+  aspect-ratio: 88 / 63;
+}
+
+.large {
+  width: min(560px, 86vw);
+  aspect-ratio: 88 / 63;
+}
+
+.mini {
+  width: auto;
+  max-width: 240px;
+  clip-path: none;
+  border-width: 1px;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  background: linear-gradient(
+    180deg,
+    var(--event-color),
+    color-mix(in srgb, var(--event-color) 60%, var(--frame-900))
+  );
+  color: var(--paper-100);
+}
+
+.mini .header {
+  padding: 3px 8px;
+}
+
+.headIcon {
+  width: 20px;
+  height: 20px;
+  flex: none;
+}
+
+.mini .headIcon {
+  width: 14px;
+  height: 14px;
+}
+
+.name {
+  font-family: var(--font-display);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-size: 18px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mini .name {
+  font-size: 13px;
+}
+
+.large .name {
+  font-size: 26px;
+}
+
+.category {
+  margin-left: auto;
+  font-family: var(--font-display);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  opacity: 0.85;
+}
+
+.mini .category {
+  display: none;
+}
+
+.art {
+  flex: 1;
+  min-height: 0;
+  position: relative;
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--event-color) 35%, var(--paper-300)),
+    var(--event-color)
+  );
+}
+
+.art svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.ridgeFar {
+  fill: color-mix(in srgb, var(--event-color) 55%, var(--frame-900));
+}
+
+.ridgeNear {
+  fill: color-mix(in srgb, var(--event-color) 25%, var(--frame-900));
+}
+
+.effect {
+  margin: 0;
+  padding: 8px 12px 10px;
+  background: var(--paper-100);
+  font-family: var(--font-body);
+  font-weight: 500;
+  font-size: 13px;
+  line-height: 1.3;
+}
+
+.large .effect {
+  font-size: 17px;
+}
+
+/* ── Cinemática (UX_SPEC 2.14) ── */
+
+.reveal {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+  background: color-mix(in srgb, var(--frame-900) 55%, transparent);
+  animation: dim 1.6s ease both;
+}
+
+.tint {
+  position: absolute;
+  inset: 0;
+  background: var(--event-color);
+  mix-blend-mode: soft-light;
+  animation: tint 1.6s ease both;
+}
+
+.flying {
+  position: relative;
+  animation: fly 1.6s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+@keyframes dim {
+  0% {
+    opacity: 0;
+  }
+  12% {
+    opacity: 1;
+  }
+  80% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes tint {
+  0% {
+    opacity: 0;
+  }
+  15% {
+    opacity: 0.55;
+  }
+  70% {
+    opacity: 0.35;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes fly {
+  0% {
+    transform: translate(-40vw, -40vh) scale(0.3) rotateY(180deg);
+    opacity: 0;
+  }
+  25% {
+    transform: translate(0, 0) scale(1.15) rotateY(0deg);
+    opacity: 1;
+  }
+  75% {
+    transform: translate(0, 0) scale(1.15);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-6vw, -44vh) scale(0.3);
+    opacity: 0;
+  }
+}
+
+/* Efeito por categoria (UX_SPEC 6). */
+.fx {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.fx_seismic {
+  animation: shake 0.5s steps(8) 2;
+}
+
+.fx_thermal {
+  background-image:
+    radial-gradient(2px 2px at 20% 10%, var(--frame-edge), transparent),
+    radial-gradient(2px 2px at 60% 30%, var(--frame-edge), transparent),
+    radial-gradient(3px 3px at 80% 5%, var(--frame-edge), transparent),
+    radial-gradient(2px 2px at 40% 60%, var(--frame-edge), transparent);
+  background-size: 200px 200px;
+  animation: fall 1.6s linear both;
+}
+
+.fx_climatic {
+  background-image: repeating-linear-gradient(
+    105deg,
+    transparent 0 14px,
+    color-mix(in srgb, var(--paper-100) 30%, transparent) 14px 15px
+  );
+  animation: rain 0.4s linear 4;
+}
+
+.fx_atmospheric {
+  backdrop-filter: blur(1.5px) hue-rotate(20deg);
+  animation: noise 0.2s steps(2) 6;
+}
+
+.fx_horde {
+  background: radial-gradient(ellipse at 50% 120%, var(--frame-900), transparent 60%);
+  animation: rise 1.6s ease both;
+}
+
+.fx_economic {
+  background-image:
+    radial-gradient(4px 4px at 30% 20%, var(--resource-gold-color), transparent),
+    radial-gradient(4px 4px at 70% 40%, var(--resource-gold-color), transparent);
+  background-size: 160px 160px;
+  animation: fall 1.6s linear both;
+}
+
+@keyframes shake {
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+  25% {
+    transform: translate(-6px, 3px);
+  }
+  50% {
+    transform: translate(5px, -4px);
+  }
+  75% {
+    transform: translate(-3px, -2px);
+  }
+}
+
+@keyframes fall {
+  from {
+    background-position: 0 -200px;
+  }
+  to {
+    background-position: 40px 200px;
+  }
+}
+
+@keyframes rain {
+  from {
+    background-position: 0 0;
+  }
+  to {
+    background-position: -20px 60px;
+  }
+}
+
+@keyframes noise {
+  0% {
+    opacity: 0.9;
+  }
+  100% {
+    opacity: 0.4;
+  }
+}
+
+@keyframes rise {
+  from {
+    transform: translateY(30%);
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 0;
+  }
+}
+
+/* Movimento reduzido: só aparece e some (ART_DIRECTION 7). */
+.reduced,
+.reduced .flying,
+.reduced .tint {
+  animation: dim 0.7s ease both;
+}
+
+.reduced .fx {
+  display: none;
+}
+
+/* ── Chip no topo do HUD ── */
+
+.chip {
+  display: flex;
+  align-items: center;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  min-width: 0;
+}
+
+.chip:focus-visible {
+  outline: 2px solid var(--accent-orange);
+}
+
+.zoomBackdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 55;
+  display: grid;
+  place-items: center;
+  background: color-mix(in srgb, var(--frame-900) 70%, transparent);
+}

@@ -28,6 +28,8 @@ export function NewGame() {
   const [seed, setSeed] = useState(() => freshSeed());
   const [longMap, setLongMap] = useState(false);
   const [cards, setCards] = useState(true);
+  const [events, setEvents] = useState(true);
+  const [special, setSpecial] = useState(true);
   // Assentos guardados para 6: mudar a contagem não perde a escolha.
   const [seats, setSeats] = useState<SeatKind[]>(() => Array.from({ length: MAX }, () => 'human'));
   const active = seats.slice(0, players);
@@ -39,7 +41,7 @@ export function NewGame() {
         className={`${hud.plate} ${hud.rivets} ${styles.panel}`}
         onSubmit={(e) => {
           e.preventDefault();
-          go('game', { players, seed, long: longMap, cards, seats: active.join(',') });
+          go('game', { players, seed, long: longMap, cards, events, special, seats: active.join(',') });
         }}
       >
         <header className={styles.head}>
@@ -147,6 +149,24 @@ export function NewGame() {
             data-testid="layer-cards"
           />
           {t('newGame.cards')}
+        </label>
+        <label className={styles.option}>
+          <input
+            type="checkbox"
+            checked={events}
+            onChange={(e) => setEvents(e.target.checked)}
+            data-testid="layer-events"
+          />
+          {t('newGame.events')}
+        </label>
+        <label className={styles.option}>
+          <input
+            type="checkbox"
+            checked={special}
+            onChange={(e) => setSpecial(e.target.checked)}
+            data-testid="layer-special"
+          />
+          {t('newGame.special')}
         </label>
         <label className={styles.option}>
           <input

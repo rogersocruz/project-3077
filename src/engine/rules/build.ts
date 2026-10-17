@@ -21,7 +21,9 @@ import {
 } from '../queries';
 import type { Reason } from '../reasons';
 import type { GameState, HexKey, HexState, PlayerId } from '../state';
+import { until } from './hazards';
 import { permanentsWith, sumParam } from './permanents';
+import { mineDiscountAt } from './specials';
 
 const SURVEYED_SUBSOIL = 'surveyedSubsoil';
 
@@ -155,16 +157,35 @@ function terrainAllows(
   return def.buildOn.includes(hex.surface) ? null : { key: 'wrongTerrain', params: { structure: def.id } };
 }
 
-/** Custo de construir; Contrato de Obra paga metade de cada recurso, para cima (interpretação AH). */
-export function buildCost(ctx: EngineContext, structure: string, half = false): ResourceAmounts {
-  const cost = ctx.structure(structure).levels[0]?.cost ?? {};
-  if (!half) return cost;
+/**
+ * Custo de construir; Contrato de Obra paga metade de cada recurso, para cima
+ * (interpretação AH). `discount` (Crosta Fina) sai antes da metade, sem passar de 0.
+ */
+export function buildCost(
+  ctx: EngineContext,
+  structure: string,
+  half = false,
+  discount: ResourceAmounts = {},
+): ResourceAmounts {
+  const base = ctx.structure(structure).levels[0]?.cost ?? {};
   const out: ResourceAmounts = {};
   for (const id of RESOURCE_IDS) {
-    const n = cost[id];
-    if (n) out[id] = Math.ceil(n / 2);
+    const n = Math.max(0, (base[id] ?? 0) - (discount[id] ?? 0));
+    if (n) out[id] = half ? Math.ceil(n / 2) : n;
   }
   return out;
+}
+
+/** Custo de construir no hex (desconto da Mina na Crosta Fina). */
+export function buildCostAt(
+  ctx: EngineContext,
+  state: GameState,
+  structure: string,
+  key: HexKey,
+  half = false,
+): ResourceAmounts {
+  const discount = structure === 'mine' ? mineDiscountAt(ctx, state, getHex(state, key)) : {};
+  return buildCost(ctx, structure, half, discount);
 }
 
 /** Cartas jogadas junto com Construir. */
@@ -189,6 +210,8 @@ export function checkBuild(
   const hex = getHex(state, key);
   if (!hex) return { key: 'noSuchHex' };
   if (!hex.revealed) return { key: 'hexHidden' };
+  if (hex.guardian !== null) return { key: 'guardianBlocks' };
+  if (structure === 'mine' && until(state, hex.status.sealedUntil)) return { key: 'subsoilSealed' };
   if (!rarityUnlocked(state, player, def.rarity)) {
     return { key: 'rarityLocked', params: { structure, university: def.rarity } };
   }
@@ -205,7 +228,7 @@ export function checkBuild(
   ) {
     return { key: 'outpostLimit', params: { limit: outpostLimit(ctx, state, player) } };
   }
-  if (!canAfford(getPlayer(state, player).resources, buildCost(ctx, structure, mods.halfCost)))
+  if (!canAfford(getPlayer(state, player).resources, buildCostAt(ctx, state, structure, key, mods.halfCost)))
     return { key: 'cannotAfford' };
   return null;
 }

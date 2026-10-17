@@ -52,7 +52,7 @@ function assertValid(ctx: EngineContext, s: GameState): void {
   expect(s.actionsLeft).toBeGreaterThanOrEqual(0);
   expect(s.round).toBeLessThanOrEqual(ctx.balance.turn.roundLimit);
   // Cartas: cada instância em exatamente um lugar; slots fixos; teto de recebimento.
-  const places: number[] = [...s.cards.removed];
+  const places: number[] = [...s.cards.removed, ...s.cards.treasure, ...s.cards.treasureDiscard];
   for (const d of DRAW_DECKS) places.push(...s.cards.decks[d], ...s.cards.discards[d]);
   for (const p of s.players) {
     places.push(...p.hand, ...p.incoming.map((i) => i.card));

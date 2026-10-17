@@ -23,6 +23,7 @@ import {
 } from './structures';
 import type { EffectHandler } from './types';
 import { WORLD_EFFECTS } from './world';
+import * as worldCards from './world-cards';
 
 export const CARD_EFFECTS: Readonly<Record<string, EffectHandler>> = {
   // Recursos e ações do turno
@@ -70,9 +71,9 @@ export const CARD_EFFECTS: Readonly<Record<string, EffectHandler>> = {
   freeRetreat: gated.freeRetreat,
   lineStrengthBonus: gated.lineStrengthBonus,
   antigrav: gated.antigrav,
-  spawnGuardian: gated.spawnGuardian,
+  spawnGuardian: worldCards.spawnGuardian,
   freeTreaties: gated.freeTreaties,
-  disasterResist: gated.disasterResist,
+  disasterResist: worldCards.disasterResist,
 };
 
 export function effectOf(def: CardDef): EffectHandler {
@@ -109,15 +110,21 @@ export function effectIssues(data: GameData): EffectIssue[] {
     const bad = handler.validateParams(card.params);
     if (bad) issues.push({ file: 'cards.json', path: `[${i}].params`, message: `"${card.id}": ${bad}` });
   });
-  const world = (file: EffectIssue['file'], path: string, id: string) => {
-    if (!(id in WORLD_EFFECTS)) issues.push({ file, path, message: `effectId "${id}" desconhecido` });
+  const world = (file: EffectIssue['file'], path: string, id: string, params?: unknown) => {
+    const handler = WORLD_EFFECTS[id];
+    if (!handler) {
+      issues.push({ file, path: `${path}.effectId`, message: `effectId "${id}" desconhecido` });
+      return;
+    }
+    const bad = handler.validateParams(params);
+    if (bad) issues.push({ file, path: `${path}.params`, message: `"${id}": ${bad}` });
   };
-  data.events.forEach((e, i) => world('events.json', `[${i}].effectId`, e.effectId));
+  data.events.forEach((e, i) => world('events.json', `[${i}]`, e.effectId, e.params));
   data.tiles.hazards.forEach((h, i) => {
-    world('tiles.json', `.hazards[${i}].bonus.effectId`, h.bonus.effectId);
-    world('tiles.json', `.hazards[${i}].damage.effectId`, h.damage.effectId);
+    world('tiles.json', `.hazards[${i}].bonus`, h.bonus.effectId, h.bonus.params);
+    world('tiles.json', `.hazards[${i}].damage`, h.damage.effectId, h.damage.params);
   });
-  data.factions.forEach((f, i) => world('factions.json', `[${i}].ability.effectId`, f.ability.effectId));
+  data.factions.forEach((f, i) => world('factions.json', `[${i}].ability`, f.ability.effectId));
   return issues;
 }
 

@@ -22,6 +22,14 @@ export function cardName(t: TFunction, state: GameState | null, card: CardUid): 
   return cardNames.get(id) ?? t('log.card');
 }
 
+let eventNames: Map<string, string> | null = null;
+
+/** Nome do evento global (events.json). */
+export function eventName(id: string): string {
+  eventNames ??= new Map(loadGameData().events.map((e) => [e.id, e.name]));
+  return eventNames.get(id) ?? id;
+}
+
 export function parseHexKey(key: HexKey): { board: number; q: number; r: number } | null {
   const m = /^(\d+):(-?\d+),(-?\d+)$/.exec(key);
   return m ? { board: Number(m[1]), q: Number(m[2]), r: Number(m[3]) } : null;
@@ -91,6 +99,22 @@ export const LOG_KEYS: Record<GameEvent['type'], string> = {
   cardTaken: 'cardTaken',
   roundEnded: 'roundEnded',
   gameOver: 'gameOver',
+  eventRevealed: 'eventRevealed',
+  eventDeckReshuffled: 'eventDeckReshuffled',
+  hazardTriggered: 'hazardTriggered',
+  hexStatus: 'hexStatus',
+  hexContaminated: 'hexContaminated',
+  hexCleaned: 'hexCleaned',
+  disaster: 'disaster',
+  volcanoErupted: 'volcanoErupted',
+  villageDamaged: 'villageDamaged',
+  playerEliminated: 'playerEliminated',
+  guardianSpawned: 'guardianSpawned',
+  hordeAttack: 'hordeAttack',
+  excavated: 'excavated',
+  treasureDrawn: 'treasureDrawn',
+  braced: 'braced',
+  eventFoodLoss: 'eventFoodLoss',
 };
 
 /** Detalhes que poluem o registro; ficam atrás do filtro "detalhes". */
@@ -100,12 +124,14 @@ export const LOG_DETAIL: ReadonlySet<GameEvent['type']> = new Set<GameEvent['typ
   'upkeepPaid',
   'roundEnded',
   'deckReshuffled',
+  'eventDeckReshuffled',
+  'hexStatus',
 ]);
 
 /** Jogador a quem o evento diz respeito (filtro por jogador). */
 export function eventPlayers(e: GameEvent): PlayerId[] {
   if ('player' in e) return [e.player];
-  if ('from' in e) return [e.from, e.to];
+  if ('from' in e && e.type !== 'hordeAttack') return [e.from, e.to];
   if (e.type === 'subsoilSealed') return [e.by];
   if (e.type === 'gameOver') return e.winners;
   return [];
@@ -307,5 +333,45 @@ export function logLine(
       });
     case 'gameOver':
       return t(key, { names: e.winners.map(name).join(', ') });
+    // ── Eventos globais, hazards e sítios (Fase 6) ──
+    case 'eventRevealed':
+      return t(key, { event: eventName(e.event), category: t(`events.category.${e.category}`) });
+    case 'eventDeckReshuffled':
+      return t(key, { size: e.size });
+    case 'hazardTriggered':
+      return t(key, { hazard: t(`terrain.${e.hazard}`), hex: hexLabel(t, e.hex) });
+    case 'hexStatus':
+      return t(key, { hex: hexLabel(t, e.hex), status: t(`events.status.${e.status}`), round: e.until });
+    case 'hexContaminated':
+      return t(key, { hex: hexLabel(t, e.hex), n: e.actions });
+    case 'hexCleaned':
+      return t(key, { name: name(e.player), hex: hexLabel(t, e.hex) });
+    case 'disaster':
+      return t(key, { hex: hexLabel(t, e.hex) });
+    case 'volcanoErupted':
+      return t(key, { hex: hexLabel(t, e.hex) });
+    case 'villageDamaged':
+      return t(key, { name: name(e.player), lives: e.lives });
+    case 'playerEliminated':
+      return t(key, { name: name(e.player) });
+    case 'guardianSpawned':
+      return t(key, { hex: hexLabel(t, e.hex), strength: e.strength });
+    case 'hordeAttack':
+      return t(e.repelled ? 'log.hordeRepelled' : key, {
+        from: hexLabel(t, e.from),
+        to: hexLabel(t, e.to),
+        strength: e.strength,
+        defense: e.defense,
+      });
+    case 'excavated':
+      return t(key, { name: name(e.player), site: t(`terrain.${e.site}`), hex: hexLabel(t, e.hex) });
+    case 'treasureDrawn':
+      return viewer === e.player
+        ? t('log.treasureDrawnOwn', { name: name(e.player), card: cardName(t, state, e.card) })
+        : t(key, { name: name(e.player) });
+    case 'braced':
+      return t(key, { name: name(e.player), event: eventName(e.event) });
+    case 'eventFoodLoss':
+      return t(key, { name: name(e.player), n: e.amount });
   }
 }

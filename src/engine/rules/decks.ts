@@ -66,10 +66,14 @@ export function drawCards(
   return drawn;
 }
 
-/** Mutável: carta usada vai para o descarte do seu baralho; sem baralho de compra, sai do jogo. */
+/**
+ * Mutável: carta usada vai para o descarte do seu baralho (Tesouro: descarte do Tesouro);
+ * sem baralho, sai do jogo.
+ */
 export function toDiscard(ctx: EngineContext, state: GameState, card: CardUid): void {
   const deck = deckOfCard(ctx, state, card);
   if (deck) state.cards.discards[deck].push(card);
+  else if (cardDefOf(ctx, state, card).deck === 'treasure') state.cards.treasureDiscard.push(card);
   else state.cards.removed.push(card);
 }
 
@@ -103,11 +107,35 @@ export function handLimit(ctx: EngineContext, state: GameState, player: PlayerId
   return ctx.balance.cards.handLimit + bonus;
 }
 
-/** GDD 6.4: linhas de compra que a Universidade do jogador oferece. */
+/**
+ * GDD 6.4: linhas de compra que a Universidade do jogador oferece. Ruína escavada
+ * (GDD 4.3, interpretação AN): +`ruinBonusDraw` n1 em toda linha e acesso a uma linha n3.
+ */
 export function drawRows(ctx: EngineContext, state: GameState, player: PlayerId): DeckDraw[][] {
   const level = maxLevelOf(state, player, 'university');
   const table = level > 0 ? (levelDef(ctx, { type: 'university', level }).drawTable ?? level) : 0;
-  return ctx.balance.cards.universityDraw[String(table)] ?? [];
+  const rows = ctx.balance.cards.universityDraw[String(table)] ?? [];
+  if (!ruinBonus(state, player, ctx)) return rows;
+  const extra = ctx.balance.cards.ruinBonusDraw;
+  const withExtra = (row: readonly DeckDraw[]): DeckDraw[] => {
+    const n1 = row.find((d) => d.deck === 'n1');
+    return n1
+      ? row.map((d) => (d === n1 ? { ...d, count: d.count + extra } : d))
+      : [...row, { deck: 'n1', count: extra }];
+  };
+  const out = rows.map(withExtra);
+  if (!rows.some((r) => r.some((d) => d.deck === 'n3'))) out.push(withExtra([{ deck: 'n3', count: 1 }]));
+  return out;
+}
+
+/** O jogador escavou uma Ruína (sítio com bônus passivo). */
+function ruinBonus(state: GameState, player: PlayerId, ctx: EngineContext): boolean {
+  for (const h of Object.values(state.hexes)) {
+    if (h.excavatedBy !== player) continue;
+    const t = ctx.terrain(h.surface);
+    if (t.kind === 'site' && t.def.passive) return true;
+  }
+  return false;
 }
 
 /** Mutável: compra a linha escolhida. */

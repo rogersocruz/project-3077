@@ -19,8 +19,5 @@ export const revealTroops = gated('conflict', 'hex', z.strictObject({ radius: Co
 export const freeRetreat = gated('conflict', 'hex', z.strictObject({}));
 export const lineStrengthBonus = gated('conflict', 'none', z.strictObject({}));
 export const antigrav = gated('conflict', 'none', z.strictObject({}));
-export const spawnGuardian = gated('conflict', 'hex', z.strictObject({ strength: Count }));
 // Tratados (Fase 8)
 export const freeTreaties = gated('treaties', 'none', z.strictObject({}));
-// Eventos e desastres (Fase 6)
-export const disasterResist = gated('events', 'none', z.strictObject({}));

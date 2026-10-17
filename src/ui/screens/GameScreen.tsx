@@ -24,10 +24,12 @@ import { cardCategory } from '../card/model';
 import { flowTargets, targetHexes } from '../game/cardFlow';
 import { actOnHex, cancel } from '../game/commands';
 import { perform } from '../game/hooks';
+import { EventReveal } from '../event/EventReveal';
+import { EventZoom } from '../event/EventZoom';
 import { CardDialog } from '../hand/CardDialog';
 import { CardCaption, CardFlights } from '../hand/CardFlights';
 import { CardZoom } from '../hand/CardZoom';
-import { DiscardModal, DrawChoice, TutorChoice } from '../hand/Choices';
+import { CompensationChoice, DiscardModal, DrawChoice, TutorChoice } from '../hand/Choices';
 import { Hand } from '../hand/Hand';
 import { IntelReport } from '../hand/Intel';
 import { palette } from '../theme/tokens';
@@ -248,6 +250,8 @@ export function GameScreen() {
       <BottomBar />
 
       <RoundBanner />
+      <EventReveal />
+      <EventZoom />
       <Toast />
       {modal?.kind === 'bank' && <BankModal />}
       {modal?.kind === 'trade' && <TradeModal counter={modal.counter} />}
@@ -255,6 +259,7 @@ export function GameScreen() {
       {modal?.kind === 'rules' && <QuickRules />}
       {modal?.kind === 'discard' && <DiscardModal />}
       {cards && !busy && !gate && <DrawChoice />}
+      {!busy && !gate && <CompensationChoice />}
       {cards && !busy && !gate && <TutorChoice />}
       {cards && <CardZoom />}
       {cards && <CardFlights />}

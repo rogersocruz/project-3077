@@ -60,7 +60,9 @@ export interface RoundEndVerdict {
  * progresso. Devolve null se a partida continua.
  */
 export function checkRoundEnd(ctx: EngineContext, state: GameState): RoundEndVerdict | null {
-  const all = state.players.map((p) => p.id);
+  // GDD 13.2: eliminado não vence (D11).
+  const all = state.players.filter((p) => !p.eliminated).map((p) => p.id);
+  if (all.length === 1) return { winners: all, reason: 'condition' };
   const achievers = all.filter((p) => progress(ctx, state, p).met.length > 0);
   if (achievers.length > 0) return { winners: pickByProgress(ctx, state, achievers), reason: 'condition' };
   if (state.round >= ctx.balance.turn.roundLimit) {

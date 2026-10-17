@@ -51,7 +51,11 @@ export const useSession = create<SessionStore>()((set, get) => ({
 
   start: (setup) => {
     const ctx = createContext(loadGameData(), setup.players, setup.longMap);
-    const options: GameOptions = { seed: setup.seed, longMap: setup.longMap, layers: { cards: setup.cards } };
+    const options: GameOptions = {
+      seed: setup.seed,
+      longMap: setup.longMap,
+      layers: { cards: setup.cards, events: setup.events, specialHexes: setup.specialHexes },
+    };
     const state = createGame(ctx, options);
     // Agentes determinísticos pela seed da partida e pelo assento (Rng, nunca Math.random).
     const agents = setup.seats.map((kind, i) =>

@@ -18,6 +18,7 @@ import { cardResourceCost } from '../engine/rules/cards';
 import { drawRows, handLimit } from '../engine/rules/decks';
 import { bankQuote, minBankAmount } from '../engine/rules/economy';
 import { cardDefOf } from '../engine/rules/permanents';
+import { eventParams, hasRuinBonus } from '../engine/rules/world';
 import { progress } from '../engine/rules/victory';
 import { Rng, type Seed } from '../engine/rng';
 import type { CardTarget, CardUid, GameState, PlayerId, Resources } from '../engine/state';
@@ -198,11 +199,16 @@ function scoreCandidates(
       case 'build':
         builds.push(a);
         break;
+      case 'excavate':
+        out.push({ action: a, value: now + excavateGain(ctx, state, player, a.hex, w) });
+        break;
       default: {
         const after = simulate(ctx, state, a);
         if (!after) break;
         let v = value(ctx, after, player, agent);
         if (a.type === 'playCard' && cardDefOf(ctx, state, a.card).valence === 'information') v += w.infoPlay;
+        // Praga: a perda vem no fim da rodada, a avaliação de agora não a vê.
+        if (a.type === 'brace') v += plagueLoss(ctx, state, player);
         out.push({ action: a, value: v, after });
       }
     }
@@ -323,6 +329,35 @@ function surveyGain(
     route *
     scale
   );
+}
+
+/**
+ * Escavar pelo valor esperado (Fase 6): cartas de Tesouro que não são o Guardião (a
+ * proporção do baralho é pública), bônus da Ruína, menos o custo. Simular espiaria o topo.
+ */
+function excavateGain(
+  ctx: EngineContext,
+  state: GameState,
+  player: PlayerId,
+  hex: string,
+  w: AiWeights,
+): number {
+  const h = state.hexes[hex];
+  const t = h ? ctx.terrain(h.surface) : null;
+  if (!h || t?.kind !== 'site') return 0;
+  const pile = [...state.cards.treasure, ...state.cards.treasureDiscard];
+  const guardians = pile.filter((c) => cardDefOf(ctx, state, c).effectId === 'spawnGuardian').length;
+  const safe = pile.length ? 1 - guardians / pile.length : 1;
+  const scale = productionsLeft(ctx, state, player, w.horizon) / w.horizon;
+  const ruin = t.def.passive && !hasRuinBonus(ctx, state, player) ? w.ruinBonus * scale : 0;
+  return t.def.reward.treasureDraw * safe * w.treasureCard + ruin - resourcesWorth(ctx, t.def.excavateCost);
+}
+
+/** Comida que a Praga tiraria do jogador no fim da rodada (o que a contra-ação evita). */
+function plagueLoss(ctx: EngineContext, state: GameState, player: PlayerId): number {
+  const p = eventParams<{ amount: number }>(ctx, state, 'loseFoodWithCounter');
+  if (!p) return 0;
+  return Math.min(p.amount, getPlayer(state, player).resources.food) * ctx.resourceValue('food') + 1;
 }
 
 /** Estimativa barata de Construir: renda nova − custo (para podar antes de simular). */

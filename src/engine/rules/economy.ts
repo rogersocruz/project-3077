@@ -18,7 +18,10 @@ import {
   type ResourceAmounts,
 } from '../queries';
 import type { GameState, HexState, PlayerId, StructureState } from '../state';
+import { until } from './hazards';
 import { numParam, permanentsWith, sumParam } from './permanents';
+import { freeUpkeepAt, hazardParkYield, mineMultiplierBonus, portEffect } from './specials';
+import { eventHits, eventParams, withhold } from './world';
 
 // ── Banca ────────────────────────────────────────────────────────────────────
 
@@ -50,6 +53,19 @@ export function bankPrices(
   const bank = ctx.balance.bank;
   let buyOffset = bank.buyOffset;
   let sellOffset = bank.sellOffset;
+  // Fase 6: evento muda o spread da rodada (o lado da venda absorve, como na interpretação A);
+  // Porto Franco aberto zera o spread; fechado, dobra o de quem tem estrutura nele.
+  const event = eventParams<{ spread: number }>(ctx, state, 'bankSpread');
+  if (event) sellOffset = buyOffset + event.spread;
+  const port = portEffect(ctx, state, player);
+  if (port.spread !== undefined) {
+    const value = ctx.resourceValue(resource);
+    return { sell: Math.max(0, value - port.spread), buy: Math.max(1, value + port.spread) };
+  }
+  if (port.multiplier !== undefined) {
+    buyOffset *= port.multiplier;
+    sellOffset *= port.multiplier;
+  }
   const maxReduction = Math.max(0, sellOffset - buyOffset - bank.minSpread);
   let k = Math.min(spreadReduction(ctx, state, player), maxReduction);
 
@@ -140,7 +156,16 @@ export function runProduction(
       events.push({ type: 'mineIdle', player, hex: key, uid: structure.uid });
       continue;
     }
-    if (productionBlocked(state, hex, structure)) {
+    // AQ: Mina parada só pelo evento com contra-ação fica registrada (a contra-ação devolve).
+    if (
+      structure.type === 'mine' &&
+      !productionBlocked(state, hex, structure) &&
+      eventParams(ctx, state, 'minesOff') === null &&
+      eventHits(ctx, state, 'minesOffWithCounter', player)
+    ) {
+      withhold(state, player).mines.push(structure.uid);
+    }
+    if (productionBlocked(state, hex, structure, ctx)) {
       // Marcas de uma Produção só: Sobrecarga e Pane Induzida se consomem aqui.
       delete structure.overloaded;
       delete structure.noProduceRound;
@@ -153,17 +178,31 @@ export function runProduction(
 }
 
 /**
- * Carta que impede a estrutura de produzir agora: Bomba de Íons (desligada na rodada),
- * Pane Induzida (não produz neste turno), Sobrecarga (inativa na próxima Produção) e
- * Colapso de Galeria (Mina em subsolo selado).
+ * O que impede a estrutura de produzir agora: Bomba de Íons (desligada na rodada), Pane
+ * Induzida (não produz neste turno), Sobrecarga (inativa na próxima Produção), Colapso de
+ * Galeria (Mina em subsolo selado); Fase 6: cinzas, contaminação e eventos que param as
+ * Minas (com `ctx`; a contra-ação mantém as do jogador).
  */
-export function productionBlocked(state: GameState, hex: HexState, s: StructureState): boolean {
+export function productionBlocked(
+  state: GameState,
+  hex: HexState,
+  s: StructureState,
+  ctx?: EngineContext,
+): boolean {
   return (
     s.offlineRound === state.round ||
     s.noProduceRound === state.round ||
     s.overloaded === true ||
-    (s.type === 'mine' && hex.seal !== null)
+    (s.type === 'mine' && hex.seal !== null) ||
+    until(state, hex.status.ashUntil) ||
+    !!hex.status.contaminated ||
+    (!!ctx && s.type === 'mine' && minesStopped(ctx, state, s.owner))
   );
+}
+
+/** Ionização (todas) e Colapso Sísmico (quem não fez a contra-ação): Minas não operam. */
+export function minesStopped(ctx: EngineContext, state: GameState, owner: PlayerId): boolean {
+  return eventParams(ctx, state, 'minesOff') !== null || eventHits(ctx, state, 'minesOffWithCounter', owner);
 }
 
 /**
@@ -176,14 +215,21 @@ export function structureYield(
   hex: HexState,
   structure: StructureState,
   automation: ReadonlyMap<number, number> = new Map(),
+  state: GameState | null = null,
 ): ResourceAmounts {
   const level = levelDef(ctx, structure);
   const out: ResourceAmounts = {};
   if (structure.type === 'mine') {
     const resource = ctx.subsoil(hex.subsoil).resource;
-    if (resource && !hex.depleted) out[resource] = level.multiplier ?? ctx.balance.production.mineMultiplier;
+    // Crosta Fina: multiplicador +N (com estado: só com o bônus ligado).
+    const bonus = state ? mineMultiplierBonus(ctx, state, hex) : 0;
+    if (resource && !hex.depleted)
+      out[resource] = (level.multiplier ?? ctx.balance.production.mineMultiplier) + bonus;
     return out;
   }
+  // Parque em Vulcão/Pântano (interpretação AL).
+  const hazardYield = hazardParkYield(ctx, state, hex, structure, level.yield ?? 0);
+  if (hazardYield) return hazardYield;
   const terrain = ctx.terrain(hex.surface);
   if (terrain.kind !== 'surface') return out;
   const base = level.yield ?? 0;
@@ -205,7 +251,7 @@ export function automationBonus(ctx: EngineContext, state: GameState, player: Pl
   const copies = permanentsWith(ctx, state, player, 'parkBonus');
   if (copies.length === 0) return out;
   const parks = ownedStructures(state, player, 'park')
-    .filter(({ hex, structure }) => !productionBlocked(state, hex, structure))
+    .filter(({ hex, structure }) => !productionBlocked(state, hex, structure, ctx))
     .map(({ hex, structure }) => {
       const y = structureYield(ctx, hex, structure);
       const worth = RESOURCE_IDS.reduce((sum, id) => sum + (y[id] ? ctx.resourceValue(id) : 0), 0);
@@ -235,7 +281,8 @@ export function produceOnce(
 ): ResourceAmounts {
   const { hex, key, structure } = placed;
   const p = getPlayer(state, player);
-  const y = structureYield(ctx, hex, structure, automation);
+  const y = { ...structureYield(ctx, hex, structure, automation, state) };
+  applyEventYield(ctx, state, player, hex, structure, y);
   for (const resource of RESOURCE_IDS) {
     const amount = y[resource];
     if (!amount) continue;
@@ -279,6 +326,66 @@ function runSilos(
 }
 
 /**
+ * Eventos da rodada sobre Parques (Fase 6): Estação Fértil (+N nos terrenos) e Chuva
+ * Ácida (−N nos Parques de superfície de quem não fez a contra-ação; mínimo 0).
+ */
+function applyEventYield(
+  ctx: EngineContext,
+  state: GameState,
+  player: PlayerId,
+  hex: HexState,
+  structure: StructureState,
+  y: ResourceAmounts,
+): void {
+  if (structure.type !== 'park') return;
+  const fertile = eventParams<{ terrains: string[]; amount: number }>(ctx, state, 'terrainYieldBonus');
+  const acid = eventHits(ctx, state, 'parksMinusWithCounter', player)
+    ? eventParams<{ amount: number }>(ctx, state, 'parksMinusWithCounter')
+    : null;
+  for (const id of RESOURCE_IDS) {
+    const n = y[id];
+    if (!n) continue;
+    let v = n;
+    if (fertile?.terrains.includes(hex.surface)) v += fertile.amount;
+    if (acid) {
+      const cut = Math.min(v, acid.amount);
+      v -= cut;
+      // AQ: o corte fica registrado para a contra-ação devolver.
+      if (cut > 0 && state.phase === 'production') {
+        const lost = withhold(state, player).lost;
+        lost[id] = (lost[id] ?? 0) + cut;
+      }
+    }
+    y[id] = v;
+  }
+}
+
+/** AQ: a Mina que o evento parou produz agora e paga a manutenção (se puder). */
+export function produceWithheldMine(
+  ctx: EngineContext,
+  state: GameState,
+  uid: number,
+  events: GameEvent[],
+): void {
+  const placed = ownedStructures(state, findOwner(state, uid)).find((p) => p.structure.uid === uid);
+  if (!placed || productionBlocked(state, placed.hex, placed.structure)) return;
+  const owner = placed.structure.owner;
+  const upkeep = ctx.structure('mine').upkeep ?? {};
+  const p = getPlayer(state, owner);
+  if (!freeUpkeepAt(ctx, state, placed.hex)) {
+    if (!canAfford(p.resources, upkeep)) return;
+    pay(p.resources, upkeep);
+    events.push({ type: 'upkeepPaid', player: owner, uid, cost: upkeep });
+  }
+  produceOnce(ctx, state, owner, placed, automationBonus(ctx, state, owner), events);
+}
+
+function findOwner(state: GameState, uid: number): PlayerId {
+  for (const h of Object.values(state.hexes)) for (const s of h.structures) if (s.uid === uid) return s.owner;
+  return -1;
+}
+
+/**
  * GDD 6.2 fase 4: cada Mina paga o upkeep (Carvão) em ordem de construção. A que não
  * puder pagar fica ociosa e não produz na próxima Produção. Estrutura desligada por
  * carta (Bomba de Íons, subsolo selado) não opera: não paga nem fica ociosa (AA, AB).
@@ -290,6 +397,9 @@ export function runUpkeep(ctx: EngineContext, state: GameState, player: PlayerId
     const upkeep = ctx.structure(structure.type).upkeep;
     if (!upkeep || RESOURCE_IDS.every((id) => (upkeep[id] ?? 0) === 0)) continue;
     if (structure.offlineRound === state.round || (structure.type === 'mine' && hex.seal !== null)) continue;
+    // Fase 6: Mina parada por evento não opera (não paga); Geiser ativo perto dispensa o Carvão.
+    if (structure.type === 'mine' && (minesStopped(ctx, state, player) || freeUpkeepAt(ctx, state, hex)))
+      continue;
     if (canAfford(p.resources, upkeep)) {
       pay(p.resources, upkeep);
       events.push({ type: 'upkeepPaid', player, uid: structure.uid, cost: upkeep });

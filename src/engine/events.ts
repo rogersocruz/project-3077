@@ -102,4 +102,25 @@ export type GameEvent =
   /** Requisição Prioritária: a carta escolhida é revelada a todos. */
   | { type: 'cardTaken'; player: PlayerId; card: CardUid; deck: DrawDeck }
   | { type: 'roundEnded'; round: number }
+  // ── Eventos globais, hazards e sítios (Fase 6) ──
+  /** GDD 9: evento da rodada (id de events.json). */
+  | { type: 'eventRevealed'; round: number; event: string; category: string }
+  | { type: 'eventDeckReshuffled'; size: number }
+  /** O hazard sofreu o próprio dano (gatilho da categoria do evento). */
+  | { type: 'hazardTriggered'; hex: HexKey; hazard: string; effect: string }
+  | { type: 'hexStatus'; hex: HexKey; status: string; until: number }
+  | { type: 'hexContaminated'; hex: HexKey; actions: number }
+  | { type: 'hexCleaned'; hex: HexKey; player: PlayerId }
+  /** GDD 4.4: desastre no hex + raio. */
+  | { type: 'disaster'; hex: HexKey; radius: number }
+  | { type: 'volcanoErupted'; hex: HexKey }
+  | { type: 'villageDamaged'; player: PlayerId; lives: number }
+  | { type: 'playerEliminated'; player: PlayerId }
+  | { type: 'guardianSpawned'; hex: HexKey; strength: number }
+  | { type: 'hordeAttack'; from: HexKey; to: HexKey; strength: number; defense: number; repelled: boolean }
+  | { type: 'excavated'; player: PlayerId; hex: HexKey; site: string }
+  | { type: 'treasureDrawn'; player: PlayerId; card: CardUid }
+  /** Contra-ação do evento ("quem gastar N ações fica imune"). */
+  | { type: 'braced'; player: PlayerId; event: string }
+  | { type: 'eventFoodLoss'; player: PlayerId; amount: number }
   | { type: 'gameOver'; winners: PlayerId[]; reason: 'condition' | 'roundLimit' };

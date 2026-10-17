@@ -8,7 +8,14 @@ import type { EngineContext } from './context';
 import { effectOf } from './effects/registry';
 import { getHex, getPlayer, isValidAmounts, amountTotal, canAfford, ownedStructures } from './queries';
 import type { Reason } from './reasons';
-import { buildCost, checkBuild, checkExplore, checkSurvey, checkUpgrade, ownBoardHexes } from './rules/build';
+import {
+  buildCostAt,
+  checkBuild,
+  checkExplore,
+  checkSurvey,
+  checkUpgrade,
+  ownBoardHexes,
+} from './rules/build';
 import {
   addAmounts,
   cardResourceCost,
@@ -26,6 +33,8 @@ import { drawRows, handLimit } from './rules/decks';
 import { bankQuote, minBankAmount } from './rules/economy';
 import { cardDefOf, freeSlot } from './rules/permanents';
 import { inVillageZone } from './setup';
+import { freeSurveyAt } from './rules/specials';
+import { braceActions, checkBrace, checkCleanHex, checkExcavate, eventParams } from './rules/world';
 import type { CardTarget, CardUid, GameState, HexKey, PlayerId, Resources } from './state';
 
 export type CheckResult = { readonly ok: true } | { readonly ok: false; readonly reason: Reason };
@@ -57,6 +66,13 @@ export function actionCost(ctx: EngineContext, state: GameState, action: Action)
     }
     case 'clearSeal':
       return state.hexes[action.hex]?.seal?.clearActions ?? 0;
+    case 'brace':
+      return braceActions(ctx, state);
+    case 'cleanHex':
+      return state.hexes[action.hex]?.status.contaminated ?? 0;
+    case 'survey':
+      // Crosta Fina: sondar o próprio hex é grátis enquanto o bônus vale.
+      return freeSurveyAt(ctx, state, action.hex) ? 0 : ACTION_COST.survey;
     default:
       return ACTION_COST[action.type];
   }
@@ -100,6 +116,7 @@ function checkOffer(
 ): CheckResult {
   const partner = state.players[to];
   if (!partner || to === from) return no('invalidTradePartner');
+  if (partner.eliminated) return no('playerEliminated');
   if (!isValidAmounts(give) || !isValidAmounts(receive)) return no('invalidAmounts');
   if (amountTotal(give) + amountTotal(receive) === 0) return no('emptyTrade');
   if (
@@ -142,6 +159,8 @@ function checkSurveyAction(ctx: EngineContext, state: GameState, a: ActionOf<'su
     const r = checkModifier(ctx, state, a.player, a.drone, 'drone', []);
     if (r) return r;
   }
+  // Crosta Instável: Sondar falha na rodada, exceto com Drone.
+  if (!a.drone && eventParams(ctx, state, 'surveyBlocked')) return { key: 'surveyBlocked' };
   const bonus = a.drone ? droneBonus(ctx, state, a.drone) : undefined;
   const r = checkSurvey(ctx, state, a.player, a.hex, bonus);
   if (r) return r;
@@ -172,7 +191,7 @@ function checkBuildAction(ctx: EngineContext, state: GameState, a: ActionOf<'bui
   });
   if (r) return r;
   const total = addAmounts(
-    buildCost(ctx, a.structure, !!a.halfCost),
+    buildCostAt(ctx, state, a.structure, a.hex, !!a.halfCost),
     a.drone ? modifierCost(ctx, state, a.player, a.drone) : {},
     a.halfCost ? modifierCost(ctx, state, a.player, a.halfCost) : {},
   );
@@ -221,6 +240,12 @@ function checkActionsPhase(ctx: EngineContext, state: GameState, action: Action)
         : no('layerDisabled', { layer: 'cards' });
     case 'clearSeal':
       return fromReason(checkClearSeal(state, action));
+    case 'excavate':
+      return fromReason(checkExcavate(ctx, state, action));
+    case 'brace':
+      return fromReason(checkBrace(ctx, state, action));
+    case 'cleanHex':
+      return fromReason(checkCleanHex(state, action));
     case 'endPhase':
       return OK;
     default:
@@ -337,7 +362,7 @@ function cardCandidates(ctx: EngineContext, state: GameState, player: PlayerId, 
   for (const card of p.hand) {
     const def = cardDefOf(ctx, state, card);
     const handler = effectOf(def);
-    if (def.timing === 'own' && !handler.modifier) {
+    if ((def.timing === 'own' || def.timing === 'instant') && !handler.modifier) {
       for (const use of cardUses(ctx, state, player, card)) {
         for (const target of targetsOrNone(ctx, state, player, card, null)) {
           out.push({ type: 'playCard', player, ...use, ...(target ? { target } : {}) });
@@ -461,6 +486,14 @@ export function legalActions(ctx: EngineContext, state: GameState, player: Playe
       for (const { structure } of ownedStructures(state, player)) {
         candidates.push({ type: 'upgrade', player, uid: structure.uid });
       }
+      // Fase 6: escavar sítios, contra-ação do evento, limpar contaminação.
+      if (state.layers.specialHexes) {
+        for (const hex of ownHexes) candidates.push({ type: 'excavate', player, hex });
+        for (const [hex, h] of Object.entries(state.hexes)) {
+          if (h.status.contaminated) candidates.push({ type: 'cleanHex', player, hex });
+        }
+      }
+      if (state.layers.events) candidates.push({ type: 'brace', player });
       for (const give of RESOURCE_IDS) {
         for (const receive of RESOURCE_IDS) {
           if (give === receive) continue;

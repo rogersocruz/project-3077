@@ -76,6 +76,33 @@ export interface HexState {
   /** Terraformação: produção extra por recurso das estruturas de superfície. */
   yieldBonus: number;
   structures: StructureState[];
+  /** Estados com prazo de hazards e eventos (Fase 6). */
+  status: HexStatus;
+  /** Guardião parado no hex (força); bloqueia escavar e construir (interpretação AK). */
+  guardian: number | null;
+  /** Quem escavou a Ruína (uma vez por Ruína; o bônus passivo é dele — AN). */
+  excavatedBy: PlayerId | null;
+}
+
+/**
+ * Marcas com prazo num hex (GDD 4.3). "Até a rodada N" = vale enquanto round ≤ N.
+ * Contaminação não tem prazo: sai quando alguém gasta as ações de limpeza.
+ */
+export interface HexStatus {
+  /** Cinzas: o hex não produz. */
+  ashUntil?: number;
+  /** Geiser seco: sem bônus. */
+  dryUntil?: number;
+  /** Pântano contaminado: ações que faltam para limpar (sem bônus e sem produção). */
+  contaminated?: number;
+  /** Cânion: drones de quem tem estrutura aqui ficam no chão. */
+  groundedUntil?: number;
+  /** Porto fechado: sem bônus e spread dobrado de quem tem estrutura aqui. */
+  closedUntil?: number;
+  /** Anomalia invertida: cartas na área com efeito dobrado, sem escudo. */
+  amplifiedUntil?: number;
+  /** Crosta colapsada: subsolo selado (sem Mina). */
+  sealedUntil?: number;
 }
 
 export interface PlayerState {
@@ -97,6 +124,8 @@ export interface PlayerState {
   receivedThisRound: number;
   /** GDD 6.2 fase 7: entregas feitas neste turno. */
   deliveredThisTurn: number;
+  /** GDD 13.2: Vila com 0 vidas — fora da partida (D11: sai da partida). */
+  eliminated: boolean;
 }
 
 // ── Cartas (GDD 7) ───────────────────────────────────────────────────────────
@@ -133,6 +162,34 @@ export interface CardsState {
   discards: Record<DrawDeck, CardUid[]>;
   /** Fora do jogo: permanentes removidos (GDD 7.4). */
   removed: CardUid[];
+  /** Baralho do Tesouro (GDD 4.3, Escavar) e o descarte dele. */
+  treasure: CardUid[];
+  treasureDiscard: CardUid[];
+}
+
+/** Eventos globais (GDD 9). */
+export interface WorldState {
+  /** Baralho ativo (ids de events.json), topo = 0. */
+  deck: string[];
+  /** Já revelados (voltam embaralhados quando o baralho acaba — interpretação AJ). */
+  used: string[];
+  /** Evento desta rodada. */
+  current: string | null;
+  /** Quem fez a contra-ação do evento desta rodada. */
+  braced: PlayerId[];
+  /** Veio Exposto: alguém já sondou nesta rodada. */
+  firstSurveyDone: boolean;
+  /**
+   * Interpretação AQ: o que o evento com contra-ação tirou na Produção deste turno (Minas
+   * paradas, Comida/recursos cortados). A contra-ação nas Ações devolve.
+   */
+  withheld: WithheldProduction[];
+}
+
+export interface WithheldProduction {
+  readonly player: PlayerId;
+  mines: number[];
+  lost: Partial<Resources>;
 }
 
 /** Escolha em dois passos que trava a partida até ser resolvida. */
@@ -184,6 +241,7 @@ export interface GameState {
   pendingTrade: TradeOffer | null;
   cards: CardsState;
   pending: PendingChoice | null;
+  world: WorldState;
   winners: PlayerId[];
   endReason: 'condition' | 'roundLimit' | null;
   log: Action[];

@@ -80,3 +80,44 @@ antes da verificação.
   compensação ou checagem de vitória diferente. Decisão de regra, não de número.
 - **Cartas:** Apoio Diplomático não tem uso entre adversários sem tratados (Fase 8); rever
   depois dos tratados.
+
+---
+
+## Fase 6 — eventos, hazards e sítios (200 partidas, 4 jogadores, seeds 1–200)
+
+`npm run sim -- --games 200 --players 4 --seed 1 --layers cards,events,specialHexes`
+(IA Normal, rotas sorteadas; ~75 s com 19 workers).
+
+**D15 — chance real de cada hazard ser atingido** (baralho ativo de 12 eventos, máx. 2 por
+categoria, partidas de ~9 rodadas):
+
+| Hazard | Partidas em que sofreu dano | Vezes por partida |
+|---|---|---|
+| Pântano Ácido (climático) | 93,5% | 1,73 |
+| Porto Franco (econômico) | 92,5% | 1,62 |
+| Crosta Fina (sísmico) | 91,5% | 1,65 |
+| Geiser (sísmico) | 91,5% | 1,65 |
+| Cânion de Ventos (atmosférico) | 86,5% | 1,37 |
+| Anomalia Magnética (atmosférico) | 86,5% | 1,37 |
+| Vulcão (térmico) | 85,0% | 1,10 |
+
+Leitura: com 2 cartas por categoria e partidas de ~9 rodadas, **quase todo hazard é atingido
+em quase toda partida** — o risco deixa de ser aposta e vira certeza. Para o hazard ser uma
+aposta (meta sugerida: 40–60%), testar **1 carta por categoria** ou baralho ativo menor.
+
+Outros números: 3,6 desastres por partida, 0,02 eliminações por partida, 3,9 escavações.
+
+**Achado: Cofre Precursor (Tesouro) quebra a rota do Ouro.** O Ouro passou de 16% para 32%
+das vitórias, com partidas vencidas já na rodada 2–4: o Cofre dá 4 Ouro (limiar 10), tem 5
+cópias no Tesouro de 15, e o Templo dá 2 cartas. Sugestões (nada aplicado): Cofre dar
+2 Ouro **ou** 2 Petróleo, ou menos cópias, ou o Templo dar 1 carta.
+
+| Vitórias por condição | Fase 5 (Economia + Cartas) | Fase 6 (+ Eventos + Hexes especiais) |
+|---|---|---|
+| Carvão | 65,0% | 52,0% |
+| Ouro | 16,0% | 32,0% |
+| Ferro | 7,5% | 4,5% |
+| Comida | 0,0% | 4,0% |
+| Petróleo | 0,5% | 3,5% |
+| Expansão | 8,0% | 2,5% |
+| Pedregulho | 4,0% | 1,5% |

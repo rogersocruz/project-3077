@@ -17,6 +17,9 @@ export interface GameSetup {
   readonly longMap: boolean;
   /** Camada de cartas (Fase 4; padrão ligada, `cards=0` desliga). */
   readonly cards: boolean;
+  /** Eventos globais e hexes especiais (Fase 6; na URL `events=1`, `special=1`). */
+  readonly events: boolean;
+  readonly specialHexes: boolean;
   /** Um por jogador (Fase 5). */
   readonly seats: readonly SeatKind[];
 }
@@ -59,6 +62,8 @@ export function parseGameParams(search: string): GameParams {
       seed: Number.isInteger(seed) && seed >= 0 ? seed : 1,
       longMap: p.get('long') === '1',
       cards: p.get('cards') !== '0',
+      events: p.get('events') === '1',
+      specialHexes: p.get('special') === '1',
       seats: parseSeats(players, p.get('seats'), p.get('ai')),
     },
     speed:
@@ -76,4 +81,6 @@ export const sameSetup = (a: GameSetup | null, b: GameSetup) =>
   a.seed === b.seed &&
   a.longMap === b.longMap &&
   a.cards === b.cards &&
+  a.events === b.events &&
+  a.specialHexes === b.specialHexes &&
   a.seats.join() === b.seats.join();

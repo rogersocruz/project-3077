@@ -7,6 +7,7 @@ import type { EngineContext } from './context';
 import { distance, ORIGIN } from './hex';
 import { emptyResources, hexKeyOf, isSpecialTerrain } from './queries';
 import { hashSeed, Rng, type Seed } from './rng';
+import { buildEventDeck } from './rules/world';
 import { buildDecks } from './rules/cards';
 import { drawCards } from './rules/decks';
 import { DEFAULT_LAYERS, type GameState, type HexState, type PlayerState, type RuleLayers } from './state';
@@ -205,10 +206,15 @@ export function createGame(ctx: EngineContext, options: GameOptions): GameState 
       seal: null,
       yieldBonus: 0,
       structures: [],
+      status: {},
+      guardian: null,
+      excavatedBy: null,
     };
   }
   // Depois dos tiles: com cartas desligadas o RNG não é tocado e o planeta não muda.
   const cards = buildDecks(ctx, layers, rng);
+  // GDD 9: baralho de eventos da partida (só com a camada; sem ela o RNG não é tocado).
+  const eventDeck = buildEventDeck(ctx, { layers }, (items) => rng.shuffle(items));
 
   const start = ctx.balance.setup.startingResources;
   const players: PlayerState[] = ctx.planet.boards.map((b) => {
@@ -228,6 +234,7 @@ export function createGame(ctx: EngineContext, options: GameOptions): GameState 
       incoming: [],
       receivedThisRound: 0,
       deliveredThisTurn: 0,
+      eliminated: false,
     };
   });
 
@@ -249,6 +256,7 @@ export function createGame(ctx: EngineContext, options: GameOptions): GameState 
     pendingTrade: null,
     cards,
     pending: null,
+    world: { deck: eventDeck, used: [], current: null, braced: [], firstSurveyDone: false, withheld: [] },
     winners: [],
     endReason: null,
     log: [],

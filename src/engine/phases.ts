@@ -10,6 +10,7 @@ import { revealIncoming } from './rules/cards';
 import { drawRow, drawRows } from './rules/decks';
 import { runProduction, runUpkeep } from './rules/economy';
 import { checkRoundEnd } from './rules/victory';
+import { endRoundEvent, revealEvent } from './rules/world';
 import type { GameState, PlayerId, TurnPhase } from './state';
 
 function enterPhase(state: GameState, phase: TurnPhase, events: GameEvent[]): void {
@@ -40,7 +41,33 @@ export function startRound(ctx: EngineContext, state: GameState, events: GameEve
   // GDD 7.1: o teto de recebimento é por rodada.
   for (const p of state.players) p.receivedThisRound = 0;
   events.push({ type: 'roundStarted', round: state.round });
-  startTurn(ctx, state, 0, events);
+  revealEvent(ctx, state, events);
+  // O evento pode eliminar alguém (Vila a 0) e até encerrar a partida.
+  if (finishIfDecided(ctx, state, events)) return;
+  const first = nextAlive(state, -1);
+  if (first === null) return;
+  startTurn(ctx, state, first, events);
+}
+
+/** Próximo assento na partida depois de `after` nesta rodada (null = acabou a rodada). */
+function nextAlive(state: GameState, after: PlayerId): PlayerId | null {
+  for (let p = after + 1; p < state.players.length; p++) if (!state.players[p]?.eliminated) return p;
+  return null;
+}
+
+/** Eliminação total (GDD 13.1): sobrou um só, ele vence na hora. */
+function finishIfDecided(ctx: EngineContext, state: GameState, events: GameEvent[]): boolean {
+  const alive = state.players.filter((p) => !p.eliminated);
+  if (alive.length > 1) return false;
+  const verdict = checkRoundEnd(ctx, state) ?? {
+    winners: alive.map((p) => p.id),
+    reason: 'condition' as const,
+  };
+  state.stage = 'over';
+  state.winners = verdict.winners;
+  state.endReason = verdict.reason;
+  events.push({ type: 'gameOver', winners: verdict.winners, reason: verdict.reason });
+  return true;
 }
 
 /**
@@ -87,8 +114,8 @@ export function endCurrentPhase(ctx: EngineContext, state: GameState, events: Ga
 
 function endTurn(ctx: EngineContext, state: GameState, events: GameEvent[]): void {
   state.actionsLeft = 0;
-  const next = state.activePlayer + 1;
-  if (next < state.players.length) {
+  const next = nextAlive(state, state.activePlayer);
+  if (next !== null) {
     startTurn(ctx, state, next, events);
     return;
   }
@@ -97,6 +124,7 @@ function endTurn(ctx: EngineContext, state: GameState, events: GameEvent[]): voi
 
 /** GDD 6.1 FIM: tratados com prazo (Fase 8) e verificação de vitória (13.1). */
 function endRound(ctx: EngineContext, state: GameState, events: GameEvent[]): void {
+  endRoundEvent(ctx, state, events);
   events.push({ type: 'roundEnded', round: state.round });
   const verdict = checkRoundEnd(ctx, state);
   if (verdict) {

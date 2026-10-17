@@ -853,19 +853,17 @@ describe('passivos de permanentes', () => {
 // ── Camadas futuras e registro ───────────────────────────────────────────────
 
 describe('effectIds de camadas futuras e registro (CLAUDE.md regra 6)', () => {
-  it('handlers de tropas/tratados/eventos recusam com "camada desligada" e lançam se aplicados', () => {
+  it('handlers de tropas/tratados recusam com "camada desligada" e lançam se aplicados', () => {
     const gatedIds = Object.entries(CARD_EFFECTS)
       .filter(([, h]) => !h.implemented)
       .map(([id]) => id);
     expect(gatedIds.sort()).toEqual(
       [
         'antigrav',
-        'disasterResist',
         'freeRetreat',
         'freeTreaties',
         'lineStrengthBonus',
         'revealTroops',
-        'spawnGuardian',
         'troopRoot',
         'troopStrengthBonus',
       ].sort(),

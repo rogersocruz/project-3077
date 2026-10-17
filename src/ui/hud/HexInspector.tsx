@@ -8,7 +8,7 @@ import { useTranslation } from 'react-i18next';
 import { usePresentation } from '../../anim';
 import { type Action, actionCost, checkAction, type HexKey, type Reason } from '../../engine';
 import { deficit, type ResourceAmounts, slotsUsed } from '../../engine/queries';
-import { buildCost, upgradeCost } from '../../engine/rules/build';
+import { buildCostAt, upgradeCost } from '../../engine/rules/build';
 import { useSceneStore } from '../../render3d/sceneStore';
 import { CostLine, Icon } from '../components/Bits';
 import { perform, useCanDecide } from '../game/hooks';
@@ -100,6 +100,31 @@ export function HexInspector({ hexKey }: { hexKey: HexKey }) {
     : hex.depleted
       ? t('subsoil.depleted')
       : t(`subsoil.${hex.subsoil}`);
+  const site0 = ctx.terrain(hex.surface);
+  // Marcas do hex: selo, Terraformação e, na Fase 6, estados de hazard/evento, Guardião e Ruína.
+  const STATUS = [
+    'ashUntil',
+    'dryUntil',
+    'groundedUntil',
+    'closedUntil',
+    'amplifiedUntil',
+    'sealedUntil',
+  ] as const;
+  const modifiers = [
+    hex.seal ? t('inspector.sealedInfo', { n: hex.seal.clearActions }) : null,
+    hex.yieldBonus > 0 ? t('inspector.yieldBonus', { n: hex.yieldBonus }) : null,
+    ...STATUS.map((k) => {
+      const until = hex.status[k];
+      return until !== undefined && until >= shown.round
+        ? `${t(`events.status.${k}`)} (${t('inspector.untilRound', { n: until })})`
+        : null;
+    }),
+    hex.status.contaminated ? t('events.contaminated', { n: hex.status.contaminated }) : null,
+    hex.guardian !== null ? t('events.guardian', { n: hex.guardian }) : null,
+    hex.excavatedBy !== null && site0.kind === 'site' && site0.def.passive
+      ? t('events.ruinBonus', { name: playerName(t, hex.excavatedBy) })
+      : null,
+  ].filter((x): x is string => !!x);
   const used = slotsUsed(ctx, hex);
   const slots = ctx.balance.hex.slots;
   const me = state.activePlayer;
@@ -148,7 +173,7 @@ export function HexInspector({ hexKey }: { hexKey: HexKey }) {
           id: `build-${d.id}`,
           label: t(`structures.${d.id}`),
           action: { type: 'build', player: me, structure: d.id, hex: hexKey },
-          cost: buildCost(ctx, d.id),
+          cost: buildCostAt(ctx, state, d.id, hexKey),
         }));
       const ok = builds.filter((o) => checkAction(ctx, state, o.action).ok);
       const no = builds.filter((o) => !checkAction(ctx, state, o.action).ok);
@@ -165,6 +190,35 @@ export function HexInspector({ hexKey }: { hexKey: HexKey }) {
         cost: upgradeCost(ctx, state, me, s.uid),
       }));
     if (upgrades.length) sections.push({ title: t('hud.upgrade'), options: upgrades });
+
+    // Fase 6: escavar Templo/Ruína e limpar contaminação (o motor decide se pode).
+    const site = ctx.terrain(hex.surface);
+    if (hex.revealed && site.kind === 'site' && site.def.action === 'excavate') {
+      sections.push({
+        title: t('events.excavate'),
+        options: [
+          {
+            id: 'excavate',
+            label: t('inspector.excavate', { site: t(`terrain.${hex.surface}`) }),
+            action: { type: 'excavate', player: me, hex: hexKey },
+            cost: site.def.excavateCost,
+          },
+        ],
+      });
+    }
+    if (hex.status.contaminated) {
+      sections.push({
+        title: t('events.clean'),
+        options: [
+          {
+            id: 'clean',
+            label: t('inspector.clean', { n: hex.status.contaminated }),
+            action: { type: 'cleanHex', player: me, hex: hexKey },
+            cost: {},
+          },
+        ],
+      });
+    }
 
     // Colapso de Galeria: o dono do tabuleiro remove o selo gastando ações.
     if (hex.seal && hex.boardId === state.players[me]?.boardId) {
@@ -216,17 +270,10 @@ export function HexInspector({ hexKey }: { hexKey: HexKey }) {
               {used}/{slots}
             </span>
           </dd>
-          {(hex.seal || hex.yieldBonus > 0) && (
+          {modifiers.length > 0 && (
             <>
               <dt>{t('inspector.modifiers')}</dt>
-              <dd>
-                {[
-                  hex.seal ? t('inspector.sealedInfo', { n: hex.seal.clearActions }) : null,
-                  hex.yieldBonus > 0 ? t('inspector.yieldBonus', { n: hex.yieldBonus }) : null,
-                ]
-                  .filter(Boolean)
-                  .join(' · ')}
-              </dd>
+              <dd data-testid="inspector-modifiers">{modifiers.join(' · ')}</dd>
             </>
           )}
         </dl>

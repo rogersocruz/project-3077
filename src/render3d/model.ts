@@ -62,7 +62,13 @@ export interface SceneHex {
   readonly sealed?: boolean;
   /** Terraformação: rendimento extra do hex (público). */
   readonly yieldBonus?: number;
+  /** Fase 6: estados de hazard/evento ativos (públicos) e Guardião parado. */
+  readonly marks?: readonly WorldMark[];
+  readonly guardian?: number | null;
 }
+
+/** Marca de estado no hex (cinzas, contaminado, seco, fechado, drones no chão, anomalia, selado). */
+export type WorldMark = 'ash' | 'contaminated' | 'dry' | 'closed' | 'grounded' | 'amplified' | 'sealed';
 
 export interface ScenePermanent {
   /** Id da carta (cards.json) ou do modelo de tratado. */
@@ -133,10 +139,24 @@ export function sceneHexes(ctx: EngineContext, state: GameState, viewer: PlayerI
           (s.type === 'mine' && hs.seal !== null),
       })),
       troops: [],
-      sealed: hs.seal !== null,
+      sealed: hs.seal !== null || (hs.status.sealedUntil ?? 0) >= state.round,
       yieldBonus: hs.yieldBonus,
+      marks: worldMarks(hs.status, state.round),
+      guardian: hs.guardian,
     };
   });
+}
+
+function worldMarks(st: GameState['hexes'][string]['status'], round: number): WorldMark[] {
+  const out: WorldMark[] = [];
+  const on = (n: number | undefined) => n !== undefined && n >= round;
+  if (on(st.ashUntil)) out.push('ash');
+  if (st.contaminated) out.push('contaminated');
+  if (on(st.dryUntil)) out.push('dry');
+  if (on(st.closedUntil)) out.push('closed');
+  if (on(st.groundedUntil)) out.push('grounded');
+  if (on(st.amplifiedUntil)) out.push('amplified');
+  return out;
 }
 
 /** Jogadores da cena; `resources` permite mostrar o estoque animado (contadores do HUD). */

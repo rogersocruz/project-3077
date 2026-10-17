@@ -47,6 +47,15 @@ export interface SimSummary {
   readonly structuresPerPlayer: Record<string, number>;
   readonly cards: CardStat[];
   readonly msPerGame: number;
+  /** D15: por hazard, % das partidas (em que ele estava no planeta) em que sofreu dano. */
+  readonly hazards: Record<
+    string,
+    { readonly games: number; readonly hitGames: number; readonly hits: number }
+  >;
+  readonly eventsPerGame: Record<string, number>;
+  readonly disastersPerGame: number;
+  readonly eliminationsPerGame: number;
+  readonly excavationsPerGame: number;
 }
 
 const TRACKS: readonly (TrackId | 'roundLimit')[] = [...RESOURCE_IDS, 'expansion', 'roundLimit'];
@@ -67,6 +76,11 @@ export function summarize(records: readonly GameRecord[], allCardIds: readonly s
   const histogram: Record<number, number> = {};
   let trades = 0;
   let shared = 0;
+  const hazards: Record<string, { games: number; hitGames: number; hits: number }> = {};
+  const evs: Record<string, number> = {};
+  let disasters = 0;
+  let eliminations = 0;
+  let excavations = 0;
   let totalMs = 0;
 
   for (const r of records) {
@@ -94,6 +108,17 @@ export function summarize(records: readonly GameRecord[], allCardIds: readonly s
       traded[id] += r.playerTraded[id];
     }
     trades += r.tradesAccepted;
+    for (const h of r.hazardsPresent ?? []) {
+      const hz = (hazards[h] ??= { games: 0, hitGames: 0, hits: 0 });
+      hz.games++;
+      const n = r.hazardHits?.[h] ?? 0;
+      hz.hits += n;
+      if (n > 0) hz.hitGames++;
+    }
+    for (const [id, c] of Object.entries(r.eventsRevealed ?? {})) evs[id] = (evs[id] ?? 0) + c;
+    disasters += r.disasters ?? 0;
+    eliminations += r.eliminations ?? 0;
+    excavations += r.excavations ?? 0;
     for (const [id, c] of Object.entries(r.cardsPlayed)) played[id] = (played[id] ?? 0) + c;
     for (const [id, c] of Object.entries(r.cardsDrawn)) drawn[id] = (drawn[id] ?? 0) + c;
   }
@@ -142,6 +167,11 @@ export function summarize(records: readonly GameRecord[], allCardIds: readonly s
     ),
     cards,
     msPerGame: totalMs / n,
+    hazards,
+    eventsPerGame: Object.fromEntries(Object.entries(evs).map(([k, v]) => [k, v / n])),
+    disastersPerGame: disasters / n,
+    eliminationsPerGame: eliminations / n,
+    excavationsPerGame: excavations / n,
   };
 }
 
@@ -275,6 +305,21 @@ export function summaryText(s: SimSummary, header = ''): string {
         .map(([k, v]) => `${k} ${v.toFixed(2)}`)
         .join(' · '),
   );
+  const hz = Object.entries(s.hazards);
+  if (hz.length) {
+    out.push('', 'Hazards atingidos (D15: % das partidas em que sofreram dano):');
+    for (const [id, v] of hz.sort((a, b) => b[1].hitGames / b[1].games - a[1].hitGames / a[1].games)) {
+      out.push(
+        `  ${id.padEnd(17)} ${pct(v.hitGames / Math.max(1, v.games)).padStart(6)}  (${(v.hits / Math.max(1, v.games)).toFixed(2)} vezes por partida)`,
+      );
+    }
+  }
+  if (Object.keys(s.eventsPerGame).length) {
+    out.push(
+      '',
+      `Desastres por partida: ${s.disastersPerGame.toFixed(2)} · eliminações: ${s.eliminationsPerGame.toFixed(2)} · escavações: ${s.excavationsPerGame.toFixed(2)}`,
+    );
+  }
   const playedCards = s.cards.filter((c) => c.drawn > 0 || c.played > 0);
   out.push('', 'Cartas mais jogadas:');
   for (const c of playedCards.slice(0, 6))

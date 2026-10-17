@@ -154,9 +154,11 @@ function crossCheck(d: GameData, issues: DataIssue[]): void {
   // ── structures.json ──
   const drawLevels = new Set(Object.keys(d.balance.cards.universityDraw).map(Number));
   d.structures.forEach((s, i) => {
+    // Fase 6 (interpretação AL): Parque também vai em hazard (Vulcão, Pântano Ácido).
+    const hazardIds = new Set(d.tiles.hazards.map((h) => h.id));
     s.buildOn?.forEach((target, j) => {
-      if (target !== 'surveyedSubsoil' && !surfaceIds.has(target)) {
-        err('structures.json', `[${i}].buildOn[${j}]`, `terreno "${target}" não existe em tiles.json surface`);
+      if (target !== 'surveyedSubsoil' && !surfaceIds.has(target) && !hazardIds.has(target)) {
+        err('structures.json', `[${i}].buildOn[${j}]`, `terreno "${target}" não existe em tiles.json`);
       }
     });
     s.levels.forEach((lvl, j) => {

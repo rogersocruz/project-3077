@@ -10,7 +10,7 @@ import type { CardDef, EngineContext } from '../context';
 import { cardEnabled, effectOf } from '../effects/registry';
 import type { ApplyScope, EffectScope, ModifierKind } from '../effects/types';
 import type { GameEvent } from '../events';
-import { canAfford, getPlayer, pay, type ResourceAmounts } from '../queries';
+import { canAfford, findStructure, getPlayer, pay, type ResourceAmounts } from '../queries';
 import type { Reason } from '../reasons';
 import type { Rng } from '../rng';
 import {
@@ -20,10 +20,13 @@ import {
   DRAW_DECKS,
   type DrawDeck,
   type GameState,
+  type HexKey,
   type PlayerId,
   type RuleLayers,
 } from '../state';
 import { discardFromHand, isDrawDeck, shuffleDeck, takeFromHand, toDiscard } from './decks';
+import { amplifyFactor, dronesGroundedFor, freeDronesFor, shieldedHex } from './specials';
+import { eventParams } from './world';
 import {
   cardDefOf,
   freeSlot,
@@ -58,7 +61,25 @@ export function buildDecks(ctx: EngineContext, layers: RuleLayers, rng: Rng): Ca
     }
     for (const deck of DRAW_DECKS) decks[deck] = rng.shuffle(decks[deck]);
   }
-  return { defs, decks, discards: perDeck<CardUid[]>(() => []), removed: [] };
+  // GDD 4.3: baralho do Tesouro (Escavar), com hexes especiais e cartas.
+  const treasure: CardUid[] = [];
+  if (layers.cards && layers.specialHexes) {
+    for (const def of ctx.data.cards) {
+      if (def.deck !== 'treasure' || !cardEnabled(def, layers)) continue;
+      for (let i = 0; i < def.copies; i++) {
+        treasure.push(defs.length);
+        defs.push(def.id);
+      }
+    }
+  }
+  return {
+    defs,
+    decks,
+    discards: perDeck<CardUid[]>(() => []),
+    removed: [],
+    treasure: rng.shuffle(treasure),
+    treasureDiscard: [],
+  };
 }
 
 // ── Custos ───────────────────────────────────────────────────────────────────
@@ -87,7 +108,8 @@ export function cardResourceCost(
   } else if (payment !== undefined && payment !== 0) return null;
 
   if (effectOf(def).modifier === 'drone') {
-    if (hasPermanent(ctx, state, player, 'freeDrones')) return {};
+    // Núcleo de Navegação e Cânion de Ventos (estrutura no Cânion ativo): Drone grátis.
+    if (hasPermanent(ctx, state, player, 'freeDrones') || freeDronesFor(ctx, state, player)) return {};
     for (const d of permanentsWith(ctx, state, player, 'droneDiscount')) {
       const coal = out.coal;
       if (coal) out.coal = Math.max(numParam(d, 'min'), coal - numParam(d, 'coal'));
@@ -207,7 +229,10 @@ export function checkPlayCard(ctx: EngineContext, state: GameState, a: ActionOf<
     const def = cardDefOf(ctx, state, a.card);
     if (def.timing === 'own' && effectOf(def).modifier) return { key: 'playWithAction' };
   }
-  const basics = checkCardBasics(ctx, state, a.player, a.card, 'own', 'notPlayable', a, 0);
+  // Tesouro "instant" se joga como carta própria (interpretação AO).
+  const timing =
+    p.hand.includes(a.card) && cardDefOf(ctx, state, a.card).timing === 'instant' ? 'instant' : 'own';
+  const basics = checkCardBasics(ctx, state, a.player, a.card, timing, 'notPlayable', a, 0);
   if (basics) return basics;
   const def = cardDefOf(ctx, state, a.card);
   return effectOf(def).check(scope(ctx, state, a.player, a.card, null, 'play'), a.target);
@@ -248,6 +273,9 @@ export function checkModifier(
   const def = cardDefOf(ctx, state, use.card);
   if (effectOf(def).modifier !== kind) return { key: 'wrongModifier' };
   if (!cardEnabled(def, state.layers)) return { key: 'layerDisabled', params: { layer: 'cards' } };
+  // Tempestade Magnética (todos) e Cânion com dano (quem tem estrutura nele): Drone no chão.
+  if (kind === 'drone' && (eventParams(ctx, state, 'dronesOff') || dronesGroundedFor(state, player)))
+    return { key: 'dronesGrounded' };
   if (!cardResourceCost(ctx, state, player, def, use.payment)) return { key: 'invalidPayment' };
   return checkDiscard(state, player, def, use.discard, [...used, use.card]);
 }
@@ -317,7 +345,6 @@ export function applyInstall(
 ): void {
   const def = cardDefOf(ctx, s, a.card);
   payCard(ctx, s, a.player, a.card, def, a, events);
-  s.actionsLeft -= installActions(ctx, def);
   const slot =
     a.replace !== undefined
       ? removePermanent(s, a.player, a.replace, 'replaced', events)
@@ -327,6 +354,14 @@ export function applyInstall(
 }
 
 // ── Entrega (fase 7) e Revelação (fase 1 do alvo) ────────────────────────────
+
+/** Hex do alvo da carta (hex ou estrutura); null para alvos sem lugar no mapa. */
+export function targetHex(state: GameState, target: CardTarget | undefined): HexKey | null {
+  if (!target) return null;
+  if (target.kind === 'hex') return target.hex;
+  if (target.kind === 'structure') return findStructure(state, target.uid)?.key ?? null;
+  return null;
+}
 
 export function checkDeliver(
   ctx: EngineContext,
@@ -339,6 +374,11 @@ export function checkDeliver(
   if (p.deliveredThisTurn >= ctx.balance.cards.deliverPerTurn) return { key: 'alreadyDelivered' };
   const to = state.players[a.to];
   if (!to || a.to === a.player) return { key: 'invalidRecipient' };
+  if (to.eliminated) return { key: 'playerEliminated' };
+  // Anomalia Magnética: Sabotagem não alveja o hex nem os vizinhos (sem a inversão).
+  const target = targetHex(state, a.target);
+  const def0 = cardDefOf(ctx, state, a.card);
+  if (def0.valence === 'sabotage' && target && shieldedHex(ctx, state, target)) return { key: 'shielded' };
   const cap = ctx.balance.cards.receiveCapPerRound;
   if (to.receivedThisRound >= cap) return { key: 'receiveCapReached', params: { cap } };
   const def = cardDefOf(ctx, state, a.card);
@@ -390,9 +430,19 @@ export function revealIncoming(
     const sc = scope(ctx, s, d.from, d.card, player, 'resolve', d.sacrifice);
     const handler = effectOf(sc.def);
     const reason = handler.check(sc, d.target);
-    if (reason)
+    const at = targetHex(s, d.target);
+    if (!reason && sc.def.valence === 'sabotage' && at && shieldedHex(ctx, s, at)) {
+      events.push({ type: 'cardFizzled', from: d.from, to: player, card: d.card, reason: 'shielded' });
+    } else if (reason)
       events.push({ type: 'cardFizzled', from: d.from, to: player, card: d.card, reason: reason.key });
-    else handler.apply({ ...sc, events }, d.target);
+    else {
+      // Anomalia invertida: carta que alveja a área tem o efeito dobrado (aplica N vezes).
+      const times = at ? amplifyFactor(ctx, s, at) : 1;
+      for (let i = 0; i < times; i++) {
+        if (i > 0 && handler.check(sc, d.target)) break;
+        handler.apply({ ...sc, events }, d.target);
+      }
+    }
     toDiscard(ctx, s, d.card);
   }
 }

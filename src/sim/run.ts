@@ -37,7 +37,7 @@ export const DEFAULT_SIM: SimConfig = {
 };
 
 /** Camadas que a simulação aceita ligar hoje (as outras ainda não têm regra no motor). */
-export const SIM_LAYERS: readonly LayerName[] = ['cards', 'specialHexes'];
+export const SIM_LAYERS: readonly LayerName[] = ['cards', 'events', 'specialHexes'];
 
 /** Dados validados com o balance.json trocado; lança com a lista de erros. */
 export function simData(balance?: unknown): GameData {

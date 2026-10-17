@@ -226,6 +226,15 @@ function Results({ s }: { s: SimSummary }) {
   const rounds: BarRow[] = Object.entries(s.roundsHistogram)
     .sort((a, b) => Number(a[0]) - Number(b[0]))
     .map(([r, c]) => ({ key: r, label: t('lab.roundN', { n: r }), value: c, display: String(c) }));
+  const hazards: BarRow[] = Object.entries(s.hazards)
+    .sort((a, b) => b[1].hitGames / b[1].games - a[1].hitGames / a[1].games)
+    .map(([k, v]) => ({
+      key: k,
+      label: t(`terrain.${k}`),
+      value: v.hitGames / Math.max(1, v.games),
+      display: pct(v.hitGames / Math.max(1, v.games)),
+      title: t('lab.hazardTitle', { n: (v.hits / Math.max(1, v.games)).toFixed(2) }),
+    }));
   const played = s.cards.filter((c) => c.drawn > 0 || c.played > 0);
   const least = [...played].sort((a, b) => a.played - b.played || a.rate - b.rate).slice(0, 6);
 
@@ -298,6 +307,12 @@ function Results({ s }: { s: SimSummary }) {
           <figure>
             <figcaption className={hud.label}>{t('lab.winsByLevel')}</figcaption>
             <BarList rows={byLevel} label={t('lab.winsByLevel')} />
+          </figure>
+        )}
+        {hazards.length > 0 && (
+          <figure>
+            <figcaption className={hud.label}>{t('lab.hazards')}</figcaption>
+            <BarList rows={hazards} label={t('lab.hazards')} testId="chart-hazards" />
           </figure>
         )}
         <figure>

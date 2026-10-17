@@ -36,6 +36,8 @@ interface SceneStore {
   focus: FocusRequest | null;
   /** Hexes válidos para a ação escolhida; os demais escurecem (ART_DIRECTION 8). */
   targets: TargetSet | null;
+  /** Hexes que um evento global atingiu: contorno pulsante na cor da categoria (UX_SPEC 2.14). */
+  pulse: { readonly keys: ReadonlySet<HexKey>; readonly color: string } | null;
   fps: number;
   /** Degrau atual da qualidade adaptativa (0 = tudo ligado). */
   autoTier: number;
@@ -44,6 +46,7 @@ interface SceneStore {
   requestFocus(target: FocusTarget, instant?: boolean): void;
   setLocalPlayer(player: number): void;
   setTargets(targets: TargetSet | null): void;
+  setPulse(pulse: { readonly keys: ReadonlySet<HexKey>; readonly color: string } | null): void;
   setFps(fps: number): void;
   setAutoTier(tier: number): void;
 }
@@ -65,6 +68,7 @@ export const useSceneStore = create<SceneStore>()((set) => ({
   localPlayer: 0,
   focus: null,
   targets: null,
+  pulse: null,
   fps: 0,
   autoTier: 0,
   setHovered: (hovered) => set((s) => (s.hovered === hovered ? s : { hovered })),
@@ -75,6 +79,7 @@ export const useSceneStore = create<SceneStore>()((set) => ({
   requestFocus: (target, instant = false) => set({ focus: { target, instant, nonce: ++nonce } }),
   setLocalPlayer: (localPlayer) => set({ localPlayer }),
   setTargets: (targets) => set({ targets }),
+  setPulse: (pulse) => set({ pulse }),
   setFps: (fps) => set({ fps }),
   setAutoTier: (autoTier) => set({ autoTier }),
 }));

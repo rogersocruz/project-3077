@@ -60,6 +60,22 @@ const SAMPLES: GameEvent[] = [
   { type: 'cardTaken', player: 0, card: 9, deck: 'n1' },
   { type: 'roundEnded', round: 2 },
   { type: 'gameOver', winners: [0, 2], reason: 'condition' },
+  { type: 'eventRevealed', round: 2, event: 'ev_quake', category: 'seismic' },
+  { type: 'eventDeckReshuffled', size: 12 },
+  { type: 'hazardTriggered', hex: '0:1,0', hazard: 'volcano', effect: 'ashCloud' },
+  { type: 'hexStatus', hex: '0:1,0', status: 'ashUntil', until: 3 },
+  { type: 'hexContaminated', hex: '0:1,0', actions: 2 },
+  { type: 'hexCleaned', hex: '0:1,0', player: 0 },
+  { type: 'disaster', hex: '0:1,0', radius: 1 },
+  { type: 'volcanoErupted', hex: '0:1,0' },
+  { type: 'villageDamaged', player: 1, lives: 2 },
+  { type: 'playerEliminated', player: 2 },
+  { type: 'guardianSpawned', hex: '0:1,0', strength: 4 },
+  { type: 'hordeAttack', from: '0:1,0', to: '0:2,0', strength: 5, defense: 2, repelled: false },
+  { type: 'excavated', player: 0, hex: '0:1,0', site: 'temple' },
+  { type: 'treasureDrawn', player: 0, card: 0 },
+  { type: 'braced', player: 0, event: 'ev_plague' },
+  { type: 'eventFoodLoss', player: 1, amount: 2 },
 ];
 
 describe.each([

@@ -165,7 +165,15 @@ export type Cue =
       readonly card: CardRef;
       readonly report: IntelReport;
     }
-  | { readonly kind: 'taken'; readonly player: PlayerId; readonly card: CardRef; readonly deck: DrawDeck };
+  | { readonly kind: 'taken'; readonly player: PlayerId; readonly card: CardRef; readonly deck: DrawDeck }
+  // ── Eventos globais (Fase 6, UX_SPEC 2.14) ──
+  | {
+      readonly kind: 'worldEvent';
+      readonly event: string;
+      readonly category: string;
+      /** Hexes que o evento atingiu neste lote (pulsam na cor da categoria). */
+      readonly hexes: readonly HexKey[];
+    };
 
 /** Estrutura `uid` com a posição dentro do hex (procura em `primary`, depois em `fallback`). */
 function placed(primary: GameState, fallback: GameState, uid: number): PlacedStructureCue | null {
@@ -198,6 +206,29 @@ function scanOrigin(ctx: EngineContext, state: GameState, player: PlayerId, hex:
     best = { key: `${src.hex.boardId}:${src.hex.q},${src.hex.r}`, d };
   }
   return best?.key ?? null;
+}
+
+/** Hexes atingidos pelo evento do lote: gatilhos, marcas, desastres (com raio), guardiões, horda. */
+export function worldEventHexes(
+  ctx: EngineContext,
+  state: GameState,
+  events: readonly GameEvent[],
+): HexKey[] {
+  const out = new Set<HexKey>();
+  for (const e of events) {
+    if (e.type === 'hazardTriggered' || e.type === 'hexStatus' || e.type === 'hexContaminated')
+      out.add(e.hex);
+    else if (e.type === 'guardianSpawned' || e.type === 'volcanoErupted') out.add(e.hex);
+    else if (e.type === 'hordeAttack') out.add(e.to);
+    else if (e.type === 'disaster') {
+      const c = state.hexes[e.hex];
+      if (!c) continue;
+      for (const h of ctx.planet.hexes) {
+        if (ctx.planet.distance(c, h) <= e.radius) out.add(`${h.boardId}:${h.q},${h.r}`);
+      }
+    }
+  }
+  return [...out];
 }
 
 /** A carta `uid` como a animação a mostra. */
@@ -442,6 +473,21 @@ export function buildCues(ctx: EngineContext, batch: Batch): Cue[] {
         break;
       case 'cardTaken':
         cues.push({ kind: 'taken', player: e.player, card: card(e.card), deck: e.deck });
+        break;
+      case 'eventRevealed':
+        cues.push({
+          kind: 'worldEvent',
+          event: e.event,
+          category: e.category,
+          hexes: worldEventHexes(ctx, before, events),
+        });
+        break;
+      case 'treasureDrawn':
+        cues.push({ kind: 'draw', player: e.player, cards: [card(e.card)] });
+        break;
+      case 'eventFoodLoss':
+        if (e.amount > 0)
+          cues.push({ kind: 'resources', player: e.player, amounts: { food: e.amount }, sign: -1 });
         break;
       default:
         break;

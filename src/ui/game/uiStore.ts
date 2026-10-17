@@ -13,7 +13,9 @@ export type Modal =
   | { readonly kind: 'rules' }
   | { readonly kind: 'buildPicker' }
   /** Descartar até o limite antes de encerrar a Entrega. */
-  | { readonly kind: 'discard' };
+  | { readonly kind: 'discard' }
+  /** Zoom da carta do evento da rodada (Fase 6). */
+  | { readonly kind: 'event' };
 
 export interface Toast {
   readonly key: string;

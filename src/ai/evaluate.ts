@@ -118,7 +118,7 @@ export function evaluateParts(
           n = Math.min(left, s.tokens ?? def.tokens ?? ctx.balance.production.mineTokens);
         // Produção bloqueada agora custa uma produção.
         if (productionBlocked(state, hex, s) || (s.type === 'mine' && s.idle)) n = Math.max(0, n - 1);
-        income += yieldWorth(ctx, hex, s) * n;
+        income += yieldWorth(ctx, hex, s) * n * (1 - riskOf(ctx, state, hex, w));
       } else if (s.type === 'outpost') {
         capability += w.outpost * scale;
         // Nível do Posto: só o alcance importa (o raio do nível já está nas origens).
@@ -152,7 +152,10 @@ export function evaluateParts(
   if (state.layers.cards) {
     const limit = handLimit(ctx, state, me);
     const handValues = player.hand
-      .map((c) => tierValue(w.cardTier, cardDefOf(ctx, state, c).tier))
+      .map((c) => {
+        const def = cardDefOf(ctx, state, c);
+        return def.deck === 'treasure' ? w.treasureCard : tierValue(w.cardTier, def.tier);
+      })
       .sort((a, b) => b - a)
       .slice(0, limit);
     cards += handValues.reduce((a, b) => a + b, 0);
@@ -286,6 +289,21 @@ export function diminishing(values: readonly number[], weights: readonly number[
   for (let i = 0; i < Math.min(values.length, weights.length); i++)
     sum += (values[i] ?? 0) * (weights[i] ?? 0);
   return sum;
+}
+
+/**
+ * Risco de desastre do hex (Fase 6): com eventos, Montanha (Tremor) e a vizinhança de
+ * Vulcão, Geiser e Crosta Fina perdem parte do valor da renda futura.
+ */
+export function riskOf(ctx: EngineContext, state: GameState, hex: HexState, w: AiWeights): number {
+  if (!state.layers.events) return 0;
+  if (hex.surface === 'mountain') return w.hazardRisk;
+  for (const n of [hex, ...ctx.planet.neighbors(hex).map((b) => state.hexes[`${b.boardId}:${b.q},${b.r}`])]) {
+    const t = n ? ctx.terrain(n.surface) : null;
+    if (t?.kind === 'hazard' && (t.def.trigger === 'seismic' || t.def.trigger === 'thermal'))
+      return w.hazardRisk;
+  }
+  return 0;
 }
 
 export function evaluate(
