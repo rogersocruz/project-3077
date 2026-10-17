@@ -48,8 +48,23 @@ export class Director {
   private releaseIntel: (() => void) | null = null;
   private readonly active = new Map<gsap.core.Timeline, () => void>();
   private logId = 1;
+  /** Assentos de pessoas (Fase 5); null = todos humanos (hotseat). */
+  private humans: readonly boolean[] | null = null;
 
   constructor(private readonly deps: DirectorDeps) {}
+
+  /** Quem é pessoa e quem é IA: só pessoas recebem a tela de privacidade e relatórios. */
+  setHumans(humans: readonly boolean[] | null): void {
+    this.humans = humans;
+  }
+
+  private isHuman(player: PlayerId): boolean {
+    return !this.humans || this.humans[player] !== false;
+  }
+
+  private get spectator(): boolean {
+    return !!this.humans && this.humans.every((h) => !h);
+  }
 
   /** Nova partida, revanche ou desfazer: mostra `state` sem animar e acerta quem olha. */
   reset(
@@ -178,7 +193,18 @@ export class Director {
 
   private async ensureViewer(player: PlayerId, reason: GateReason, epoch: number): Promise<boolean> {
     if (usePresentation.getState().viewer === player) return false;
-    if (this.deps.privacy()) {
+    if (!this.isHuman(player)) {
+      // IA decide: com alguém jogando, a tela continua com a última pessoa (nada privado
+      // da IA aparece). Só IA (espectador): a tela acompanha quem decide, sem privacidade.
+      if (!this.spectator) return false;
+      usePresentation.setState({ viewer: player });
+      this.deps.setLocalPlayer(player);
+      return true;
+    }
+    // Uma pessoa só contra IA: não há com quem esconder a tela depois da primeira vez.
+    const humans = this.humans?.filter(Boolean).length ?? Infinity;
+    const seen = usePresentation.getState().viewer !== null;
+    if (this.deps.privacy() && !(humans === 1 && seen)) {
       usePresentation.setState({ gate: { player, reason } });
       this.syncBusy();
       await new Promise<void>((resolve) => (this.releaseGate = resolve));
@@ -305,7 +331,7 @@ export class Director {
       case 'intel': {
         // Relatório privado: só quem jogou vê, e a fila espera o "Entendi" (mesmo em
         // velocidade instantânea — é informação, não enfeite).
-        if (usePresentation.getState().viewer !== cue.player) return;
+        if (usePresentation.getState().viewer !== cue.player || !this.isHuman(cue.player)) return;
         usePresentation.setState({ intel: { player: cue.player, card: cue.card.id, report: cue.report } });
         await new Promise<void>((resolve) => (this.releaseIntel = resolve));
         this.releaseIntel = null;

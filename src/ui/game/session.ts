@@ -4,6 +4,7 @@
  * O save futuro (Fase 10) é exatamente `options` + `state.log`.
  */
 import { create } from 'zustand';
+import { type Agent, chooseAction, createAgent } from '../../ai';
 import { director, usePresentation } from '../../anim';
 import { loadGameData } from '../../data';
 import {
@@ -17,6 +18,9 @@ import {
   type EngineContext,
   type GameOptions,
   type GameState,
+  decider,
+  legalActions,
+  type PlayerId,
   undo,
 } from '../../engine';
 import type { GameSetup } from './params';
@@ -26,7 +30,11 @@ interface SessionStore {
   ctx: EngineContext | null;
   options: GameOptions | null;
   state: GameState | null;
+  /** Agente por assento (null = pessoa). */
+  agents: (Agent | null)[];
   start(setup: GameSetup): void;
+  /** Se quem decide agora é IA: escolhe e aplica pelo mesmo caminho dos botões. */
+  aiStep(): boolean;
   /** Confere e aplica; devolve o motivo quando a ação é ilegal (nada muda). */
   dispatch(action: Action): CheckResult;
   undo(): boolean;
@@ -39,12 +47,18 @@ export const useSession = create<SessionStore>()((set, get) => ({
   ctx: null,
   options: null,
   state: null,
+  agents: [],
 
   start: (setup) => {
     const ctx = createContext(loadGameData(), setup.players, setup.longMap);
     const options: GameOptions = { seed: setup.seed, longMap: setup.longMap, layers: { cards: setup.cards } };
     const state = createGame(ctx, options);
-    set({ setup, ctx, options, state });
+    // Agentes determinísticos pela seed da partida e pelo assento (Rng, nunca Math.random).
+    const agents = setup.seats.map((kind, i) =>
+      kind === 'human' ? null : createAgent(kind, `${setup.seed}:seat:${i}`),
+    );
+    set({ setup, ctx, options, state, agents });
+    director.setHumans(setup.seats.map((k) => k === 'human'));
     director.reset(ctx, state);
   },
 
@@ -57,6 +71,24 @@ export const useSession = create<SessionStore>()((set, get) => ({
     set({ state: next });
     director.enqueue({ before: state, after: next, events });
     return check;
+  },
+
+  aiStep: () => {
+    const { ctx, state, agents } = get();
+    if (!ctx || !state || state.stage === 'over') return false;
+    const agent = agents[decider(state)];
+    if (!agent) return false;
+    let action: Action;
+    try {
+      action = chooseAction(ctx, state, agent);
+    } catch (e) {
+      // A IA nunca pode travar a partida: na falha, a primeira ação legal (encerrar fase).
+      console.error('IA falhou; jogando a primeira ação legal', e);
+      const fallback = legalActions(ctx, state, decider(state));
+      action = fallback.find((a) => a.type === 'endPhase') ?? fallback[0]!;
+      if (!action) return false;
+    }
+    return get().dispatch(action).ok;
   },
 
   undo: () => {
@@ -74,5 +106,17 @@ export const useSession = create<SessionStore>()((set, get) => ({
     if (setup) get().start(setup);
   },
 
-  quit: () => set({ setup: null, ctx: null, options: null, state: null }),
+  quit: () => set({ setup: null, ctx: null, options: null, state: null, agents: [] }),
 }));
+
+/** O assento é de uma pessoa (sem partida, todos contam como pessoa). */
+export function isHuman(player: PlayerId): boolean {
+  const seats = useSession.getState().setup?.seats;
+  return !seats || seats[player] === undefined || seats[player] === 'human';
+}
+
+/** Há alguém diante da tela? Sem pessoa nenhuma é modo espectador. */
+export function anyHuman(): boolean {
+  const seats = useSession.getState().setup?.seats;
+  return !seats || seats.some((k) => k === 'human');
+}

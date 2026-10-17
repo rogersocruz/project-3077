@@ -7,6 +7,7 @@ import { NewGame } from './screens/NewGame';
 // three.js e a cena só baixam quando a mesa abre.
 const TableView = lazy(() => import('./screens/TableView').then((m) => ({ default: m.TableView })));
 const GameScreen = lazy(() => import('./screens/GameScreen').then((m) => ({ default: m.GameScreen })));
+const Lab = lazy(() => import('./screens/Lab').then((m) => ({ default: m.Lab })));
 const CardGallery = lazy(() => import('./screens/CardGallery').then((m) => ({ default: m.CardGallery })));
 
 export function App() {
@@ -35,6 +36,12 @@ export function App() {
       return (
         <Suspense fallback={null}>
           <CardGallery />
+        </Suspense>
+      );
+    case 'lab':
+      return (
+        <Suspense fallback={null}>
+          <Lab />
         </Suspense>
       );
     case 'newGame':

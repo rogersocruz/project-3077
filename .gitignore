@@ -5,3 +5,4 @@ test-results
 playwright-report
 screenshots
 *.local
+sim-out

@@ -31,6 +31,7 @@ import { DiscardModal, DrawChoice, TutorChoice } from '../hand/Choices';
 import { Hand } from '../hand/Hand';
 import { IntelReport } from '../hand/Intel';
 import { palette } from '../theme/tokens';
+import { useAiDriver } from '../game/aiDriver';
 import { parseGameParams, sameSetup } from '../game/params';
 import { useSession } from '../game/session';
 import { useGameShortcuts } from '../game/shortcuts';
@@ -178,6 +179,7 @@ export function GameScreen() {
 
   useGameShortcuts();
   useTargets();
+  useAiDriver();
 
   // Clique num hex destacado executa a ação escolhida.
   useEffect(() => onHexSelect((key) => key !== null && actOnHex(key)), []);

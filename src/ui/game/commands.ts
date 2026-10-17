@@ -21,15 +21,21 @@ import { useSceneStore } from '../../render3d/sceneStore';
 import { useSettings } from '../../settings';
 import { type CardFlow, flowAction, flowCheck, flowTargets, flowUse, startFlow, targetsAt } from './cardFlow';
 import { perform } from './hooks';
-import { useSession } from './session';
+import { isHuman, useSession } from './session';
 import { NOT_ARMED, useUi } from './uiStore';
 
-/** Pode agir agora: nada tocando, partida em curso e quem olha é quem decide. */
+/** Pode agir agora: nada tocando, partida em curso e quem olha é quem decide (e é pessoa). */
 export function canDecideNow(): boolean {
   const { busy, viewer, shown } = usePresentation.getState();
   const state = useSession.getState().state;
   return (
-    !busy && !!state && !!shown && shown.stage !== 'over' && viewer !== null && decider(state) === viewer
+    !busy &&
+    !!state &&
+    !!shown &&
+    shown.stage !== 'over' &&
+    viewer !== null &&
+    isHuman(viewer) &&
+    decider(state) === viewer
   );
 }
 

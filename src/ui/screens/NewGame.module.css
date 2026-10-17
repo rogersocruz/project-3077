@@ -75,10 +75,16 @@
   gap: 8px;
 }
 
-.seats li span:last-child {
+.seatKind {
   margin-left: auto;
-  color: var(--frame-edge);
   font-size: 12px;
+}
+
+.seatPresets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
 }
 
 .option {

@@ -17,7 +17,8 @@ export function useCanDecide(): boolean {
   const locked = useLocked();
   const viewer = usePresentation((s) => s.viewer);
   const state = useSession((s) => s.state);
-  return !locked && !!state && viewer !== null && decider(state) === viewer;
+  const human = useSession((s) => viewer === null || (s.setup?.seats[viewer] ?? 'human') === 'human');
+  return !locked && !!state && viewer !== null && human && decider(state) === viewer;
 }
 
 export function useInstantCounters(): boolean {

@@ -38,6 +38,7 @@ function PlayerCard({ state, id }: { state: GameState; id: PlayerId }) {
   const viewer = usePresentation((s) => s.viewer);
   const instant = useInstantCounters();
   const requestFocus = useSceneStore((s) => s.requestFocus);
+  const kind = useSession((s) => s.setup?.seats[id] ?? 'human');
   const player = state.players[id];
   const prog = useMemo(() => (ctx ? progress(ctx, state, id) : null), [ctx, state, id]);
   if (!ctx || !player || !prog) return null;
@@ -77,7 +78,12 @@ function PlayerCard({ state, id }: { state: GameState; id: PlayerId }) {
       <div className={styles.cardSub}>
         <span>{t('hud.player', { n: id + 1 })}</span>
         {active && <span className={styles.badgeActive}>{t('hud.active')}</span>}
-        {viewer === id && <span className={styles.badgeYou}>{t('hud.you')}</span>}
+        {kind !== 'human' && (
+          <span className={styles.badgeAi} title={t(`newGame.seat.${kind}`)} data-testid={`ai-${id}`}>
+            {t('hud.ai')}
+          </span>
+        )}
+        {viewer === id && kind === 'human' && <span className={styles.badgeYou}>{t('hud.you')}</span>}
         {state.layers.cards && (
           <span className={styles.cardCounts}>
             <span title={t('hud.handCount', { count: player.hand.length })} data-testid={`hand-count-${id}`}>

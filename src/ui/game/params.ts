@@ -1,9 +1,15 @@
 /**
- * Parâmetros da partida na URL: `?view=game&players=3&seed=1&long=0&cards=1` e, para capturas
+ * Parâmetros da partida na URL: `?view=game&players=3&seed=1&long=0&cards=1` e os assentos
+ * (Fase 5): `seats=human,normal,hard` (um por jogador; falta = humano) ou `ai=all|easy|
+ * normal|hard` (todos IA: modo espectador; `all` = Normal). Para capturas
  * reproduzíveis e testes, `speed=0.5|1|2|instant`, `privacy=0|1`, `quality`, `post`,
  * `adaptive`. Os de apresentação gravam nas configurações.
  */
+import { type AiLevel, isAiLevel } from '../../ai/types';
 import type { AnimationSpeed, Quality } from '../../settings';
+
+/** Quem joga no assento: pessoa (hotseat) ou IA de um nível. */
+export type SeatKind = 'human' | AiLevel;
 
 export interface GameSetup {
   readonly players: number;
@@ -11,7 +17,23 @@ export interface GameSetup {
   readonly longMap: boolean;
   /** Camada de cartas (Fase 4; padrão ligada, `cards=0` desliga). */
   readonly cards: boolean;
+  /** Um por jogador (Fase 5). */
+  readonly seats: readonly SeatKind[];
 }
+
+export function parseSeats(players: number, seats: string | null, ai: string | null): SeatKind[] {
+  if (ai !== null) {
+    const level: AiLevel = ai === 'all' || !isAiLevel(ai) ? 'normal' : ai;
+    return Array.from({ length: players }, () => level);
+  }
+  const list = (seats ?? '').split(',');
+  return Array.from({ length: players }, (_, i) => {
+    const v = list[i]?.trim();
+    return isAiLevel(v) ? v : 'human';
+  });
+}
+
+export const isSpectator = (seats: readonly SeatKind[]) => seats.every((k) => k !== 'human');
 
 export interface GameParams {
   readonly setup: GameSetup;
@@ -26,16 +48,18 @@ const flag = (v: string | null): boolean | null => (v === null ? null : v !== '0
 
 export function parseGameParams(search: string): GameParams {
   const p = new URLSearchParams(search);
-  const players = Number(p.get('players') ?? 3);
+  const rawPlayers = Number(p.get('players') ?? 3);
+  const players = Number.isInteger(rawPlayers) && rawPlayers >= 3 && rawPlayers <= 6 ? rawPlayers : 3;
   const seed = Number(p.get('seed') ?? 1);
   const speed = p.get('speed');
   const q = p.get('quality');
   return {
     setup: {
-      players: Number.isInteger(players) && players >= 3 && players <= 6 ? players : 3,
+      players,
       seed: Number.isInteger(seed) && seed >= 0 ? seed : 1,
       longMap: p.get('long') === '1',
       cards: p.get('cards') !== '0',
+      seats: parseSeats(players, p.get('seats'), p.get('ai')),
     },
     speed:
       speed === 'instant' ? 'instant' : speed === '0.5' ? 0.5 : speed === '1' ? 1 : speed === '2' ? 2 : null,
@@ -47,4 +71,9 @@ export function parseGameParams(search: string): GameParams {
 }
 
 export const sameSetup = (a: GameSetup | null, b: GameSetup) =>
-  !!a && a.players === b.players && a.seed === b.seed && a.longMap === b.longMap && a.cards === b.cards;
+  !!a &&
+  a.players === b.players &&
+  a.seed === b.seed &&
+  a.longMap === b.longMap &&
+  a.cards === b.cards &&
+  a.seats.join() === b.seats.join();

@@ -6,7 +6,7 @@
 import { useTranslation } from 'react-i18next';
 import { usePresentation } from '../../anim';
 import { RESOURCE_IDS } from '../../data/schemas';
-import { type ActionTemplate, canUndo } from '../../engine';
+import { type ActionTemplate, canUndo, decider } from '../../engine';
 import { useSettings } from '../../settings';
 import { Icon, ResourceIcon, RollingNumber } from '../components/Bits';
 import {
@@ -20,6 +20,7 @@ import {
 } from '../game/commands';
 import { useCanDecide, useInstantCounters } from '../game/hooks';
 import { useSession } from '../game/session';
+import { playerName } from '../game/text';
 import { useUi } from '../game/uiStore';
 import { cardFace } from '../card/faces';
 import { MiniCard } from '../hand/MiniCard';
@@ -47,10 +48,15 @@ export function BottomBar() {
   const modal = useUi((s) => s.modal);
   const undoOn = useSettings((s) => s.gameplay.undo);
   const canDecide = useCanDecide();
+  const seats = useSession((s) => s.setup?.seats);
   const instant = useInstantCounters();
   if (!ctx || !state || !turn) return null;
 
   const me = viewer ?? turn.activePlayer;
+  // Vez de um assento de IA: a barra diz quem está pensando (a entrada fica travada).
+  const who = state.stage === 'over' ? null : decider(state);
+  const aiName =
+    who !== null && seats?.[who] !== undefined && seats[who] !== 'human' ? playerName(t, who) : null;
   const res = counters[me];
   const total = ctx.balance.turn.actionsPerTurn;
   const playing = turn.stage === 'playing';
@@ -69,11 +75,13 @@ export function BottomBar() {
       })
     : armedNames
       ? t('hud.armed', { list: armedNames })
-      : turn.stage === 'setup' && canDecide
-        ? t('hud.setupHint')
-        : mineTurn && state.phase === 'delivery' && state.layers.cards
-          ? t('hud.deliveryHint')
-          : '';
+      : aiName
+        ? t('hud.aiThinking', { name: aiName })
+        : turn.stage === 'setup' && canDecide
+          ? t('hud.setupHint')
+          : mineTurn && state.phase === 'delivery' && state.layers.cards
+            ? t('hud.deliveryHint')
+            : '';
   const mySlots = shown?.players[me]?.permanents ?? [];
 
   return (

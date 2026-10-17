@@ -14,10 +14,11 @@
     "typeNumeric": "Rajdhani 700 — numbers",
     "typeBody": "Barlow 500 — effect text, with **KEYWORDS** in bold",
     "typeLore": "Barlow italic 400 — lore and dialogue",
-    "status": "Phase 3 · playable hotseat match — Economy layer",
+    "status": "Phase 5 · AI and Laboratory — Economy and Cards",
     "versionTag": "v0.3",
     "play": "New game",
-    "showcase": "3D table · showcase"
+    "showcase": "3D table · showcase",
+    "lab": "Laboratory"
   },
   "resources": {
     "food": "Food",
@@ -167,7 +168,7 @@
   "hexLabel": "B{{board}} ({{q}}, {{r}})",
   "newGame": {
     "title": "New game",
-    "subtitle": "Hotseat · Economy layer",
+    "subtitle": "Hotseat or against the AI · Economy and Cards",
     "players": "Players",
     "human": "Human",
     "map": "Map",
@@ -178,7 +179,17 @@
     "privacy": "Privacy screen between players",
     "layersNote": "Events, troops, treaties and factions come in the next phases.",
     "start": "Start",
-    "cards": "Card layer (n1/n2/n3 decks, deliveries and permanents)"
+    "cards": "Card layer (n1/n2/n3 decks, deliveries and permanents)",
+    "seatLabel": "Who plays as {{player}}",
+    "seat": {
+      "human": "Human",
+      "easy": "AI Easy",
+      "normal": "AI Normal",
+      "hard": "AI Hard"
+    },
+    "vsAi": "Me vs the AI",
+    "watchAi": "AI only (watch)",
+    "allHuman": "All human"
   },
   "phases": {
     "reveal": "Reveal",
@@ -279,7 +290,9 @@
     "incoming_other": "{{count}} envelopes to reveal",
     "armed": "{{list}} armed: choose Survey (R) or Build (B) · Esc disarms",
     "deliveryHint": "Delivery: click a card to deliver it, or end the turn",
-    "permanentsOf": "{{name}}'s permanents"
+    "permanentsOf": "{{name}}'s permanents",
+    "ai": "AI",
+    "aiThinking": "{{name}} is thinking…"
   },
   "noTargets": {
     "explore": "No hex to explore: only neighbours of revealed hexes on your board.",
@@ -580,5 +593,62 @@
     "level": "level {{level}}",
     "produces": "yields {{list}}",
     "ok": "Got it"
+  },
+  "lab": {
+    "title": "Laboratory",
+    "subtitle": "Design tool: tune the tabletop numbers with AI vs AI games.",
+    "balance": "balance.json",
+    "restore": "Restore",
+    "export": "Export balance.json",
+    "balanceNote": "Edits stay in this browser only; the file does not change. Export to bring them to the repository.",
+    "provisional": "PROV",
+    "provisionalHint": "Provisional value (DECISOES_ABERTAS)",
+    "original": "Value in the file",
+    "simulator": "Simulator",
+    "games": "Games",
+    "players": "Players",
+    "seed": "First seed",
+    "level": "AI",
+    "levelMix": "Mixed (Easy, Normal, Hard)",
+    "style": "Strategy",
+    "styleMixed": "Random route per seat",
+    "styleBalanced": "No focus (balanced)",
+    "layers": "Layers",
+    "layer": {
+      "economy": "Economy",
+      "cards": "Cards",
+      "specialHexes": "Special hexes (inert until Phase 6)"
+    },
+    "layersNote": "Events, troops, treaties and factions join the simulator with their phases.",
+    "invalid": "Invalid balance — fix it before simulating:",
+    "run": "Simulate",
+    "stop": "Stop",
+    "progress": "{{done}}/{{total}} games",
+    "elapsed": "{{s}} s",
+    "results": "Results",
+    "csvGames": "games.csv",
+    "csvCards": "cards.csv",
+    "txtSummary": "Summary (.txt)",
+    "meanRounds": "Mean rounds",
+    "roundLimitRate": "Hit the round limit",
+    "tradesPerGame": "Trades per game",
+    "cpuPerGame": "CPU per game",
+    "winsByTrack": "Wins by condition",
+    "winsByFocus": "Win by own route (who pursued it)",
+    "winsBySeat": "Wins by turn position",
+    "winsByLevel": "Wins by AI level",
+    "duration": "Length (rounds)",
+    "roundN": "Round {{n}}",
+    "focusTitle": "{{seats}} seats · won {{wins}} · by own route {{own}}",
+    "resources": "Resources per game",
+    "produced": "Produced",
+    "bank": "Bank",
+    "traded": "Between players",
+    "cardsMost": "Most played cards",
+    "cardsLeast": "Least played cards",
+    "track": {
+      "expansion": "Expansion",
+      "roundLimit": "Round limit"
+    }
   }
 }

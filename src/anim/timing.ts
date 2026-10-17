@@ -33,6 +33,8 @@ export const T = {
   revealHold: 0.8,
   steal: 0.75,
   sink: 0.5,
+  /** IA (Fase 5): pausa antes de cada decisão, para a mesa ser legível. */
+  aiThink: 0.35,
 } as const;
 
 export const EASE = {

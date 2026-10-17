@@ -14,10 +14,11 @@
     "typeNumeric": "Rajdhani 700 — números",
     "typeBody": "Barlow 500 — texto de efeito, com **PALAVRAS-CHAVE** em negrito",
     "typeLore": "Barlow itálico 400 — lore e diálogos",
-    "status": "Fase 3 · partida jogável em hotseat — camada de Economia",
+    "status": "Fase 5 · IA e Laboratório — Economia e Cartas",
     "versionTag": "v0.3",
     "play": "Nova partida",
-    "showcase": "Mesa 3D · vitrine"
+    "showcase": "Mesa 3D · vitrine",
+    "lab": "Laboratório"
   },
   "resources": {
     "food": "Comida",
@@ -167,7 +168,7 @@
   "hexLabel": "T{{board}} ({{q}}, {{r}})",
   "newGame": {
     "title": "Nova partida",
-    "subtitle": "Hotseat · camada de Economia",
+    "subtitle": "Hotseat ou contra a IA · Economia e Cartas",
     "players": "Jogadores",
     "human": "Humano",
     "map": "Mapa",
@@ -178,7 +179,17 @@
     "privacy": "Tela de privacidade entre jogadores",
     "layersNote": "Eventos, tropas, tratados e facções entram nas próximas fases.",
     "start": "Iniciar",
-    "cards": "Camada de cartas (baralhos n1/n2/n3, entrega e permanentes)"
+    "cards": "Camada de cartas (baralhos n1/n2/n3, entrega e permanentes)",
+    "seatLabel": "Quem joga como {{player}}",
+    "seat": {
+      "human": "Humano",
+      "easy": "IA Fácil",
+      "normal": "IA Normal",
+      "hard": "IA Difícil"
+    },
+    "vsAi": "Eu contra a IA",
+    "watchAi": "Só IA (assistir)",
+    "allHuman": "Todos humanos"
   },
   "phases": {
     "reveal": "Revelação",
@@ -279,7 +290,9 @@
     "incoming_other": "{{count}} envelopes a revelar",
     "armed": "{{list}} armado: escolha Sondar (R) ou Construir (B) · Esc desarma",
     "deliveryHint": "Entrega: clique numa carta para entregá-la, ou encerre o turno",
-    "permanentsOf": "Permanentes de {{name}}"
+    "permanentsOf": "Permanentes de {{name}}",
+    "ai": "IA",
+    "aiThinking": "{{name}} está pensando…"
   },
   "noTargets": {
     "explore": "Não há hex para explorar: só vizinhos de hexes revelados do seu tabuleiro.",
@@ -580,5 +593,62 @@
     "level": "nível {{level}}",
     "produces": "rende {{list}}",
     "ok": "Entendi"
+  },
+  "lab": {
+    "title": "Laboratório",
+    "subtitle": "Ferramenta de design: calibra os números do jogo físico com partidas IA × IA.",
+    "balance": "balance.json",
+    "restore": "Restaurar",
+    "export": "Exportar balance.json",
+    "balanceNote": "Edições ficam só neste navegador; o arquivo não muda. Exporte para levar ao repositório.",
+    "provisional": "PROV",
+    "provisionalHint": "Valor provisório (DECISOES_ABERTAS)",
+    "original": "Valor do arquivo",
+    "simulator": "Simulador",
+    "games": "Partidas",
+    "players": "Jogadores",
+    "seed": "Seed inicial",
+    "level": "IA",
+    "levelMix": "Misturada (Fácil, Normal, Difícil)",
+    "style": "Estratégia",
+    "styleMixed": "Rotas sorteadas por assento",
+    "styleBalanced": "Sem foco (equilibrada)",
+    "layers": "Camadas",
+    "layer": {
+      "economy": "Economia",
+      "cards": "Cartas",
+      "specialHexes": "Hexes especiais (inertes até a Fase 6)"
+    },
+    "layersNote": "Eventos, tropas, tratados e facções entram no simulador com as fases deles.",
+    "invalid": "balance inválido — corrija antes de simular:",
+    "run": "Simular",
+    "stop": "Parar",
+    "progress": "{{done}}/{{total}} partidas",
+    "elapsed": "{{s}} s",
+    "results": "Resultados",
+    "csvGames": "games.csv",
+    "csvCards": "cards.csv",
+    "txtSummary": "Resumo (.txt)",
+    "meanRounds": "Rodadas em média",
+    "roundLimitRate": "No limite de rodadas",
+    "tradesPerGame": "Trocas por partida",
+    "cpuPerGame": "CPU por partida",
+    "winsByTrack": "Vitórias por condição",
+    "winsByFocus": "Vitória pela própria rota (quem a perseguiu)",
+    "winsBySeat": "Vitórias por posição de turno",
+    "winsByLevel": "Vitórias por nível de IA",
+    "duration": "Duração (rodadas)",
+    "roundN": "Rodada {{n}}",
+    "focusTitle": "{{seats}} assentos · venceram {{wins}} · pela própria rota {{own}}",
+    "resources": "Recursos por partida",
+    "produced": "Produzido",
+    "bank": "Banca",
+    "traded": "Entre jogadores",
+    "cardsMost": "Cartas mais jogadas",
+    "cardsLeast": "Cartas menos jogadas",
+    "track": {
+      "expansion": "Expansão",
+      "roundLimit": "Limite de rodadas"
+    }
   }
 }

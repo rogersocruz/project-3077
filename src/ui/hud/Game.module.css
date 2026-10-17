@@ -325,7 +325,8 @@
 }
 
 .badgeActive,
-.badgeYou {
+.badgeYou,
+.badgeAi {
   padding: 0 5px;
   font-family: var(--font-display);
   font-weight: 700;
@@ -343,6 +344,11 @@
 .badgeYou {
   color: var(--paper-100);
   border: 1px solid var(--frame-edge);
+}
+
+.badgeAi {
+  color: var(--frame-edge);
+  border: 1px dashed var(--frame-edge);
 }
 
 .tracks {

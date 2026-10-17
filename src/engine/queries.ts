@@ -98,7 +98,14 @@ export function levelDef(ctx: EngineContext, s: Pick<StructureState, 'type' | 'l
 
 /** Maior nível de um tipo de estrutura que o jogador possui (0 se nenhuma). */
 export function maxLevelOf(state: GameState, player: PlayerId, type: string): number {
-  return ownedStructures(state, player, type).reduce((m, p) => Math.max(m, p.structure.level), 0);
+  // Caminho quente (banca, alcance, desbloqueios): varre sem montar nem ordenar lista.
+  let best = 0;
+  for (const hex of Object.values(state.hexes)) {
+    for (const s of hex.structures) {
+      if (s.owner === player && s.type === type && s.level > best) best = s.level;
+    }
+  }
+  return best;
 }
 
 export function villageLevel(state: GameState, player: PlayerId): number {

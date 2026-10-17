@@ -13,7 +13,7 @@
     "lint": "eslint . && prettier --check .",
     "format": "prettier --write .",
     "typecheck": "tsc --noEmit",
-    "sim": "tsx scripts/not-implemented.ts sim",
+    "sim": "tsx scripts/sim.ts",
     "data:check": "tsx scripts/data-check.ts",
     "art:check": "tsx scripts/not-implemented.ts art:check"
   },

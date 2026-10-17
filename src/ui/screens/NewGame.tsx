@@ -1,6 +1,7 @@
 /**
- * Nova partida mínima: jogadores, seed, tamanho do mapa e a camada de Cartas (Fase 4),
- * todos humanos em hotseat. O setup completo (UX_SPEC 2.3) é da Fase 10.
+ * Nova partida mínima: jogadores, quem joga cada assento (pessoa ou IA, Fase 5), seed,
+ * tamanho do mapa e a camada de Cartas (Fase 4). Todos IA = modo espectador. O setup
+ * completo (UX_SPEC 2.3) é da Fase 10.
  */
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -8,12 +9,15 @@ import { freshSeed } from '../../engine/rng';
 import { seatFaction } from '../../render3d/model';
 import { useSettings } from '../../settings';
 import { FactionBadge } from '../components/Bits';
+import type { SeatKind } from '../game/params';
 import { playerName } from '../game/text';
 import hud from '../hud/Hud.module.css';
 import { useNav } from '../nav';
 import styles from './NewGame.module.css';
 
 const COUNTS = [3, 4, 5, 6];
+const KINDS: readonly SeatKind[] = ['human', 'easy', 'normal', 'hard'];
+const MAX = COUNTS[COUNTS.length - 1] ?? 6;
 
 export function NewGame() {
   const { t } = useTranslation();
@@ -24,6 +28,10 @@ export function NewGame() {
   const [seed, setSeed] = useState(() => freshSeed());
   const [longMap, setLongMap] = useState(false);
   const [cards, setCards] = useState(true);
+  // Assentos guardados para 6: mudar a contagem não perde a escolha.
+  const [seats, setSeats] = useState<SeatKind[]>(() => Array.from({ length: MAX }, () => 'human'));
+  const active = seats.slice(0, players);
+  const setSeat = (i: number, kind: SeatKind) => setSeats((list) => list.map((k, j) => (j === i ? kind : k)));
 
   return (
     <main className={styles.screen}>
@@ -31,7 +39,7 @@ export function NewGame() {
         className={`${hud.plate} ${hud.rivets} ${styles.panel}`}
         onSubmit={(e) => {
           e.preventDefault();
-          go('game', { players, seed, long: longMap, cards });
+          go('game', { players, seed, long: longMap, cards, seats: active.join(',') });
         }}
       >
         <header className={styles.head}>
@@ -56,14 +64,50 @@ export function NewGame() {
             ))}
           </div>
           <ul className={styles.seats}>
-            {Array.from({ length: players }, (_, i) => (
+            {active.map((kind, i) => (
               <li key={i}>
                 <FactionBadge faction={seatFaction(i)} size={16} />
                 <span>{playerName(t, i)}</span>
-                <span className={hud.muted}>{t('newGame.human')}</span>
+                <select
+                  className={styles.seatKind}
+                  value={kind}
+                  onChange={(e) => setSeat(i, e.target.value as SeatKind)}
+                  aria-label={t('newGame.seatLabel', { player: playerName(t, i) })}
+                  data-testid={`seat-${i}`}
+                >
+                  {KINDS.map((k) => (
+                    <option key={k} value={k}>
+                      {t(`newGame.seat.${k}`)}
+                    </option>
+                  ))}
+                </select>
               </li>
             ))}
           </ul>
+          <div className={styles.seatPresets}>
+            <button
+              type="button"
+              className={hud.btn}
+              onClick={() => setSeats((list) => list.map((_, i) => (i === 0 ? 'human' : 'normal')))}
+            >
+              {t('newGame.vsAi')}
+            </button>
+            <button
+              type="button"
+              className={hud.btn}
+              onClick={() => setSeats((list) => list.map(() => 'normal'))}
+              data-testid="all-ai"
+            >
+              {t('newGame.watchAi')}
+            </button>
+            <button
+              type="button"
+              className={hud.btn}
+              onClick={() => setSeats((list) => list.map(() => 'human'))}
+            >
+              {t('newGame.allHuman')}
+            </button>
+          </div>
         </fieldset>
 
         <fieldset className={styles.field}>

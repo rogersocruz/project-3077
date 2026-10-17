@@ -32,6 +32,9 @@ export function Home() {
         >
           {t('home.play')}
         </button>
+        <button type="button" className={hud.btn} onClick={() => go('lab')} data-testid="open-lab">
+          {t('home.lab')}
+        </button>
         <button type="button" className={hud.btn} onClick={() => go('table')}>
           {t('home.showcase')}
         </button>

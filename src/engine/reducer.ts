@@ -195,10 +195,12 @@ function apply(ctx: EngineContext, s: GameState, action: Action, events: GameEve
 export function applyAction(ctx: EngineContext, state: GameState, action: Action): ApplyResult {
   const check = checkAction(ctx, state, action);
   if (!check.ok) throw new IllegalActionError(check.reason);
-  const next = structuredClone(state);
+  // O log só cresce e suas ações nunca mudam: copia o estado sem ele e reaproveita as
+  // entradas (copiar o histórico inteiro a cada ação deixava a partida O(n²)).
+  const next = structuredClone<GameState>({ ...state, log: [] });
   const events: GameEvent[] = [];
   apply(ctx, next, action, events);
-  next.log.push(structuredClone(action));
+  next.log = [...state.log, structuredClone(action)];
   return { state: next, events };
 }
 

@@ -83,7 +83,7 @@ npm run build        build de produção
 npm run test         Vitest
 npm run test:e2e     Playwright
 npm run lint         ESLint
-npm run sim -- --games 200 --players 4 --seed 1   simulação sem renderização
+npm run sim -- --games 200 --players 4 --seed 1   simulação IA × IA sem renderização
 npm run data:check   valida data/*.json contra os esquemas e effectIds
 npm run art:check    lista arte faltante do manifesto
 ```
@@ -97,8 +97,46 @@ npm run art:check    lista arte faltante do manifesto
 - Se uma regra do GDD parecer contraditória, **pare e pergunte** — não invente.
 
 ## Estado atual
-- Fase concluída: 4 — Cartas
-- Próxima fase: 5 — IA básica e Laboratório (fim da rota rápida)
+- Fase concluída: 5 — IA básica e Laboratório (fim da rota rápida)
+- Próxima fase: 6 — Eventos, hazards, sítios e tesouro
+- IA e Laboratório (Fase 5):
+  - Jogar contra a IA: Nova partida → assento Humano/IA Fácil/Normal/Difícil (ou URL
+    `seats=human,normal,hard`); só IA (espectador): `ai=all|easy|normal|hard`. Laboratório:
+    Home → "Laboratório" ou `/?view=lab`. Simulador: `npm run sim -- --games 200 --players 4
+    --seed 1 [--level easy,normal,hard] [--style mixed|balanced] [--layers cards,specialHexes]
+    [--balance arquivo.json] [--workers N] [--out sim-out]` → `sim-out/` (fora do git).
+  - IA (`src/ai/`): `chooseAction(ctx, state, agent)` escolhe entre `legalActions`/
+    `checkAction` (nunca reimplementa regra). `evaluate.ts` = valor do estado em pontos de
+    recurso (estoque, trilhas, renda futura, capacidades, sítios abertos, cartas); pesos em
+    `weights.ts` (gosto da IA, não regra). Explorar/Sondar/Comprar valem pelo valor
+    esperado de tiles.json (`expect.ts`): a IA não espia o escondido (teste). Plano
+    "banca + construir" quando só falta recurso. Fácil = sorteio ponderado; Normal =
+    guloso 1 passo; Difícil = 2 ações + escolhe a rota mais promissora a cada turno.
+    Trocas: aceita se ganha valor e não entrega vitória; propõe 1:1 no máximo 1×/turno.
+    Medido: Difícil 40% > Normal 29% > Fácil ~1% por assento.
+  - Simulador (`src/sim/`): `game.ts` (uma partida + registro), `run.ts` (lote, balance
+    validado, fatias), `report.ts` (resumo, CSV), `worker.ts` (Web Worker do Laboratório);
+    `scripts/sim.ts` + `sim-worker.ts` (worker_threads). `--style mixed` sorteia uma rota
+    por assento para medir cada condição. 200 partidas/4 jogadores ≈ 46 s.
+  - Resultados e sugestões para D1–D7: **`docs/SIMULACAO.md`** (balance.json intocado).
+  - Interface: `ui/game/aiDriver.ts` joga pela sessão quando a fila para (pausa trava;
+    `T.aiThink`); selo "IA" no painel, "{facção} está pensando…" na barra. Diretor:
+    `director.setHumans(mask)` — privacidade só para pessoas; com uma pessoa só, a tela fica
+    com ela; só IA, a tela segue quem decide e relatórios de carta não esperam clique.
+    `canDecideNow`/`useCanDecide` exigem assento humano.
+  - Laboratório (`ui/screens/Lab.tsx`, `ui/lab/`): edita todo número/booleano de
+    balance.json (rascunho em localStorage `p3077.lab.balance`, nunca no arquivo), selo PROV,
+    valor original ao lado, restaurar, exportar; camadas; simulação em Web Workers com
+    progresso, gráficos de barras, tabelas e download de CSV/resumo.
+  - Desempenho do motor: `applyAction` não copia mais o log inteiro a cada ação;
+    `maxLevelOf` varre sem montar lista. (Teste: `structuredClone` segue no reducer — uma
+    cópia JSON manual deixou o V8 mais lento no jogo real.)
+  - Testes: `ai/agent.test.ts` (partidas nos 3 níveis, determinismo, não espiar, trocas),
+    `sim/report.test.ts`, `e2e/ai.spec.ts` (Laboratório, espectador até o fim, pessoa × IA;
+    capturas `screenshots/phase5-*`).
+  - Fora da fase: IA de tropas/combate (7) e tratados (8; validade do tratado será lógica
+    de regra no motor, não IA), Laboratório jogar partida com o balance editado, gráficos
+    por facção (facções na Fase 9; hoje assento = facção).
 - Cartas (Fase 4):
   - Jogar: `/?view=game&players=3&seed=1` (camada de cartas ligada por padrão; `cards=0`
     desliga; também na Nova partida). Galeria de desenvolvimento: `/?view=cards`
@@ -249,5 +287,5 @@ npm run art:check    lista arte faltante do manifesto
   - `data:check` ainda não confere `effectId` contra o registro (entra na Fase 4).
   - Valores duplicados entre `balance.json` e `structures.json` (produção do Parque e
     da Pedreira, multiplicador e tokens da Mina) são checados por coerência.
-  - `npm run sim` e `npm run art:check` respondem "não implementado".
+  - `npm run art:check` responde "não implementado" (Fase 12); `npm run sim` chegou na Fase 5.
   - Capturas de tela do Playwright vão para `screenshots/` (fora do git).
