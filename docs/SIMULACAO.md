@@ -121,3 +121,28 @@ cópias no Tesouro de 15, e o Templo dá 2 cartas. Sugestões (nada aplicado): C
 | Petróleo | 0,5% | 3,5% |
 | Expansão | 8,0% | 2,5% |
 | Pedregulho | 4,0% | 1,5% |
+
+## Fase 7 — Tropas e combate
+
+Comando: `npm run sim -- --games 200 --players 4 --seed 1 --layers cards,events,specialHexes,conflict --out simulations/phase7`
+(seeds 1–200, IA normal nos 4 assentos, ~95 s). Intervalos de 95% de Wilson.
+
+| Condição | Vitórias [IC 95%] |
+|---|---|
+| Carvão | 46,5% [39,7–53,4] |
+| Ouro | 42,0% [35,4–48,9] |
+| Comida | 3,5% [1,7–7,0] |
+| Petróleo | 3,0% [1,4–6,4] |
+| Expansão | 3,0% [1,4–6,4] |
+| Ferro | 1,5% [0,5–4,3] |
+| Pedregulho | 1,0% [0,3–3,6] |
+| Limite de rodadas | 0,5% [0,1–2,8] |
+| Eliminação | 0,0% [0,0–1,9] |
+
+Por partida: 5,13 recrutamentos, 0,23 combates, 0,28 ataques à Vila, 0,10 eliminações de
+jogador (nenhuma decidiu a partida).
+
+Leitura: o combate funciona (o exemplo 8.4.1 é teste de aceite), mas **a IA quase não o
+usa** — recruta para defesa e raramente ataca, porque a corrida econômica (Carvão/Ouro)
+termina antes de um ataque compensar. A rota militar só deve ser avaliada depois da IA de
+tribo/agressão (Fase 9) e do ajuste do Cofre Precursor (ver Fase 6).

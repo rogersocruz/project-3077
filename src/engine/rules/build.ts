@@ -215,12 +215,16 @@ export function checkBuild(
   if (!rarityUnlocked(state, player, def.rarity)) {
     return { key: 'rarityLocked', params: { structure, university: def.rarity } };
   }
-  if (!inRange(ctx, state, player, hex, { bonus: mods.droneBonus ?? 0 })) return { key: 'outOfRange' };
+  // GDD 6.3: no raio ou em hex próprio com tropa sua.
+  const troopHere =
+    hex.boardId === getPlayer(state, player).boardId && hex.troops.some((t) => t.owner === player);
+  if (!troopHere && !inRange(ctx, state, player, hex, { bonus: mods.droneBonus ?? 0 }))
+    return { key: 'outOfRange' };
   const terrain = terrainAllows(ctx, def, hex, player);
   if (terrain) return terrain;
   if (hex.structures.some((s) => s.type === structure))
     return { key: 'duplicateInHex', params: { structure } };
-  if (slotsUsed(ctx, hex) + def.slots > ctx.balance.hex.slots)
+  if (slotsUsed(ctx, hex, player) + def.slots > ctx.balance.hex.slots)
     return { key: 'hexFull', params: { slots: ctx.balance.hex.slots } };
   if (
     structure === 'outpost' &&

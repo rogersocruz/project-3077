@@ -105,7 +105,15 @@ export async function foundVillages(page: Page, players: number, privacy: boolea
     await expect
       .poll(() => page.evaluate(() => (window as unknown as HookWindow).__p3077.targets().length))
       .toBeGreaterThan(0);
-    await clickHex(page, `${p}:0,0`);
+    // Sob carga a câmera pode ainda estar assentando: confere no inspetor que o hex certo
+    // foi selecionado antes de fundar (e clica de novo se não foi).
+    for (let attempt = 0; attempt < 4; attempt++) {
+      await clickHex(page, `${p}:0,0`);
+      const label = page.getByTestId('inspector');
+      if ((await label.textContent())?.includes(`T${p + 1} (0, 0)`)) break;
+      await page.waitForTimeout(300);
+    }
+    await expect(page.getByTestId('inspector')).toContainText(`T${p + 1} (0, 0)`);
     await page.getByTestId('act-village').click();
     await settle(page);
   }

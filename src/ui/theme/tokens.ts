@@ -106,6 +106,8 @@ export const scene = {
     chooseVillage: '#FF7A1A',
     /** Alvo de carta sem categoria definida (as cartas usam a cor da categoria). */
     card: '#FFC46A',
+    /** Fase 7: destino de movimento de tropas (provisória). */
+    move: '#F2694B',
   },
   dim: '#05070B',
   /** Efeitos (Fase 3): poeira ao assentar tile, varredura da sondagem, Mina parada. */

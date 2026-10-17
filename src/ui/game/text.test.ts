@@ -76,6 +76,27 @@ const SAMPLES: GameEvent[] = [
   { type: 'treasureDrawn', player: 0, card: 0 },
   { type: 'braced', player: 0, event: 'ev_plague' },
   { type: 'eventFoodLoss', player: 1, amount: 2 },
+  { type: 'troopRecruited', player: 0, hex: '0:1,0', uid: 40, troop: 'line' },
+  { type: 'troopUpgraded', player: 0, uid: 40, level: 2 },
+  { type: 'tariffChanged', player: 1, resource: 'iron' },
+  { type: 'tollPaid', from: 0, to: 1, resources: { iron: 2 } },
+  { type: 'troopsMoved', player: 0, from: '0:1,0', to: '1:0,1', uids: [40, 41], path: ['0:1,0', '1:0,1'] },
+  {
+    type: 'combatResolved',
+    hex: '1:0,1',
+    winner: 0,
+    sides: [
+      { owner: 0, attacker: true, troops: 8, support: 4, modifiers: [], modifierTotal: -1, total: 11 },
+      { owner: -1, attacker: false, troops: 4, support: 0, modifiers: [], modifierTotal: 0, total: 4 },
+    ],
+  },
+  { type: 'casualtiesPending', player: 1, hex: '1:0,1', need: 1 },
+  { type: 'troopsLost', player: 1, hex: '1:0,1', uids: [50] },
+  { type: 'troopsRetreated', player: 1, from: '1:0,1', to: '1:0,0', uids: [51] },
+  { type: 'guardianDefeated', hex: '1:0,1' },
+  { type: 'villageAttacked', player: 1, by: [0] },
+  { type: 'troopBoosted', player: 0, uid: 40, amount: 2 },
+  { type: 'troopRooted', player: 1, uid: 51 },
 ];
 
 describe.each([

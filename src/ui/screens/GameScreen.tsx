@@ -24,6 +24,7 @@ import { cardCategory } from '../card/model';
 import { flowTargets, targetHexes } from '../game/cardFlow';
 import { actOnHex, cancel } from '../game/commands';
 import { perform } from '../game/hooks';
+import { CasualtyChoice, CombatPanel, MovePreview } from '../combat/CombatModals';
 import { EventReveal } from '../event/EventReveal';
 import { EventZoom } from '../event/EventZoom';
 import { CardDialog } from '../hand/CardDialog';
@@ -252,6 +253,9 @@ export function GameScreen() {
       <RoundBanner />
       <EventReveal />
       <EventZoom />
+      <MovePreview />
+      <CombatPanel />
+      {!busy && !gate && <CasualtyChoice />}
       <Toast />
       {modal?.kind === 'bank' && <BankModal />}
       {modal?.kind === 'trade' && <TradeModal counter={modal.counter} />}

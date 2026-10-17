@@ -451,7 +451,7 @@ export function revealIncoming(
 
 export function checkResolveChoice(state: GameState, a: ActionOf<'resolveChoice'>): Reason | null {
   const pending = state.pending;
-  if (!pending) return { key: 'invalidChoice' };
+  if (!pending || pending.kind !== 'tutor') return { key: 'invalidChoice' };
   if (a.player !== pending.player) return { key: 'notYourTurn' };
   return pending.options.includes(a.card) ? null : { key: 'invalidChoice' };
 }
@@ -459,7 +459,7 @@ export function checkResolveChoice(state: GameState, a: ActionOf<'resolveChoice'
 /** Mutável: a carta escolhida vai para a mão, revelada a todos; o baralho é embaralhado. */
 export function applyResolveChoice(s: GameState, a: ActionOf<'resolveChoice'>, events: GameEvent[]): void {
   const pending = s.pending;
-  if (!pending) return;
+  if (!pending || pending.kind !== 'tutor') return;
   const deck = s.cards.decks[pending.deck];
   deck.splice(deck.indexOf(a.card), 1);
   getPlayer(s, a.player).hand.push(a.card);

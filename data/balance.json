@@ -189,12 +189,14 @@
     },
     "artilleryInMeleeFactor": 0.5,
     "tieLossEachSide": 1,
-    "retreatHexes": 1
+    "retreatHexes": 1,
+    "villageDamagePerRound": 1
   },
   "border": {
     "tollPerTroop": 1,
     "maxModifiers": 2,
-    "changeTariffOnlyAtRoundStart": true
+    "changeTariffOnlyAtRoundStart": true,
+    "defaultTariff": "food"
   },
   "events": {
     "perRound": 1,

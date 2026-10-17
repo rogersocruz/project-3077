@@ -23,7 +23,8 @@ test.describe('Laboratório', () => {
       await page.getByTestId('lab-run').click();
       await expect(page.getByTestId('lab-results')).toBeVisible({ timeout: 120_000 });
       await expect(page.getByTestId('lab-progress')).toContainText('16/16');
-      await expect(page.getByTestId('chart-tracks').locator('li')).toHaveCount(8);
+      // 6 recursos + Expansão + Eliminação (Fase 7) + Limite de rodadas.
+      await expect(page.getByTestId('chart-tracks').locator('li')).toHaveCount(9);
       // balance inválido trava o botão com o motivo.
       await page.getByTestId('bal-turn-actionsPerTurn').fill('-2');
       await expect(page.getByRole('alert')).toContainText('balance');

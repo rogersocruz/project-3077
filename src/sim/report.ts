@@ -20,7 +20,7 @@ export interface SimSummary {
   readonly players: number;
   readonly totalMs: number;
   /** Vitórias por trilha (partidas em que a trilha deu a vitória) e pelo limite de rodadas. */
-  readonly winsByTrack: Record<TrackId | 'roundLimit', number>;
+  readonly winsByTrack: Record<TrackId | 'elimination' | 'roundLimit', number>;
   /** Vitórias por assento (empate conta para cada vencedor). */
   readonly winsBySeat: number[];
   readonly winsByLevel: Record<string, { readonly seats: number; readonly wins: number }>;
@@ -56,14 +56,25 @@ export interface SimSummary {
   readonly disastersPerGame: number;
   readonly eliminationsPerGame: number;
   readonly excavationsPerGame: number;
+  readonly combatsPerGame: number;
+  readonly recruitsPerGame: number;
+  readonly villageHitsPerGame: number;
 }
 
-const TRACKS: readonly (TrackId | 'roundLimit')[] = [...RESOURCE_IDS, 'expansion', 'roundLimit'];
+const TRACKS: readonly (TrackId | 'elimination' | 'roundLimit')[] = [
+  ...RESOURCE_IDS,
+  'expansion',
+  'elimination',
+  'roundLimit',
+];
 
 export function summarize(records: readonly GameRecord[], allCardIds: readonly string[] = []): SimSummary {
   const n = records.length || 1;
   const players = records[0]?.players ?? 0;
-  const winsByTrack = Object.fromEntries(TRACKS.map((t) => [t, 0])) as Record<TrackId | 'roundLimit', number>;
+  const winsByTrack = Object.fromEntries(TRACKS.map((t) => [t, 0])) as Record<
+    TrackId | 'elimination' | 'roundLimit',
+    number
+  >;
   const winsBySeat = Array.from({ length: players }, () => 0);
   const winsByLevel: Record<string, { seats: number; wins: number }> = {};
   const winsByFocus: Record<string, { seats: number; wins: number; onFocus: number }> = {};
@@ -81,6 +92,9 @@ export function summarize(records: readonly GameRecord[], allCardIds: readonly s
   let disasters = 0;
   let eliminations = 0;
   let excavations = 0;
+  let combats = 0;
+  let recruits = 0;
+  let villageHits = 0;
   let totalMs = 0;
 
   for (const r of records) {
@@ -119,6 +133,9 @@ export function summarize(records: readonly GameRecord[], allCardIds: readonly s
     disasters += r.disasters ?? 0;
     eliminations += r.eliminations ?? 0;
     excavations += r.excavations ?? 0;
+    combats += r.combats ?? 0;
+    recruits += r.recruits ?? 0;
+    villageHits += r.villageHits ?? 0;
     for (const [id, c] of Object.entries(r.cardsPlayed)) played[id] = (played[id] ?? 0) + c;
     for (const [id, c] of Object.entries(r.cardsDrawn)) drawn[id] = (drawn[id] ?? 0) + c;
   }
@@ -172,6 +189,9 @@ export function summarize(records: readonly GameRecord[], allCardIds: readonly s
     disastersPerGame: disasters / n,
     eliminationsPerGame: eliminations / n,
     excavationsPerGame: excavations / n,
+    combatsPerGame: combats / n,
+    recruitsPerGame: recruits / n,
+    villageHitsPerGame: villageHits / n,
   };
 }
 
@@ -318,6 +338,12 @@ export function summaryText(s: SimSummary, header = ''): string {
     out.push(
       '',
       `Desastres por partida: ${s.disastersPerGame.toFixed(2)} · eliminações: ${s.eliminationsPerGame.toFixed(2)} · escavações: ${s.excavationsPerGame.toFixed(2)}`,
+    );
+  }
+  if (s.recruitsPerGame > 0 || s.combatsPerGame > 0) {
+    out.push(
+      '',
+      `Conflito por partida: ${s.recruitsPerGame.toFixed(2)} tropas recrutadas · ${s.combatsPerGame.toFixed(2)} combates · ${s.villageHitsPerGame.toFixed(2)} ataques à Vila`,
     );
   }
   const playedCards = s.cards.filter((c) => c.drawn > 0 || c.played > 0);

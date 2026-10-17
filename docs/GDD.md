@@ -318,6 +318,45 @@ Artilharia alcançada por Linha inimiga no próprio hex luta com metade da forç
 Três ou mais jogadores: o maior vence; cada perdedor sofre baixas iguais à própria
 diferença para o vencedor.
 
+#### 8.4.1 Exemplo trabalhado *(validado na Fase 7; é o teste de aceite do combate)*
+
+**Situação.** Turno dos **Revolucionários** (atacante). Eles moveram, nesta rodada, duas
+Linhas para o hex **T2 (1, 0)**, no tabuleiro do **Governo** (cruzaram a fronteira):
+- Linha **nível 3** (força 3 + 2 = **5**) e Linha **nível 1** (força **3**);
+- duas Artilharias nível 1 dos Revolucionários a 2 hexes de T2 (1, 0) (força 2 cada).
+
+O **Governo** (defensor) tem em T2 (1, 0):
+- uma Linha nível 1 (força **3**) e uma Artilharia nível 1 (força 2);
+- um **Muro** no hex e um **Posto de Observação** do Governo num hex vizinho;
+- mais uma Artilharia nível 1 a 2 hexes (fora do combate).
+
+**Fase 6 dos Revolucionários — passo a passo**
+
+| Passo | Revolucionários (atacante) | Governo (defensor) |
+|---|---|---|
+| 1. Apoio | 2 Artilharias a ≤ 2 hexes: **+4** | 1 Artilharia a ≤ 2 hexes: **+2** |
+| 2. Tropas no hex | Linha 5 + Linha 3 = **8** | Linha **3** + Artilharia alcançada por Linha inimiga (metade de 2) **1** = **4** |
+| 2. Modificadores | cruzou a fronteira nesta rodada **−1** | próprio tabuleiro +1 · formação de 2 +1 · Muro +2 · Posto adjacente +1 = +5 → **teto +4** |
+| Total | 4 + 8 − 1 = **11** | 2 + 4 + 4 = **10** |
+
+3. **Resultado:** 11 × 10 → **Revolucionários vencem**; diferença **1**.
+4. **Baixas:** o Governo remove tropas *do hex* até a força removida (como lutou) ≥ 1. A IA
+   (e o automático) tira a mais fraca: a **Artilharia** (lutou com 1) → 1 ≥ 1, para.
+   As Artilharias de apoio (fora do hex) nunca sofrem baixas.
+5. **Recuo:** a Linha sobrevivente do Governo recua 1 hex, sem custo.
+6. **Ocupação:** os Revolucionários têm Linha no hex → **ocupam T2 (1, 0)**. O Muro continua
+   do Governo; enquanto a Linha ocupar o hex, o Governo não produz ali e os Revolucionários
+   extraem 1 do recurso do hex na própria Produção (8.5).
+
+**Variante de empate.** Se a Linha atacante fosse nível 2 (força 4), o total seria 10 × 10:
+cada lado perde 1 tropa (a mais fraca: Linha nível 1 dos Revolucionários e a Artilharia do
+Governo), ninguém ocupa, ninguém recua; o hex continua disputado e é resolvido de novo no
+próximo Combate.
+
+**Variante com três lados.** Se a Horda (força 5, neutra) também estivesse no hex: totais
+11 (Revolucionários), 10 (Governo), 5 (Horda). Vencem os Revolucionários; o Governo sofre
+baixas de diferença 1 (como acima) e a Horda de diferença 6 (é removida inteira).
+
 ### 8.5 Ocupação e Vila
 Ocupar um hex alheio permite **extrair o recurso dele** na sua fase de Produção
 enquanto houver Linha sua ali. Tropa sua no hex da Vila inimiga ao **fim da rodada**,

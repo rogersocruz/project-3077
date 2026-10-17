@@ -115,6 +115,19 @@ export const LOG_KEYS: Record<GameEvent['type'], string> = {
   treasureDrawn: 'treasureDrawn',
   braced: 'braced',
   eventFoodLoss: 'eventFoodLoss',
+  troopRecruited: 'troopRecruited',
+  troopUpgraded: 'troopUpgraded',
+  tariffChanged: 'tariffChanged',
+  tollPaid: 'tollPaid',
+  troopsMoved: 'troopsMoved',
+  combatResolved: 'combatResolved',
+  casualtiesPending: 'casualtiesPending',
+  troopsLost: 'troopsLost',
+  troopsRetreated: 'troopsRetreated',
+  guardianDefeated: 'guardianDefeated',
+  villageAttacked: 'villageAttacked',
+  troopBoosted: 'troopBoosted',
+  troopRooted: 'troopRooted',
 };
 
 /** Detalhes que poluem o registro; ficam atrás do filtro "detalhes". */
@@ -131,6 +144,7 @@ export const LOG_DETAIL: ReadonlySet<GameEvent['type']> = new Set<GameEvent['typ
 /** Jogador a quem o evento diz respeito (filtro por jogador). */
 export function eventPlayers(e: GameEvent): PlayerId[] {
   if ('player' in e) return [e.player];
+  if (e.type === 'combatResolved') return e.sides.map((x) => x.owner).filter((o) => o >= 0);
   if ('from' in e && e.type !== 'hordeAttack') return [e.from, e.to];
   if (e.type === 'subsoilSealed') return [e.by];
   if (e.type === 'gameOver') return e.winners;
@@ -157,6 +171,13 @@ export function describeTarget(t: TFunction, state: GameState | null, target: Ca
         return `${cardName(t, state, target.card)} (${playerName(t, target.player)})`;
       case 'deck':
         return t(`cards.deck.${target.deck}`);
+      case 'troop': {
+        const where = state
+          ? Object.entries(state.hexes).find(([, h]) => h.troops.some((x) => x.uid === target.uid))
+          : undefined;
+        const tr = where?.[1].troops.find((x) => x.uid === target.uid);
+        return tr && where ? `${t(`troops.${tr.type}`)}, ${hexLabel(t, where[0])}` : t('log.troop');
+      }
     }
   })();
 }
@@ -373,5 +394,42 @@ export function logLine(
       return t(key, { name: name(e.player), event: eventName(e.event) });
     case 'eventFoodLoss':
       return t(key, { name: name(e.player), n: e.amount });
+    // ── Tropas e combate (Fase 7) ──
+    case 'troopRecruited':
+      return t(key, { name: name(e.player), troop: t(`troops.${e.troop}`), hex: hexLabel(t, e.hex) });
+    case 'troopUpgraded':
+      return t(key, { name: name(e.player), level: e.level });
+    case 'tariffChanged':
+      return t(key, { name: name(e.player), resource: t(`resources.${e.resource}`) });
+    case 'tollPaid':
+      return t(key, { from: name(e.from), to: name(e.to), list: amountsText(t, e.resources) });
+    case 'troopsMoved':
+      return t(key, {
+        name: name(e.player),
+        count: e.uids.length,
+        from: hexLabel(t, e.from),
+        to: hexLabel(t, e.to),
+      });
+    case 'combatResolved': {
+      const side = (o: number) => (o < 0 ? t(o === -1 ? 'troops.guardian' : 'troops.horde') : name(o));
+      const totals = e.sides.map((x) => `${side(x.owner)} ${x.total}`).join(' × ');
+      return e.winner === null
+        ? t('log.combatTie', { hex: hexLabel(t, e.hex), totals })
+        : t(key, { hex: hexLabel(t, e.hex), totals, winner: side(e.winner) });
+    }
+    case 'casualtiesPending':
+      return t(key, { name: name(e.player), n: e.need });
+    case 'troopsLost':
+      return t(key, { name: name(e.player), count: e.uids.length, hex: hexLabel(t, e.hex) });
+    case 'troopsRetreated':
+      return t(key, { name: name(e.player), count: e.uids.length, to: hexLabel(t, e.to) });
+    case 'guardianDefeated':
+      return t(key, { hex: hexLabel(t, e.hex) });
+    case 'villageAttacked':
+      return t(key, { name: name(e.player), by: e.by.map(name).join(', ') });
+    case 'troopBoosted':
+      return t(key, { name: name(e.player), n: e.amount });
+    case 'troopRooted':
+      return t(key, { name: name(e.player) });
   }
 }

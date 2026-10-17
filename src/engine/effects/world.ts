@@ -9,6 +9,7 @@ import { ResourceId } from '../../data/schemas';
 import type { EngineContext } from '../context';
 import type { GameEvent } from '../events';
 import { getPlayer, hexKeyOf } from '../queries';
+import { HORDE, previewCombat, resolveCombat } from '../rules/combat';
 import { destroyStructure } from '../rules/damage';
 import { alivePlayers, disaster, hazardAt, hexDefense, hexesAround, markUntil } from '../rules/hazards';
 import type { GameState, HexKey, LayerName } from '../state';
@@ -164,8 +165,8 @@ export const WORLD_EFFECTS: Readonly<Record<string, WorldEffect>> = {
   minesOff: world({ layer: 'events', params: None }),
   /** Tempestade Magnética: nenhum Drone na rodada. */
   dronesOff: world({ layer: 'events', params: None }),
-  /** Ventos de Cauda: movimento de tropas (Fase 7) — fora do baralho até lá. */
-  halfMoveCost: world({ layer: 'events', requires: ['conflict'], implemented: false, params: None }),
+  /** Ventos de Cauda: movimento custa metade da Comida (rules/troops.ts). */
+  halfMoveCost: world({ layer: 'events', requires: ['conflict'], params: None }),
   /**
    * Horda (interpretação AK, até a Fase 7): sai da Ruína "mais ao norte" (menor r global,
    * depois menor q) e ataca o vizinho com mais estruturas: desastre só nesse hex, a menos
@@ -190,8 +191,28 @@ export const WORLD_EFFECTS: Readonly<Record<string, WorldEffect>> = {
         .filter((t) => t.n > 0)
         .sort((a, b) => b.n - a.n || a.key.localeCompare(b.key))[0];
       if (!target) return;
-      const defense = hexDefense(w.ctx, w.state, target.key);
-      const repelled = defense >= p.strength;
+      // Fase 7: com tropas no hex, combate de verdade (baixas automáticas); sem tropas, a Horda
+      // vence. Sem a camada de conflito, vale a regra da Fase 6 (Muro + Postos, AK).
+      const troopsThere = (w.state.hexes[target.key]?.troops.length ?? 0) > 0;
+      let defense = 0;
+      let repelled: boolean;
+      if (w.state.layers.conflict) {
+        if (troopsThere) {
+          const pv = previewCombat(w.ctx, w.state, target.key, {
+            extra: { owner: HORDE, kind: 'horde', strength: p.strength, attacks: true },
+          });
+          defense = Math.max(0, ...(pv?.sides.filter((s) => s.owner !== HORDE).map((s) => s.total) ?? []));
+          const winner = resolveCombat(w.ctx, w.state, target.key, w.events, {
+            extra: { owner: HORDE, kind: 'horde', strength: p.strength, attacks: true },
+            auto: true,
+          });
+          w.state.combat = null;
+          repelled = winner !== HORDE;
+        } else repelled = false;
+      } else {
+        defense = hexDefense(w.ctx, w.state, target.key);
+        repelled = defense >= p.strength;
+      }
       w.events.push({
         type: 'hordeAttack',
         from: origin.key,

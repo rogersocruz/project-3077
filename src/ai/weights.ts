@@ -71,6 +71,19 @@ export interface AiWeights {
   readonly treasureCard: number;
   /** Bônus passivo de Ruína (+1 compra e linha n3), escalado pelo horizonte. */
   readonly ruinBonus: number;
+  /** Fase 7: valor por ponto de força das primeiras `troopCore` tropas e das demais. */
+  readonly troopCore: number;
+  readonly troopBase: number;
+  readonly troopExtra: number;
+  /** Por ponto de força inimiga a ≤2 da própria Vila sem defesa equivalente. */
+  readonly threat: number;
+  /** Por ponto de força inimiga eliminada num combate previsto; perda própria pesa `troopLoss`. */
+  readonly kill: number;
+  readonly troopLoss: number;
+  /** Tropa própria na Vila inimiga sem defensor (tira vida no fim da rodada). */
+  readonly villageHit: number;
+  /** Quartel por nível. */
+  readonly barracks: readonly number[];
   /** Bot `investor`: rodada até a qual Universidade 2 / Mina valem o bônus abaixo. */
   readonly investorUniRound: number;
   readonly investorMineRound: number;
@@ -115,6 +128,14 @@ export const DEFAULT_WEIGHTS: AiWeights = {
   hazardRisk: 0.15,
   treasureCard: 5,
   ruinBonus: 14,
+  troopCore: 3,
+  troopBase: 2.5,
+  troopExtra: 0.8,
+  threat: 3,
+  kill: 2,
+  troopLoss: 3,
+  villageHit: 30,
+  barracks: [0, 12, 16, 20],
   investorUniRound: 4,
   investorMineRound: 5,
   investorUni: 30,

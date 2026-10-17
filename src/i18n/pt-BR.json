@@ -125,7 +125,15 @@
       "surveyBlocked": "Crosta Instável: Sondar falha nesta rodada (só com Drone).",
       "dronesGrounded": "Drones estão no chão nesta rodada.",
       "shielded": "A Anomalia Magnética protege este alvo.",
-      "playerEliminated": "Esse jogador saiu da partida."
+      "playerEliminated": "Esse jogador saiu da partida.",
+      "notNearBarracks": "Recrute no hex de um Quartel seu ou num vizinho.",
+      "enemyInHex": "Há tropa inimiga ou Guardião neste hex.",
+      "armyCap": "Exército no teto ({{cap}} tropas): melhore o Quartel.",
+      "notYourTroop": "Essa tropa não é sua.",
+      "tariffAlreadyChanged": "A tarifa já mudou nesta rodada.",
+      "troopRooted": "Essa tropa não pode se mover nesta rodada (Deserção).",
+      "noPath": "Não há caminho: hexes ocultos ou bloqueados por tropas inimigas.",
+      "invalidCasualties": "Escolha tropas que somem pelo menos a força necessária, sem sobrar."
     }
   },
   "terrain": {
@@ -188,7 +196,7 @@
     "seed": "Seed",
     "randomSeed": "Sortear",
     "privacy": "Tela de privacidade entre jogadores",
-    "layersNote": "Tropas, tratados e facções entram nas próximas fases.",
+    "layersNote": "Tratados e facções entram nas próximas fases.",
     "start": "Iniciar",
     "cards": "Camada de cartas (baralhos n1/n2/n3, entrega e permanentes)",
     "seatLabel": "Quem joga como {{player}}",
@@ -203,7 +211,8 @@
     "watchAi": "Só IA (assistir)",
     "allHuman": "Todos humanos",
     "events": "Eventos globais (um por rodada; desastres atingem a Vila)",
-    "special": "Hexes especiais (Templo, Ruína e hazards únicos)"
+    "special": "Hexes especiais (Templo, Ruína e hazards únicos)",
+    "conflict": "Tropas e combate (Quartel, movimento, fronteira, ataque à Vila)"
   },
   "phases": {
     "reveal": "Revelação",
@@ -291,7 +300,8 @@
       "survey": "Sondar: clique num hex destacado · Esc cancela",
       "build": "Construir {{structure}}: clique num hex destacado · Esc cancela",
       "upgrade": "Melhorar: clique num hex destacado · Esc cancela",
-      "chooseVillage": "Escolha um hex destacado para fundar o Centro da Vila"
+      "chooseVillage": "Escolha um hex destacado para fundar o Centro da Vila",
+      "move": "Mover tropas: clique no destino destacado (Comida + pedágio) · Esc cancela"
     },
     "log": "Registro",
     "logFilter": "Filtrar por jogador",
@@ -306,14 +316,17 @@
     "deliveryHint": "Entrega: clique numa carta para entregá-la, ou encerre o turno",
     "permanentsOf": "Permanentes de {{name}}",
     "ai": "IA",
-    "aiThinking": "{{name}} está pensando…"
+    "aiThinking": "{{name}} está pensando…",
+    "armyTariff": "Exército: {{n}} tropa(s) · tarifa de fronteira: {{resource}}",
+    "armyShort": "⚔ {{n}}"
   },
   "noTargets": {
     "explore": "Não há hex para explorar: só vizinhos de hexes revelados do seu tabuleiro.",
     "survey": "Não há subsolo ao alcance para sondar.",
     "build": "Não há hex que aceite essa estrutura agora.",
     "upgrade": "Nenhuma estrutura sua pode ser melhorada agora.",
-    "chooseVillage": "Não há hex válido para a Vila."
+    "chooseVillage": "Não há hex válido para a Vila.",
+    "move": "Nenhum destino ao alcance da sua Comida."
   },
   "inspector": {
     "title": "Inspetor de hex",
@@ -346,7 +359,13 @@
     "overloaded": "inativa na próxima Produção (Sobrecarga)",
     "excavate": "Escavar {{site}}",
     "clean": "Limpar contaminação ({{n}} ações)",
-    "untilRound": "até a rodada {{n}}"
+    "untilRound": "até a rodada {{n}}",
+    "troops": "Tropas",
+    "troopLine": "{{troop}} nível {{level}} · força {{strength}}",
+    "recruit": "Recrutar {{troop}}",
+    "upgradeTroop": "Subir {{troop}} para nível {{level}}",
+    "move": "Mover tropas daqui",
+    "military": "Exército"
   },
   "bank": {
     "title": "Banca",
@@ -524,7 +543,22 @@
     "treasureDrawn": "{{name}} encontrou um tesouro.",
     "treasureDrawnOwn": "{{name}} encontrou {{card}} no Tesouro.",
     "braced": "{{name}} se protegeu contra {{event}}.",
-    "eventFoodLoss": "{{name}} perdeu {{n}} Comida para a praga."
+    "eventFoodLoss": "{{name}} perdeu {{n}} Comida para a praga.",
+    "troop": "tropa",
+    "troopRecruited": "{{name}} recrutou {{troop}} em {{hex}}.",
+    "troopUpgraded": "{{name}} subiu uma tropa para o nível {{level}}.",
+    "tariffChanged": "{{name}} declarou tarifa de fronteira: {{resource}}.",
+    "tollPaid": "{{from}} pagou pedágio a {{to}}: {{list}}.",
+    "troopsMoved": "{{name}} moveu {{count}} tropa(s) de {{from}} para {{to}}.",
+    "combatResolved": "Combate em {{hex}}: {{totals}} — vence {{winner}}.",
+    "combatTie": "Combate em {{hex}}: {{totals}} — empate.",
+    "casualtiesPending": "{{name}} escolhe as baixas (força {{n}}).",
+    "troopsLost": "{{name}} perdeu {{count}} tropa(s) em {{hex}}.",
+    "troopsRetreated": "{{count}} tropa(s) de {{name}} recuaram para {{to}}.",
+    "guardianDefeated": "O Guardião em {{hex}} foi derrotado.",
+    "villageAttacked": "A Vila de {{name}} foi atacada por {{by}}.",
+    "troopBoosted": "Uma tropa de {{name}} ganhou +{{n}} de força nesta rodada.",
+    "troopRooted": "Uma tropa de {{name}} não pode se mover nesta rodada."
   },
   "cards": {
     "deck": {
@@ -655,7 +689,8 @@
       "economy": "Economia",
       "cards": "Cartas",
       "specialHexes": "Hexes especiais",
-      "events": "Eventos globais"
+      "events": "Eventos globais",
+      "conflict": "Tropas e combate"
     },
     "layersNote": "Tropas, tratados e facções entram no simulador com as fases deles.",
     "invalid": "balance inválido — corrija antes de simular:",
@@ -725,5 +760,41 @@
     "guardian": "Guardião (força {{n}})",
     "contaminated": "Contaminado: {{n}} ações para limpar",
     "ruinBonus": "Ruína escavada por {{name}}: +1 compra e linha n3"
+  },
+  "troops": {
+    "line": "Linha",
+    "artillery": "Artilharia",
+    "guardian": "Guardião",
+    "horde": "Horda"
+  },
+  "combat": {
+    "title": "Combate em {{hex}}",
+    "attacker": "Ataca",
+    "defender": "Defende",
+    "troops": "Tropas",
+    "support": "Apoio de Artilharia",
+    "modifiers": "Modificadores",
+    "cap": "teto +{{n}}",
+    "total": "Total",
+    "wins": "{{name}} vence",
+    "tie": "Empate: cada lado perde uma tropa",
+    "preview": "Previsão de combate",
+    "confirm": "Mover e atacar",
+    "cancel": "Cancelar",
+    "casualtiesTitle": "Escolha as baixas",
+    "casualtiesHint": "Remova tropas que somem pelo menos {{n}} de força (sem sobrar). As sobreviventes recuam.",
+    "confirmCasualties": "Confirmar baixas",
+    "mod": {
+      "defenderHomeBoard": "Próprio tabuleiro",
+      "formation2": "Formação de 2",
+      "formation3": "Formação de 3+",
+      "wall": "Muro",
+      "adjacentOutpost": "Posto adjacente",
+      "attackerCrossedBorder": "Cruzou a fronteira"
+    }
+  },
+  "tariff": {
+    "label": "Tarifa",
+    "hint": "Tarifa de fronteira: cada tropa que entra no seu território paga 1 deste recurso (muda 1× por rodada)."
   }
 }

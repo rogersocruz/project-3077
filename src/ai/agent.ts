@@ -19,6 +19,7 @@ import { drawRows, handLimit } from '../engine/rules/decks';
 import { bankQuote, minBankAmount } from '../engine/rules/economy';
 import { cardDefOf } from '../engine/rules/permanents';
 import { eventParams, hasRuinBonus } from '../engine/rules/world';
+import { previewCombat } from '../engine/rules/combat';
 import { progress } from '../engine/rules/victory';
 import { Rng, type Seed } from '../engine/rng';
 import type { CardTarget, CardUid, GameState, PlayerId, Resources } from '../engine/state';
@@ -121,6 +122,7 @@ export function chooseAction(ctx: EngineContext, state: GameState, agent: Agent)
   if (legal.length === 1) return first;
 
   if (state.stage === 'setup') return chooseSetup(ctx, state, player, legal, agent);
+  if (state.pending?.kind === 'casualties') return legal.find((a) => a.type === 'chooseCasualties') ?? first;
   if (state.pending) return chooseTutor(ctx, state, legal);
   if (state.pendingTrade) return respondTrade(ctx, state, player, legal, agent);
   if (state.phase === 'draw') return chooseDraw(ctx, state, player, legal, agent);
@@ -132,7 +134,8 @@ export function chooseAction(ctx: EngineContext, state: GameState, agent: Agent)
 // ── Fase de Ações ────────────────────────────────────────────────────────────
 
 const RICH: Resources = { food: 999, stone: 999, iron: 999, coal: 999, oil: 999, gold: 999 };
-const TRADE_ONLY = new Set<Action['type']>(['proposeTrade', 'counterTrade', 'cancelTrade']);
+/** Não simulados: propostas (fluxo próprio) e tarifa (não muda a avaliação; a IA mantém a padrão). */
+const TRADE_ONLY = new Set<Action['type']>(['proposeTrade', 'counterTrade', 'cancelTrade', 'setTariff']);
 
 function chooseInActions(
   ctx: EngineContext,
@@ -227,6 +230,8 @@ function scoreCandidates(
         if (a.type === 'playCard' && cardDefOf(ctx, state, a.card).valence === 'information') v += w.infoPlay;
         // Praga: a perda vem no fim da rodada, a avaliação de agora não a vê.
         if (a.type === 'brace') v += plagueLoss(ctx, state, player);
+        // Fase 7: o combate é na fase 6; a previsão diz o que o movimento vai causar.
+        if (a.type === 'move') v += combatOutcome(ctx, after, player, a.to, w);
         out.push({ action: a, value: v, after });
       }
     }
@@ -370,6 +375,34 @@ function excavateGain(
   const scale = productionsLeft(ctx, state, player, w.horizon) / w.horizon;
   const ruin = t.def.passive && !hasRuinBonus(ctx, state, player) ? w.ruinBonus * scale : 0;
   return t.def.reward.treasureDraw * safe * w.treasureCard + ruin - resourcesWorth(ctx, t.def.excavateCost);
+}
+
+/** Valor esperado do combate que o movimento provoca (previsão do motor). */
+function combatOutcome(
+  ctx: EngineContext,
+  after: GameState,
+  player: PlayerId,
+  to: string,
+  w: AiWeights,
+): number {
+  const pv = previewCombat(ctx, after, to);
+  if (!pv) return 0;
+  const me = pv.sides.find((s) => s.owner === player);
+  if (!me) return 0;
+  const enemies = pv.sides.filter((s) => s.owner !== player);
+  const enemyTroops = enemies.reduce((a, s) => a + s.troops, 0);
+  if (pv.winner === player) {
+    // Baixas do perdedor ≈ diferença; o resto recua. Guardião derrotado libera o Templo.
+    const killed = Math.min(
+      enemyTroops,
+      enemies.reduce((a, s) => a + (me.total - s.total), 0),
+    );
+    return killed * w.kill;
+  }
+  if (pv.winner === null) return -w.troopLoss * Math.min(...me.fighters.map((f) => f.strength));
+  // Derrota: perde ao menos a diferença.
+  const best = Math.max(...enemies.map((s) => s.total));
+  return -Math.min(me.troops, best - me.total) * w.troopLoss;
 }
 
 /** Comida que a Praga tiraria do jogador no fim da rodada (o que a contra-ação evita). */

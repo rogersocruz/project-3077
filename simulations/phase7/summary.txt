@@ -1,0 +1,74 @@
+Simulação: 200 partidas · 4 jogadores · seeds 1–200 · IA normal (rotas sorteadas) · camadas: economia, cards, events, specialHexes, conflict
+Tempo real: 94.8 s com 19 workers
+200 partidas de 4 jogadores em 1624.1 s de CPU (8121 ms/partida)
+
+Vitórias por condição:
+  coal           93  46.5%
+  gold           84  42.0%
+  food            7  3.5%
+  oil             6  3.0%
+  expansion       6  3.0%
+  iron            3  1.5%
+  stone           2  1.0%
+  roundLimit      1  0.5%
+  elimination     0  0.0%
+  (vitórias compartilhadas: 0)
+
+Vitórias por posição de turno (assento = facção):
+  assento 0      49  24.5%
+  assento 1      51  25.5%
+  assento 2      57  28.5%
+  assento 3      43  21.5%
+
+Por rota perseguida (vitória = qualquer; pela rota = cumpriu a própria trilha):
+  coal         123 assentos  vitória  32.5%  pela rota  26.8%
+  food         120 assentos  vitória  31.7%  pela rota   5.8%
+  gold         112 assentos  vitória  24.1%  pela rota  17.0%
+  oil          114 assentos  vitória  23.7%  pela rota   5.3%
+  iron         112 assentos  vitória  22.3%  pela rota   1.8%
+  stone        102 assentos  vitória  20.6%  pela rota   1.0%
+  expansion    117 assentos  vitória  18.8%  pela rota   5.1%
+
+Duração: média 9.54 rodadas, mediana 10, faixa 1–15
+Bateram o limite de rodadas: 0.5%
+
+Recursos por partida (todos os jogadores):
+  recurso   produzido    banca  trocado
+  food           14.7      2.2      0.1
+  stone          21.5     15.4      0.0
+  iron           17.2      4.6      0.0
+  coal           29.4     17.2      0.3
+  oil             0.5      1.1      0.1
+  gold            9.8      5.5      0.2
+  trocas aceitas entre jogadores: 0.36 por partida
+
+Estruturas no fim (média por jogador):
+  park 3.15 · village 1.00 · outpost 0.90 · barracks 0.76 · quarry 0.55 · workshop 0.15 · mine 0.12 · university 0.10 · wall 0.04
+
+Hazards atingidos (D15: % das partidas em que sofreram dano):
+  thin_crust         94.0%  (1.69 vezes por partida)
+  geyser             94.0%  (1.69 vezes por partida)
+  free_port          93.0%  (1.71 vezes por partida)
+  wind_canyon        93.0%  (1.68 vezes por partida)
+  magnetic_anomaly   93.0%  (1.68 vezes por partida)
+  acid_swamp         92.5%  (1.72 vezes por partida)
+  volcano            83.0%  (1.17 vezes por partida)
+
+Desastres por partida: 3.44 · eliminações: 0.10 · escavações: 3.54
+
+Conflito por partida: 5.13 tropas recrutadas · 0.23 combates · 0.28 ataques à Vila
+
+Cartas mais jogadas:
+  convoy                         773  (98.3% das compradas)
+  plunder                        666  (85.8% das compradas)
+  induced_failure                624  (81.3% das compradas)
+  audit                          529  (97.8% das compradas)
+  reconnaissance                 523  (97.9% das compradas)
+  thermal_sweep                  523  (97.9% das compradas)
+Cartas menos jogadas:
+  construction_contract            0  (0.0% das compradas)
+  demolition                       0  (0.0% das compradas)
+  diplomatic_support               0  (0.0% das compradas)
+  dossier                          0  (0.0% das compradas)
+  drone_2                          0  (0.0% das compradas)
+  guardian_awakened                0  (0.0% das compradas)

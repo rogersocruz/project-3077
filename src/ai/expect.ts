@@ -36,6 +36,7 @@ const fakeHex = (surface: string, subsoil: string): HexState => ({
   status: {},
   guardian: null,
   excavatedBy: null,
+  troops: [],
 });
 
 export function expectations(ctx: EngineContext): Expectations {

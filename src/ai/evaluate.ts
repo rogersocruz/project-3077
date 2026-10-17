@@ -6,7 +6,8 @@
  */
 import { RESOURCE_IDS, type ResourceId } from '../data/schemas';
 import type { EngineContext } from '../engine/context';
-import { levelDef } from '../engine/queries';
+import { levelDef, maxLevelOf } from '../engine/queries';
+import { troopStrength } from '../engine/rules/troops';
 import { rangeSources, rarityUnlocked } from '../engine/rules/build';
 import { handLimit } from '../engine/rules/decks';
 import { productionBlocked, structureYield } from '../engine/rules/economy';
@@ -77,6 +78,7 @@ export interface EvalOptions {
 
 /** Partes da avaliação (para depuração e testes). */
 export interface EvalBreakdown {
+  military: number;
   stock: number;
   victory: number;
   income: number;
@@ -167,8 +169,9 @@ export function evaluateParts(
     }
   }
 
-  const total = stock + victory + income + capability + sites + cards;
-  return { stock, victory, income, capability, sites, cards, total };
+  const military = state.layers.conflict ? militaryValue(ctx, state, me, w, left) : 0;
+  const total = stock + victory + income + capability + sites + cards + military;
+  return { stock, victory, income, capability, sites, cards, military, total };
 }
 
 /**
@@ -291,6 +294,61 @@ export function diminishing(values: readonly number[], weights: readonly number[
   for (let i = 0; i < Math.min(values.length, weights.length); i++)
     sum += (values[i] ?? 0) * (weights[i] ?? 0);
   return sum;
+}
+
+/**
+ * Fase 7: exército (força, com retorno decrescente), Quartel, ameaça à própria Vila,
+ * ocupação de hexes alheios (renda) e tropa na Vila inimiga sem defensor.
+ */
+export function militaryValue(
+  ctx: EngineContext,
+  state: GameState,
+  me: PlayerId,
+  w: AiWeights,
+  left: number,
+): number {
+  const player = state.players[me];
+  if (!player) return 0;
+  const mine: number[] = [];
+  let value = 0;
+  for (const [key, hex] of Object.entries(state.hexes)) {
+    for (const t of hex.troops) if (t.owner === me) mine.push(troopStrength(ctx, state, t));
+    const myLine = hex.troops.some((t) => t.owner === me && t.type === 'line');
+    const others = hex.troops.some((t) => t.owner !== me);
+    // Ocupação: hex de outro tabuleiro com Linha minha e sem outra tropa.
+    if (myLine && !others && hex.boardId !== player.boardId && hex.guardian === null) {
+      const tr = ctx.terrain(hex.surface);
+      const res = tr.kind === 'surface' ? tr.def.produces : [];
+      value +=
+        res.reduce((a, r) => a + ctx.resourceValue(r), 0) *
+        ctx.balance.production.occupiedHexYield *
+        left *
+        w.income;
+      // Vila inimiga sem defensor: tira vida no fim da rodada.
+      if (state.players.some((p) => p.id !== me && p.villageHex === key && !p.eliminated))
+        value += w.villageHit;
+    }
+  }
+  mine.sort((a, b) => b - a);
+  mine.forEach((s, i) => (value += s * (i < w.troopCore ? w.troopBase : w.troopExtra)));
+  value +=
+    (w.barracks[Math.min(maxLevelOf(state, me, 'barracks'), w.barracks.length - 1)] ?? 0) *
+    (left / w.horizon);
+  // Ameaça: força inimiga a ≤2 da Vila menos a própria força ali perto.
+  const village = player.villageHex ? state.hexes[player.villageHex] : undefined;
+  if (village) {
+    let enemy = 0;
+    let own = 0;
+    for (const hex of Object.values(state.hexes)) {
+      if (ctx.planet.distance(village, hex) > 2) continue;
+      for (const t of hex.troops) {
+        if (t.owner === me) own += troopStrength(ctx, state, t);
+        else enemy += troopStrength(ctx, state, t);
+      }
+    }
+    value -= Math.max(0, enemy - own) * w.threat;
+  }
+  return value;
 }
 
 /**

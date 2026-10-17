@@ -24,6 +24,7 @@ import {
 import type { EffectHandler } from './types';
 import { WORLD_EFFECTS } from './world';
 import * as worldCards from './world-cards';
+import * as troops from './troops';
 
 export const CARD_EFFECTS: Readonly<Record<string, EffectHandler>> = {
   // Recursos e ações do turno
@@ -65,12 +66,12 @@ export const CARD_EFFECTS: Readonly<Record<string, EffectHandler>> = {
   rangeBonusAll: perm.rangeBonusAll,
   autoSurveyAdjacent: perm.starMap,
   // Camadas futuras
-  troopStrengthBonus: gated.troopStrengthBonus,
-  troopRoot: gated.troopRoot,
-  revealTroops: gated.revealTroops,
-  freeRetreat: gated.freeRetreat,
-  lineStrengthBonus: gated.lineStrengthBonus,
-  antigrav: gated.antigrav,
+  troopStrengthBonus: troops.troopStrengthBonus,
+  troopRoot: troops.troopRoot,
+  revealTroops: troops.revealTroops,
+  freeRetreat: troops.freeRetreat,
+  lineStrengthBonus: troops.lineStrengthBonus,
+  antigrav: troops.antigrav,
   spawnGuardian: worldCards.spawnGuardian,
   freeTreaties: gated.freeTreaties,
   disasterResist: worldCards.disasterResist,

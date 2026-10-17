@@ -853,22 +853,12 @@ describe('passivos de permanentes', () => {
 // ── Camadas futuras e registro ───────────────────────────────────────────────
 
 describe('effectIds de camadas futuras e registro (CLAUDE.md regra 6)', () => {
-  it('handlers de tropas/tratados recusam com "camada desligada" e lançam se aplicados', () => {
+  it('handlers de tratados recusam com "camada desligada" e lançam se aplicados', () => {
     const gatedIds = Object.entries(CARD_EFFECTS)
       .filter(([, h]) => !h.implemented)
       .map(([id]) => id);
-    expect(gatedIds.sort()).toEqual(
-      [
-        'antigrav',
-        'freeRetreat',
-        'freeTreaties',
-        'lineStrengthBonus',
-        'revealTroops',
-        'troopRoot',
-        'troopStrengthBonus',
-      ].sort(),
-    );
-    const s = edit(cardsGame(ctx), (x) => void giveCard(x, 0, 'reinforcement_orbital'));
+    expect(gatedIds.sort()).toEqual(['freeTreaties']);
+    const s = edit(cardsGame(ctx), (x) => void giveCard(x, 0, 'tech_corporate_diplomacy'));
     const card = s.players[0]?.hand.at(-1) ?? -1;
     const sc = scopeOf(s, 0, card);
     expect(effectOf(sc.def).check(sc, undefined)?.key).toBe('layerDisabled');

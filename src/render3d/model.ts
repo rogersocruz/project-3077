@@ -138,7 +138,12 @@ export function sceneHexes(ctx: EngineContext, state: GameState, viewer: PlayerI
           s.overloaded === true ||
           (s.type === 'mine' && hs.seal !== null),
       })),
-      troops: [],
+      troops: (hs.troops ?? []).map((t) => ({
+        id: String(t.uid),
+        kind: t.type,
+        level: t.level,
+        owner: t.owner,
+      })),
       sealed: hs.seal !== null || (hs.status.sealedUntil ?? 0) >= state.round,
       yieldBonus: hs.yieldBonus,
       marks: worldMarks(hs.status, state.round),

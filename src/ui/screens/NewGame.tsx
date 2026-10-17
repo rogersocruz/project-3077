@@ -30,6 +30,7 @@ export function NewGame() {
   const [cards, setCards] = useState(true);
   const [events, setEvents] = useState(true);
   const [special, setSpecial] = useState(true);
+  const [conflict, setConflict] = useState(true);
   // Assentos guardados para 6: mudar a contagem não perde a escolha.
   const [seats, setSeats] = useState<SeatKind[]>(() => Array.from({ length: MAX }, () => 'human'));
   const active = seats.slice(0, players);
@@ -41,7 +42,16 @@ export function NewGame() {
         className={`${hud.plate} ${hud.rivets} ${styles.panel}`}
         onSubmit={(e) => {
           e.preventDefault();
-          go('game', { players, seed, long: longMap, cards, events, special, seats: active.join(',') });
+          go('game', {
+            players,
+            seed,
+            long: longMap,
+            cards,
+            events,
+            special,
+            conflict,
+            seats: active.join(','),
+          });
         }}
       >
         <header className={styles.head}>
@@ -167,6 +177,15 @@ export function NewGame() {
             data-testid="layer-special"
           />
           {t('newGame.special')}
+        </label>
+        <label className={styles.option}>
+          <input
+            type="checkbox"
+            checked={conflict}
+            onChange={(e) => setConflict(e.target.checked)}
+            data-testid="layer-conflict"
+          />
+          {t('newGame.conflict')}
         </label>
         <label className={styles.option}>
           <input

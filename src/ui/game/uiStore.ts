@@ -3,7 +3,7 @@
  * uso, modificadores armados (Drone/Contrato), modal aberto, registro visível e avisos.
  */
 import { create } from 'zustand';
-import type { ActionTemplate, CardUid, CardUse, PlayerId, Reason } from '../../engine';
+import type { Action, ActionTemplate, CardUid, CardUse, PlayerId, Reason } from '../../engine';
 import type { CardFlow } from './cardFlow';
 
 export type Modal =
@@ -15,7 +15,9 @@ export type Modal =
   /** Descartar até o limite antes de encerrar a Entrega. */
   | { readonly kind: 'discard' }
   /** Zoom da carta do evento da rodada (Fase 6). */
-  | { readonly kind: 'event' };
+  | { readonly kind: 'event' }
+  /** Fase 7: previsão de combate antes de confirmar o movimento. */
+  | { readonly kind: 'movePreview'; readonly action: Extract<Action, { type: 'move' }> };
 
 export interface Toast {
   readonly key: string;

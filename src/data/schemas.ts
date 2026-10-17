@@ -144,11 +144,15 @@ export const BalanceFile = z.strictObject({
     artilleryInMeleeFactor: z.number().min(0).max(1),
     tieLossEachSide: Count,
     retreatHexes: Count,
+    /** GDD 8.5: tropa na Vila inimiga sem defensor no fim da rodada tira N vidas (máx. 1 vez por rodada). */
+    villageDamagePerRound: Count,
   }),
   border: z.strictObject({
     tollPerTroop: Count,
     maxModifiers: Count,
     changeTariffOnlyAtRoundStart: z.boolean(),
+    /** Tarifa de cada jogador no início da partida (interpretação AR). */
+    defaultTariff: ResourceId,
   }),
   events: z.strictObject({ perRound: Count, maxPerCategoryInActiveDeck: Positive, activeDeckSize: Positive }),
   treaties: z.strictObject({

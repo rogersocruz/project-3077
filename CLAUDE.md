@@ -99,8 +99,34 @@ npm run assets:check confere ícones, créditos, sha256 e licenças
 - Se uma regra do GDD parecer contraditória, **pare e pergunte** — não invente.
 
 ## Estado atual
-- Fase concluída: 6 — Eventos, hazards, sítios e tesouro
-- Próxima fase: 7 — Tropas e combate
+- Fase concluída: 7 — Tropas e combate
+- Próxima fase: 8 — Tratados (validade decidida por regra fixa no motor, sem IA)
+- Tropas e combate (Fase 7):
+  - Jogar: Nova partida (Conflito ligado por padrão) ou URL `conflict=1`. Recrutar/subir tropa
+    e "Mover tropas daqui" no inspetor do hex; mover para hex com inimigo abre a previsão
+    (`ui/combat/CombatModals.tsx`); o combate resolve na fase 6 do turno com painel e, se o
+    perdedor for humano, escolha de baixas (`chooseCasualties`). Tarifa na barra inferior.
+  - Motor: `rules/troops.ts` (força, teto, recrutar, subir, tarifa, `planMove` Dijkstra com
+    pedágio) e `rules/combat.ts` (`previewCombat`, `resolveCombat`, recuo, `runCombatPhase`,
+    `villageAttacks`, `occupiedAgainst`); efeitos de tropa em `effects/troops.ts`.
+    `state.combat` guarda a fila da fase; `pending` pode ser `tutor` ou `casualties`.
+  - GDD 8.4.1 (novo): exemplo trabalhado 11×10 + empate + três lados = teste de aceite
+    (`rules/combat.test.ts`).
+  - Decisões do usuário: o usuário escreve/valida o exemplo; recrutar = 1 ação + custo;
+    hex ocupado: o dono para de produzir e o ocupante extrai (`occupiedHexYield`);
+    Desastre atinge as tropas no hex.
+  - Interpretações provisórias (isoladas): AR) tarifa inicial `border.defaultTariff`, muda
+    1×/rodada; AS) teto = maior Quartel × 3; AT) limite de 3 espaços = estruturas + tropas de
+    UM jogador (coerente com 8.4.1); AU) caminho mais barato em Comida por hexes revelados,
+    não atravessa inimigo, pedágio por entrada em território alheio; AV) atacante = ativo,
+    senão quem chegou por último; AW) apoio até 3 por lado, 1 combate/turno; AX) baixa conta
+    a força com que lutou, escolha só quando é real, empate: cada lado perde a mais fraca;
+    AY) recuo para o mesmo vizinho seguro (próprio tabuleiro, perto da Vila), sem lugar a
+    tropa é perdida; AZ) Guardião = lado neutro (−1), Horda = −2 e só ataca no evento.
+  - Simulação (`simulations/phase7`, docs/SIMULACAO.md): eliminação 0%, 0,23 combates por
+    partida — a IA quase não ataca (agressão fica para a Fase 9).
+  - e2e `e2e/conflict.spec.ts` (capturas `screenshots/phase7-*`). Cor `scene.action.move`
+    provisória.
 - O planeta reage (Fase 6):
   - Jogar: Nova partida (Eventos e Hexes especiais ligados por padrão) ou URL
     `events=1&special=1` (na URL ficam desligados por padrão, para não mudar as partidas dos

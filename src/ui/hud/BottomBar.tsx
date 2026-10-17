@@ -5,7 +5,8 @@
  */
 import { useTranslation } from 'react-i18next';
 import { usePresentation } from '../../anim';
-import { RESOURCE_IDS } from '../../data/schemas';
+import { RESOURCE_IDS, type ResourceId } from '../../data/schemas';
+import combatStyles from '../combat/Combat.module.css';
 import { type ActionTemplate, canUndo, decider } from '../../engine';
 import { braceActions } from '../../engine/rules/world';
 import { useSettings } from '../../settings';
@@ -156,6 +157,25 @@ export function BottomBar() {
       </div>
 
       <div className={styles.tradeRow}>
+        {state.layers.conflict && (
+          <label className={combatStyles.tariff} title={t('tariff.hint')}>
+            {t('tariff.label')}
+            <select
+              value={state.players[me]?.tariff ?? 'food'}
+              disabled={!inActions || state.players[me]?.tariffRound === state.round}
+              onChange={(e) =>
+                perform({ type: 'setTariff', player: me, resource: e.target.value as ResourceId })
+              }
+              data-testid="tariff"
+            >
+              {RESOURCE_IDS.map((id) => (
+                <option key={id} value={id}>
+                  {t(`resources.${id}`)}
+                </option>
+              ))}
+            </select>
+          </label>
+        )}
         <button
           type="button"
           className={hud.btn}

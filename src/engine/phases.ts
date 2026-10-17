@@ -11,6 +11,7 @@ import { drawRow, drawRows } from './rules/decks';
 import { runProduction, runUpkeep } from './rules/economy';
 import { checkRoundEnd } from './rules/victory';
 import { endRoundEvent, revealEvent } from './rules/world';
+import { runCombatPhase, villageAttacks } from './rules/combat';
 import type { GameState, PlayerId, TurnPhase } from './state';
 
 function enterPhase(state: GameState, phase: TurnPhase, events: GameEvent[]): void {
@@ -105,10 +106,21 @@ export function continueTurn(ctx: EngineContext, state: GameState, events: GameE
 /** Encerrar a fase atual do jogador ativo (Ações ou Entrega). */
 export function endCurrentPhase(ctx: EngineContext, state: GameState, events: GameEvent[]): void {
   if (state.phase === 'actions') {
-    enterPhase(state, 'combat', events); // combate: Fase 7
-    enterPhase(state, 'delivery', events);
-    if (state.layers.cards) return; // espera a decisão de entrega/descarte
+    enterPhase(state, 'combat', events);
+    continueCombat(ctx, state, events);
+    return;
   }
+  endTurn(ctx, state, events);
+}
+
+/**
+ * GDD 6.2 fase 6: resolve os combates (para se alguém precisa escolher baixas) e segue para
+ * a Entrega. Chamado de novo depois de cada escolha de baixas.
+ */
+export function continueCombat(ctx: EngineContext, state: GameState, events: GameEvent[]): void {
+  if (state.layers.conflict && !runCombatPhase(ctx, state, events)) return;
+  enterPhase(state, 'delivery', events);
+  if (state.layers.cards) return; // espera a decisão de entrega/descarte
   endTurn(ctx, state, events);
 }
 
@@ -125,6 +137,9 @@ function endTurn(ctx: EngineContext, state: GameState, events: GameEvent[]): voi
 /** GDD 6.1 FIM: tratados com prazo (Fase 8) e verificação de vitória (13.1). */
 function endRound(ctx: EngineContext, state: GameState, events: GameEvent[]): void {
   endRoundEvent(ctx, state, events);
+  // GDD 8.5: tropa na Vila inimiga sem defensor tira vida (pode eliminar).
+  villageAttacks(ctx, state, events);
+  if (finishIfDecided(ctx, state, events)) return;
   events.push({ type: 'roundEnded', round: state.round });
   const verdict = checkRoundEnd(ctx, state);
   if (verdict) {

@@ -1,0 +1,143 @@
+.panel {
+  position: fixed;
+  left: 50%;
+  top: 14%;
+  transform: translateX(-50%);
+  z-index: 50;
+  width: min(520px, 92vw);
+  padding: 14px 18px;
+  pointer-events: none;
+  animation: rise 0.25s ease-out both;
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -10px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
+
+.sides {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.where {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-size: 16px;
+}
+
+.side {
+  border-left: 3px solid var(--frame-700);
+  padding-left: 10px;
+}
+
+.winner {
+  border-left-color: var(--accent-orange);
+}
+
+.sideHead {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.role {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--frame-edge);
+}
+
+.total {
+  margin-left: auto;
+  font-family: var(--font-numeric);
+  font-weight: 700;
+  font-size: 26px;
+}
+
+.bar {
+  display: flex;
+  height: 10px;
+  margin: 4px 0;
+  background: var(--frame-700);
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.barTroops {
+  background: var(--paper-300);
+}
+
+.barSupport {
+  background: var(--accent-orange);
+}
+
+.barMods {
+  background: var(--ui-positive);
+}
+
+.parts {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 0 12px;
+  margin: 0;
+  font-size: 12px;
+}
+
+.parts dt {
+  color: var(--frame-edge);
+}
+
+.parts dd {
+  margin: 0;
+  text-align: right;
+  font-family: var(--font-numeric);
+}
+
+.mod {
+  display: contents;
+}
+
+.result {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 18px;
+  text-transform: uppercase;
+  color: var(--accent-orange);
+}
+
+.choices {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 10px 0;
+}
+
+.choice {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.choice input {
+  accent-color: var(--accent-orange);
+}
+
+.tariff {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+}

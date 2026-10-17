@@ -54,6 +54,10 @@ function PlayerCard({ state, id }: { state: GameState; id: PlayerId }) {
     pct: Math.round(ALERT_AT * 100),
   });
   const name = playerName(t, id);
+  const army = Object.values(state.hexes).reduce(
+    (n, h) => n + h.troops.filter((x) => x.owner === id).length,
+    0,
+  );
 
   return (
     <li
@@ -89,6 +93,14 @@ function PlayerCard({ state, id }: { state: GameState; id: PlayerId }) {
             <span title={t('hud.handCount', { count: player.hand.length })} data-testid={`hand-count-${id}`}>
               <Icon glyph="cards" size={13} /> {player.hand.length}
             </span>
+            {state.layers.conflict && (
+              <span
+                title={t('hud.armyTariff', { n: army, resource: t(`resources.${player.tariff}`) })}
+                data-testid={`army-${id}`}
+              >
+                {t('hud.armyShort', { n: army })} · <ResourceIcon id={player.tariff} size={13} />
+              </span>
+            )}
             {player.incoming.length > 0 && (
               <span className={styles.incoming} title={t('hud.incoming', { count: player.incoming.length })}>
                 <Icon glyph="envelope" size={13} /> {player.incoming.length}

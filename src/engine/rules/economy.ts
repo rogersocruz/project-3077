@@ -18,6 +18,7 @@ import {
   type ResourceAmounts,
 } from '../queries';
 import type { GameState, HexState, PlayerId, StructureState } from '../state';
+import { occupiedAgainst } from './combat';
 import { until } from './hazards';
 import { numParam, permanentsWith, sumParam } from './permanents';
 import { freeUpkeepAt, hazardParkYield, mineMultiplierBonus, portEffect } from './specials';
@@ -174,6 +175,28 @@ export function runProduction(
     }
     gain(total, produceOnce(ctx, state, player, placed, automation, events));
   }
+  // GDD 8.5: hexes alheios ocupados por Linha sua (sem outra tropa) rendem occupiedHexYield.
+  if (state.layers.conflict) {
+    const own = p.boardId;
+    for (const [key, hex] of Object.entries(state.hexes)) {
+      if (hex.boardId === own || hex.guardian !== null) continue;
+      if (!hex.troops.some((t) => t.owner === player && t.type === 'line')) continue;
+      if (hex.troops.some((t) => t.owner !== player)) continue;
+      const resources = new Set<ResourceId>();
+      const t = ctx.terrain(hex.surface);
+      if (t.kind === 'surface') for (const r of t.def.produces) resources.add(r);
+      for (const s of hex.structures) {
+        if (ctx.structure(s.type).subtype !== 'extraction') continue;
+        for (const r of Object.keys(structureYield(ctx, hex, s)) as ResourceId[]) resources.add(r);
+      }
+      for (const r of resources) {
+        const amount = ctx.balance.production.occupiedHexYield;
+        p.resources[r] += amount;
+        total[r] += amount;
+        events.push({ type: 'produced', player, hex: key, uid: -1, resource: r, amount });
+      }
+    }
+  }
   runSilos(ctx, state, player, total, events);
 }
 
@@ -196,6 +219,8 @@ export function productionBlocked(
     (s.type === 'mine' && hex.seal !== null) ||
     until(state, hex.status.ashUntil) ||
     !!hex.status.contaminated ||
+    // GDD 8.5: hex ocupado por Linha de outro jogador — o dono não produz ali.
+    occupiedAgainst(hex, s.owner) ||
     (!!ctx && s.type === 'mine' && minesStopped(ctx, state, s.owner))
   );
 }

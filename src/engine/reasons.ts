@@ -92,6 +92,15 @@ export const REASON_KEYS = [
   'dronesGrounded',
   'shielded',
   'playerEliminated',
+  // Tropas e combate (Fase 7)
+  'notNearBarracks',
+  'enemyInHex',
+  'armyCap',
+  'notYourTroop',
+  'tariffAlreadyChanged',
+  'troopRooted',
+  'noPath',
+  'invalidCasualties',
 ] as const;
 
 export type ReasonKey = (typeof REASON_KEYS)[number];

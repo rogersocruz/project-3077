@@ -294,6 +294,18 @@ export class Director {
     const ctx = this.ctx;
     if (!ctx) return;
     switch (cue.kind) {
+      case 'combat': {
+        // UX_SPEC 2.13: painel com as barras de força; as baixas e o recuo vêm no estado novo.
+        if (this.instant) return;
+        usePresentation.setState({ combat: cue.event });
+        useSceneStore.getState().setPulse({ keys: new Set([cue.event.hex]), color: palette.ui.danger });
+        await this.wait(T.combatPanel);
+        if (epoch !== this.epoch) return;
+        usePresentation.setState({ combat: null });
+        useSceneStore.getState().setPulse(null);
+        return;
+      }
+
       case 'worldEvent': {
         // UX_SPEC 2.14: a mesa escurece, a carta vem ao centro com a cor da categoria e
         // os hexes atingidos pulsam; depois a carta encolhe para o topo do HUD.
@@ -406,6 +418,12 @@ export class Director {
       }
       case 'deck':
         return { kind: 'world', anchor: { kind: 'pile', deck: target.deck, pile: 'draw' } };
+      case 'troop': {
+        const hex = Object.entries(state.hexes).find(([, h]) =>
+          h.troops.some((t) => t.uid === target.uid),
+        )?.[0];
+        return hex ? { kind: 'world', anchor: { kind: 'hex', key: hex } } : { kind: 'center' };
+      }
     }
   }
 

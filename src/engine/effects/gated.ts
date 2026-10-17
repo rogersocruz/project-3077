@@ -7,17 +7,8 @@ import { z } from 'zod';
 import type { LayerName } from '../state';
 import { defineEffect, type TargetKind } from './types';
 
-const Count = z.number().int().positive();
-
 const gated = <P>(layer: LayerName, target: TargetKind, params: z.ZodType<P>) =>
   defineEffect({ params, target, requires: [layer], implemented: false });
 
-// Tropas e combate (Fase 7)
-export const troopStrengthBonus = gated('conflict', 'structure', z.strictObject({ amount: Count }));
-export const troopRoot = gated('conflict', 'structure', z.strictObject({}));
-export const revealTroops = gated('conflict', 'hex', z.strictObject({ radius: Count }));
-export const freeRetreat = gated('conflict', 'hex', z.strictObject({}));
-export const lineStrengthBonus = gated('conflict', 'none', z.strictObject({}));
-export const antigrav = gated('conflict', 'none', z.strictObject({}));
 // Tratados (Fase 8)
 export const freeTreaties = gated('treaties', 'none', z.strictObject({}));

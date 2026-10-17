@@ -19,7 +19,7 @@ export interface FocusRequest {
 }
 
 /** Ação cujos alvos estão destacados (a cor vem de tokens → scene.action). */
-export type TargetKind = 'explore' | 'survey' | 'build' | 'upgrade' | 'chooseVillage' | 'card';
+export type TargetKind = 'explore' | 'survey' | 'build' | 'upgrade' | 'chooseVillage' | 'card' | 'move';
 
 export interface TargetSet {
   readonly kind: TargetKind;

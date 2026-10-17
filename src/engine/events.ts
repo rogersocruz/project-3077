@@ -3,7 +3,16 @@
  * fila; o motor nunca espera (CLAUDE.md, regra de arquitetura 2).
  */
 import type { ResourceId } from '../data/schemas';
-import type { CardTarget, CardUid, DrawDeck, HexKey, PlayerId, Resources, TurnPhase } from './state';
+import type {
+  CardTarget,
+  CardUid,
+  DrawDeck,
+  HexKey,
+  PlayerId,
+  Resources,
+  TroopType,
+  TurnPhase,
+} from './state';
 import type { ReasonKey } from './reasons';
 
 /** Uma estrutura vista por carta de informação (Auditoria, Reconhecimento). */
@@ -123,4 +132,32 @@ export type GameEvent =
   /** Contra-ação do evento ("quem gastar N ações fica imune"). */
   | { type: 'braced'; player: PlayerId; event: string }
   | { type: 'eventFoodLoss'; player: PlayerId; amount: number }
+  // ── Tropas e combate (Fase 7) ──
+  | { type: 'troopRecruited'; player: PlayerId; hex: HexKey; uid: number; troop: TroopType }
+  | { type: 'troopUpgraded'; player: PlayerId; uid: number; level: number }
+  | { type: 'tariffChanged'; player: PlayerId; resource: ResourceId }
+  | { type: 'tollPaid'; from: PlayerId; to: PlayerId; resources: Partial<Resources> }
+  | { type: 'troopsMoved'; player: PlayerId; from: HexKey; to: HexKey; uids: number[]; path: HexKey[] }
+  | {
+      type: 'combatResolved';
+      hex: HexKey;
+      /** null = empate no topo. Dono −1 = lado neutro (Guardião/Horda). */
+      winner: PlayerId | null;
+      sides: {
+        owner: PlayerId;
+        attacker: boolean;
+        troops: number;
+        support: number;
+        modifiers: { key: string; value: number }[];
+        modifierTotal: number;
+        total: number;
+      }[];
+    }
+  | { type: 'casualtiesPending'; player: PlayerId; hex: HexKey; need: number }
+  | { type: 'troopsLost'; player: PlayerId; hex: HexKey; uids: number[] }
+  | { type: 'troopsRetreated'; player: PlayerId; from: HexKey; to: HexKey; uids: number[] }
+  | { type: 'guardianDefeated'; hex: HexKey }
+  | { type: 'villageAttacked'; player: PlayerId; by: PlayerId[] }
+  | { type: 'troopBoosted'; player: PlayerId; uid: number; amount: number }
+  | { type: 'troopRooted'; player: PlayerId; uid: number }
   | { type: 'gameOver'; winners: PlayerId[]; reason: 'condition' | 'roundLimit' };

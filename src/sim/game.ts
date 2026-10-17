@@ -14,6 +14,9 @@ import { expansionCount, progress, type TrackId } from '../engine/rules/victory'
 import { createGame, type GameOptions } from '../engine/setup';
 import type { GameState, Resources } from '../engine/state';
 
+/** Condição de vitória registrada: trilha ou eliminação total. */
+export type WinTrack = TrackId | 'elimination';
+
 export interface PlayerRecord {
   readonly seat: number;
   readonly level: AiLevel;
@@ -58,7 +61,7 @@ export interface GameRecord {
   readonly endReason: 'condition' | 'roundLimit';
   readonly winners: number[];
   /** Trilhas que deram a vitória (de todos os vencedores; vazio no limite de rodadas). */
-  readonly winTracks: TrackId[];
+  readonly winTracks: WinTrack[];
   readonly steps: number;
   readonly ms: number;
   readonly seats: PlayerRecord[];
@@ -77,6 +80,10 @@ export interface GameRecord {
   readonly disasters: number;
   readonly eliminations: number;
   readonly excavations: number;
+  /** Fase 7: combates, tropas recrutadas e ataques à Vila. */
+  readonly combats: number;
+  readonly recruits: number;
+  readonly villageHits: number;
 }
 
 export interface SimGameOptions {
@@ -156,6 +163,9 @@ export function playSimGame(ctx: EngineContext, opts: SimGameOptions): GameRecor
   let disasters = 0;
   let eliminations = 0;
   let excavations = 0;
+  let combats = 0;
+  let recruits = 0;
+  let villageHits = 0;
   const n = ctx.playerCount;
   const trajectory: RoundPoint[][] = Array.from({ length: n }, () => []);
   const flows = () =>
@@ -285,6 +295,15 @@ export function playSimGame(ctx: EngineContext, opts: SimGameOptions): GameRecor
         case 'excavated':
           excavations++;
           break;
+        case 'combatResolved':
+          combats++;
+          break;
+        case 'troopRecruited':
+          recruits++;
+          break;
+        case 'villageAttacked':
+          villageHits++;
+          break;
       }
     }
     state = next;
@@ -314,8 +333,11 @@ export function playSimGame(ctx: EngineContext, opts: SimGameOptions): GameRecor
       coalSpent: coalSpent[p.id] ?? 0,
     };
   });
-  const winTracks =
-    state.endReason === 'condition' ? [...new Set(seats.filter((s) => s.won).flatMap((s) => s.met))] : [];
+  // Eliminação total (GDD 13.1): venceu sobrando sozinho, sem trilha cumprida.
+  const alive = state.players.filter((p) => !p.eliminated).length;
+  const tracks = [...new Set(seats.filter((s) => s.won).flatMap((s) => s.met))];
+  const winTracks: WinTrack[] =
+    state.endReason === 'condition' ? (tracks.length === 0 && alive === 1 ? ['elimination'] : tracks) : [];
   return {
     seed: opts.seed,
     players: ctx.playerCount,
@@ -337,6 +359,9 @@ export function playSimGame(ctx: EngineContext, opts: SimGameOptions): GameRecor
     disasters,
     eliminations,
     excavations,
+    combats,
+    recruits,
+    villageHits,
   };
 }
 

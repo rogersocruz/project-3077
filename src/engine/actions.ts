@@ -3,7 +3,7 @@
  * em legal.ts se esse jogador pode agir agora.
  */
 import type { ResourceId } from '../data/schemas';
-import type { CardTarget, CardUid, HexKey, PlayerId, Resources } from './state';
+import type { CardTarget, CardUid, HexKey, PlayerId, Resources, TroopType } from './state';
 
 /**
  * Carta da mão usada junto com outra ação (Drone com Sondar/Construir, Contrato de Obra
@@ -77,6 +77,16 @@ export type Action =
   | { type: 'excavate'; player: PlayerId; hex: HexKey }
   /** GDD 9: contra-ação do evento da rodada ("quem gastar N ações fica imune"). */
   | { type: 'brace'; player: PlayerId }
+  /** GDD 6.3 Recrutar (Fase 7). */
+  | { type: 'recruit'; player: PlayerId; hex: HexKey; troop: TroopType }
+  /** Subir o nível da tropa (Oficina libera; 1 ação + custo de recrutar). */
+  | { type: 'upgradeTroop'; player: PlayerId; uid: number }
+  /** GDD 8.3: mover tropas do mesmo hex até o destino (0 ações, Comida + pedágio). */
+  | { type: 'move'; player: PlayerId; from: HexKey; to: HexKey; uids: readonly number[] }
+  /** GDD 5.4: declarar a tarifa de fronteira (0 ações, 1×/rodada). */
+  | { type: 'setTariff'; player: PlayerId; resource: ResourceId }
+  /** GDD 8.4 passo 4: o perdedor escolhe as baixas. */
+  | { type: 'chooseCasualties'; player: PlayerId; uids: readonly number[] }
   /** Pântano Ácido contaminado: limpar gastando ações. */
   | { type: 'cleanHex'; player: PlayerId; hex: HexKey }
   /** Colapso de Galeria: o dono do tabuleiro remove o selo gastando ações. */
@@ -122,6 +132,11 @@ export const ACTION_COST: Record<ActionType, number> = {
   installPermanent: 0,
   clearSeal: 0,
   excavate: 1,
+  recruit: 1,
+  upgradeTroop: 1,
+  move: 0,
+  setTariff: 0,
+  chooseCasualties: 0,
   brace: 0,
   cleanHex: 0,
   deliverCard: 0,

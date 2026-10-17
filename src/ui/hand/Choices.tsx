@@ -145,7 +145,7 @@ export function TutorChoice() {
   const { t } = useTranslation();
   const state = useSession((s) => s.state);
   const me = useMyDecision();
-  const pending = state?.pending;
+  const pending = state?.pending?.kind === 'tutor' ? state.pending : null;
   if (!state || !pending || me === null || pending.player !== me) return null;
   return (
     <div className={hud.overlay} role="presentation">

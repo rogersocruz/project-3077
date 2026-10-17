@@ -173,7 +173,9 @@ export type Cue =
       readonly category: string;
       /** Hexes que o evento atingiu neste lote (pulsam na cor da categoria). */
       readonly hexes: readonly HexKey[];
-    };
+    }
+  // ── Combate (Fase 7, UX_SPEC 2.13) ──
+  | { readonly kind: 'combat'; readonly event: Extract<GameEvent, { type: 'combatResolved' }> };
 
 /** Estrutura `uid` com a posição dentro do hex (procura em `primary`, depois em `fallback`). */
 function placed(primary: GameState, fallback: GameState, uid: number): PlacedStructureCue | null {
@@ -484,6 +486,9 @@ export function buildCues(ctx: EngineContext, batch: Batch): Cue[] {
         break;
       case 'treasureDrawn':
         cues.push({ kind: 'draw', player: e.player, cards: [card(e.card)] });
+        break;
+      case 'combatResolved':
+        cues.push({ kind: 'combat', event: e });
         break;
       case 'eventFoodLoss':
         if (e.amount > 0)

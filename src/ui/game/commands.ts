@@ -112,6 +112,14 @@ export function actOnHex(key: string): boolean {
     return false;
   }
   ui.setMode(null);
+  // Fase 7: destino com inimigo → previsão de combate antes de confirmar.
+  if (action.type === 'move') {
+    const dest = state.hexes[action.to];
+    if (dest && (dest.guardian !== null || dest.troops.some((t) => t.owner !== action.player))) {
+      ui.open({ kind: 'movePreview', action });
+      return true;
+    }
+  }
   return performTemplate(mode, key);
 }
 

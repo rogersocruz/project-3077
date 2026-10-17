@@ -37,6 +37,8 @@ export const T = {
   eventReveal: 1.6,
   eventRevealReduced: 0.7,
   eventPulse: 2.5,
+  /** Fase 7: painel de combate (cinemática curta). */
+  combatPanel: 1.8,
   /** IA (Fase 5): pausa antes de cada decisão, para a mesa ser legível. */
   aiThink: 0.35,
 } as const;

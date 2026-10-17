@@ -112,9 +112,18 @@ export function villageLevel(state: GameState, player: PlayerId): number {
   return maxLevelOf(state, player, 'village');
 }
 
-/** GDD 6.6: espaços ocupados no hex (estruturas; tropas entram na Fase 7). */
-export function slotsUsed(ctx: EngineContext, hex: HexState): number {
-  return hex.structures.reduce((sum, s) => sum + ctx.structure(s.type).slots, 0);
+/**
+ * GDD 6.6: espaços ocupados no hex. Interpretação AT (Fase 7, coerente com o exemplo do
+ * GDD 8.4.1): o limite conta as estruturas do hex + as tropas de UM jogador — `player`
+ * dado: as dele; sem `player`: o jogador com mais tropas ali.
+ */
+export function slotsUsed(ctx: EngineContext, hex: HexState, player?: PlayerId): number {
+  const structures = hex.structures.reduce((sum, s) => sum + ctx.structure(s.type).slots, 0);
+  const troops = hex.troops ?? [];
+  if (player !== undefined) return structures + troops.filter((t) => t.owner === player).length;
+  const per = new Map<PlayerId, number>();
+  for (const t of troops) per.set(t.owner, (per.get(t.owner) ?? 0) + 1);
+  return structures + Math.max(0, ...per.values());
 }
 
 /** Hexes do próprio tabuleiro vizinhos de `key` (GDD 6.3 Explorar: "no próprio tabuleiro"). */

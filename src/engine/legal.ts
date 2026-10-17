@@ -6,7 +6,15 @@ import { RESOURCE_IDS, type ResourceId } from '../data/schemas';
 import { ACTION_COST, type Action, type CardUse } from './actions';
 import type { EngineContext } from './context';
 import { effectOf } from './effects/registry';
-import { getHex, getPlayer, isValidAmounts, amountTotal, canAfford, ownedStructures } from './queries';
+import {
+  getHex,
+  getPlayer,
+  hexKeyOf,
+  isValidAmounts,
+  amountTotal,
+  canAfford,
+  ownedStructures,
+} from './queries';
 import type { Reason } from './reasons';
 import {
   buildCostAt,
@@ -34,6 +42,8 @@ import { bankQuote, minBankAmount } from './rules/economy';
 import { cardDefOf, freeSlot } from './rules/permanents';
 import { inVillageZone } from './setup';
 import { freeSurveyAt } from './rules/specials';
+import { autoCasualties, checkCasualtyChoice } from './rules/combat';
+import { checkMove, checkRecruit, checkSetTariff, checkUpgradeTroop } from './rules/troops';
 import { braceActions, checkBrace, checkCleanHex, checkExcavate, eventParams } from './rules/world';
 import type { CardTarget, CardUid, GameState, HexKey, PlayerId, Resources } from './state';
 
@@ -242,6 +252,14 @@ function checkActionsPhase(ctx: EngineContext, state: GameState, action: Action)
       return fromReason(checkClearSeal(state, action));
     case 'excavate':
       return fromReason(checkExcavate(ctx, state, action));
+    case 'recruit':
+      return fromReason(checkRecruit(ctx, state, action));
+    case 'upgradeTroop':
+      return fromReason(checkUpgradeTroop(ctx, state, action));
+    case 'move':
+      return fromReason(checkMove(ctx, state, action));
+    case 'setTariff':
+      return fromReason(checkSetTariff(state, action));
     case 'brace':
       return fromReason(checkBrace(ctx, state, action));
     case 'cleanHex':
@@ -288,10 +306,18 @@ export function checkAction(ctx: EngineContext, state: GameState, action: Action
   }
 
   if (state.pending) {
+    if (state.pending.kind === 'casualties') {
+      if (action.type !== 'chooseCasualties') return no('choicePending');
+      if (action.player !== state.pending.player) return no('notYourTurn');
+      return checkCasualtyChoice(state.pending, action.uids)
+        ? OK
+        : no('invalidCasualties', { n: state.pending.need });
+    }
     return action.type === 'resolveChoice'
       ? fromReason(checkResolveChoice(state, action))
       : no('choicePending');
   }
+  if (action.type === 'chooseCasualties') return no('invalidChoice');
   if (action.type === 'resolveChoice') return no('invalidChoice');
   if (state.pendingTrade) return checkTrade(ctx, state, action);
   if (
@@ -458,6 +484,16 @@ export function legalActions(ctx: EngineContext, state: GameState, player: Playe
     });
     for (const hex of ownBoardHexes(ctx, state, player))
       candidates.push({ type: 'chooseVillage', player, hex });
+  } else if (state.pending?.kind === 'casualties') {
+    // Representativo: as mais fracas primeiro (o motor aceita qualquer escolha válida).
+    const p = state.pending;
+    const fighters = p.options.map((o) => ({
+      uid: o.uid,
+      kind: 'line' as const,
+      level: 1,
+      strength: o.strength,
+    }));
+    candidates.push({ type: 'chooseCasualties', player, uids: autoCasualties(fighters, p.need) });
   } else if (state.pending) {
     for (const card of state.pending.options) candidates.push({ type: 'resolveChoice', player, card });
   } else if (state.pendingTrade) {
@@ -494,6 +530,7 @@ export function legalActions(ctx: EngineContext, state: GameState, player: Playe
         }
       }
       if (state.layers.events) candidates.push({ type: 'brace', player });
+      if (state.layers.conflict) conflictCandidates(ctx, state, player, candidates);
       for (const give of RESOURCE_IDS) {
         for (const receive of RESOURCE_IDS) {
           if (give === receive) continue;
@@ -522,6 +559,47 @@ export function legalActions(ctx: EngineContext, state: GameState, player: Playe
   return candidates.filter((a) => checkAction(ctx, state, a).ok);
 }
 
+/**
+ * Fase 7: recrutar perto dos Quartéis, subir tropa, tarifa e movimentos representativos
+ * (o grupo inteiro de cada hex para hexes a até 2, Vilas inimigas e hexes com inimigos a
+ * até 6). checkAction valida qualquer outro destino ou grupo.
+ */
+function conflictCandidates(ctx: EngineContext, state: GameState, player: PlayerId, out: Action[]): void {
+  const barracks = ownedStructures(state, player, 'barracks');
+  const near = new Set<HexKey>();
+  for (const b of barracks) {
+    near.add(b.key);
+    for (const n of ctx.planet.neighbors(b.hex)) near.add(hexKeyOf(n));
+  }
+  for (const hex of near)
+    for (const troop of ['line', 'artillery'] as const) out.push({ type: 'recruit', player, hex, troop });
+  const groups = new Map<HexKey, number[]>();
+  for (const [key, hex] of Object.entries(state.hexes)) {
+    for (const t of hex.troops) {
+      if (t.owner !== player) continue;
+      out.push({ type: 'upgradeTroop', player, uid: t.uid });
+      if (t.rootedRound !== state.round) groups.set(key, [...(groups.get(key) ?? []), t.uid]);
+    }
+  }
+  const hot = Object.entries(state.hexes)
+    .filter(
+      ([k, h]) =>
+        h.troops.some((t) => t.owner !== player) ||
+        state.players.some((p) => p.id !== player && p.villageHex === k),
+    )
+    .map(([k, h]) => ({ k, h }));
+  for (const [from, uids] of groups) {
+    const fh = state.hexes[from];
+    if (!fh) continue;
+    const dests = new Set<HexKey>();
+    for (const [k, h] of Object.entries(state.hexes))
+      if (k !== from && ctx.planet.distance(fh, h) <= 2) dests.add(k);
+    for (const { k, h } of hot) if (ctx.planet.distance(fh, h) <= 6) dests.add(k);
+    for (const to of dests) out.push({ type: 'move', player, from, to, uids });
+  }
+  for (const resource of RESOURCE_IDS) out.push({ type: 'setTariff', player, resource });
+}
+
 /** A mesma quantia com 1 unidade a menos no maior item (null se ficaria vazia). */
 function shrinkByOne(amounts: Partial<Resources>): Partial<Resources> | null {
   const top = RESOURCE_IDS.reduce<ResourceId | null>(
@@ -545,7 +623,9 @@ export type ActionTemplate =
       readonly halfCost?: CardUse;
     }
   | { readonly type: 'upgrade' }
-  | { readonly type: 'chooseVillage' };
+  | { readonly type: 'chooseVillage' }
+  /** Fase 7: mover todas as tropas livres do jogador em `from`. */
+  | { readonly type: 'move'; readonly from: HexKey };
 
 /** Ação concreta do molde num hex (Melhorar: a primeira estrutura própria melhorável). */
 export function actionAt(
@@ -570,6 +650,14 @@ export function actionAt(
         ...(template.drone ? { drone: template.drone } : {}),
         ...(template.halfCost ? { halfCost: template.halfCost } : {}),
       };
+    case 'move': {
+      const uids = (state.hexes[template.from]?.troops ?? [])
+        .filter((t) => t.owner === player && t.rootedRound !== state.round)
+        .map((t) => t.uid);
+      return uids.length && hex !== template.from
+        ? { type: 'move', player, from: template.from, to: hex, uids }
+        : null;
+    }
     case 'upgrade': {
       const own = state.hexes[hex]?.structures.filter((s) => s.owner === player) ?? [];
       const ok = own.find((s) => checkAction(ctx, state, { type: 'upgrade', player, uid: s.uid }).ok);

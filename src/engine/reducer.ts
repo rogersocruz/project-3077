@@ -6,7 +6,9 @@ import type { Action } from './actions';
 import type { EngineContext } from './context';
 import type { GameEvent } from './events';
 import { actionCost, checkAction } from './legal';
-import { advanceSetup, continueTurn, endCurrentPhase } from './phases';
+import { advanceSetup, continueCombat, continueTurn, endCurrentPhase } from './phases';
+import { applyCasualtyChoice } from './rules/combat';
+import { applyMove, applyRecruit, applySetTariff, applyUpgradeTroop } from './rules/troops';
 import { gain, getPlayer, pay, sameBoardNeighbors } from './queries';
 import { IllegalActionError } from './reasons';
 import { buildCostAt, raiseLevel, upgradeCost } from './rules/build';
@@ -201,6 +203,22 @@ function apply(ctx: EngineContext, s: GameState, action: Action, cost: number, e
       return;
     case 'excavate':
       applyExcavate(ctx, s, action, events);
+      return;
+    case 'recruit':
+      applyRecruit(ctx, s, action, events);
+      return;
+    case 'upgradeTroop':
+      applyUpgradeTroop(ctx, s, action, events);
+      return;
+    case 'move':
+      applyMove(ctx, s, action, events);
+      return;
+    case 'setTariff':
+      applySetTariff(s, action, events);
+      return;
+    case 'chooseCasualties':
+      applyCasualtyChoice(ctx, s, action.uids, events);
+      if (!s.pending) continueCombat(ctx, s, events);
       return;
     case 'brace':
       applyBrace(s, action, events, (uid) => produceWithheldMine(ctx, s, uid, events));

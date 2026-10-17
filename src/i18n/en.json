@@ -125,7 +125,15 @@
       "surveyBlocked": "Unstable Crust: surveying fails this round (only with a Drone).",
       "dronesGrounded": "Drones are grounded this round.",
       "shielded": "The Magnetic Anomaly shields this target.",
-      "playerEliminated": "That player is out of the game."
+      "playerEliminated": "That player is out of the game.",
+      "notNearBarracks": "Recruit on one of your Barracks' hexes or next to it.",
+      "enemyInHex": "There is an enemy troop or a Guardian in this hex.",
+      "armyCap": "Army at its cap ({{cap}} troops): upgrade the Barracks.",
+      "notYourTroop": "That troop is not yours.",
+      "tariffAlreadyChanged": "The tariff already changed this round.",
+      "troopRooted": "That troop cannot move this round (Desertion).",
+      "noPath": "No path: hidden hexes or blocked by enemy troops.",
+      "invalidCasualties": "Choose troops adding up to at least the needed strength, with none to spare."
     }
   },
   "terrain": {
@@ -188,7 +196,7 @@
     "seed": "Seed",
     "randomSeed": "Roll",
     "privacy": "Privacy screen between players",
-    "layersNote": "Troops, treaties and factions come in the next phases.",
+    "layersNote": "Treaties and factions come in the next phases.",
     "start": "Start",
     "cards": "Card layer (n1/n2/n3 decks, deliveries and permanents)",
     "seatLabel": "Who plays as {{player}}",
@@ -203,7 +211,8 @@
     "watchAi": "AI only (watch)",
     "allHuman": "All human",
     "events": "Global events (one per round; disasters hit the Village)",
-    "special": "Special hexes (Temple, Ruin and unique hazards)"
+    "special": "Special hexes (Temple, Ruin and unique hazards)",
+    "conflict": "Troops and combat (Barracks, movement, borders, Village attacks)"
   },
   "phases": {
     "reveal": "Reveal",
@@ -291,7 +300,8 @@
       "survey": "Survey: click a highlighted hex · Esc cancels",
       "build": "Build {{structure}}: click a highlighted hex · Esc cancels",
       "upgrade": "Upgrade: click a highlighted hex · Esc cancels",
-      "chooseVillage": "Pick a highlighted hex to found the Village Center"
+      "chooseVillage": "Pick a highlighted hex to found the Village Center",
+      "move": "Move troops: click a highlighted destination (Food + toll) · Esc cancels"
     },
     "log": "Log",
     "logFilter": "Filter by player",
@@ -306,14 +316,17 @@
     "deliveryHint": "Delivery: click a card to deliver it, or end the turn",
     "permanentsOf": "{{name}}'s permanents",
     "ai": "AI",
-    "aiThinking": "{{name}} is thinking…"
+    "aiThinking": "{{name}} is thinking…",
+    "armyTariff": "Army: {{n}} troop(s) · border tariff: {{resource}}",
+    "armyShort": "⚔ {{n}}"
   },
   "noTargets": {
     "explore": "No hex to explore: only neighbours of revealed hexes on your board.",
     "survey": "No subsoil in range to survey.",
     "build": "No hex accepts that structure right now.",
     "upgrade": "None of your structures can be upgraded right now.",
-    "chooseVillage": "No valid hex for the Village."
+    "chooseVillage": "No valid hex for the Village.",
+    "move": "No destination within your Food."
   },
   "inspector": {
     "title": "Hex inspector",
@@ -346,7 +359,13 @@
     "overloaded": "idle in the next Production (Overload)",
     "excavate": "Excavate the {{site}}",
     "clean": "Clean contamination ({{n}} actions)",
-    "untilRound": "until round {{n}}"
+    "untilRound": "until round {{n}}",
+    "troops": "Troops",
+    "troopLine": "{{troop}} level {{level}} · strength {{strength}}",
+    "recruit": "Recruit {{troop}}",
+    "upgradeTroop": "Raise {{troop}} to level {{level}}",
+    "move": "Move troops from here",
+    "military": "Army"
   },
   "bank": {
     "title": "Bank",
@@ -524,7 +543,22 @@
     "treasureDrawn": "{{name}} found a treasure.",
     "treasureDrawnOwn": "{{name}} found {{card}} in the Treasure.",
     "braced": "{{name}} braced against {{event}}.",
-    "eventFoodLoss": "{{name}} lost {{n}} Food to the plague."
+    "eventFoodLoss": "{{name}} lost {{n}} Food to the plague.",
+    "troop": "troop",
+    "troopRecruited": "{{name}} recruited {{troop}} at {{hex}}.",
+    "troopUpgraded": "{{name}} raised a troop to level {{level}}.",
+    "tariffChanged": "{{name}} declared a border tariff: {{resource}}.",
+    "tollPaid": "{{from}} paid a toll to {{to}}: {{list}}.",
+    "troopsMoved": "{{name}} moved {{count}} troop(s) from {{from}} to {{to}}.",
+    "combatResolved": "Combat at {{hex}}: {{totals}} — {{winner}} wins.",
+    "combatTie": "Combat at {{hex}}: {{totals}} — tie.",
+    "casualtiesPending": "{{name}} chooses casualties (strength {{n}}).",
+    "troopsLost": "{{name}} lost {{count}} troop(s) at {{hex}}.",
+    "troopsRetreated": "{{count}} of {{name}}'s troop(s) retreated to {{to}}.",
+    "guardianDefeated": "The Guardian at {{hex}} was defeated.",
+    "villageAttacked": "{{name}}'s Village was attacked by {{by}}.",
+    "troopBoosted": "One of {{name}}'s troops gains +{{n}} strength this round.",
+    "troopRooted": "One of {{name}}'s troops cannot move this round."
   },
   "cards": {
     "deck": {
@@ -655,7 +689,8 @@
       "economy": "Economy",
       "cards": "Cards",
       "specialHexes": "Special hexes",
-      "events": "Global events"
+      "events": "Global events",
+      "conflict": "Troops and combat"
     },
     "layersNote": "Troops, treaties and factions join the simulator with their phases.",
     "invalid": "Invalid balance — fix it before simulating:",
@@ -725,5 +760,41 @@
     "guardian": "Guardian (strength {{n}})",
     "contaminated": "Contaminated: {{n}} actions to clean",
     "ruinBonus": "Ruin excavated by {{name}}: +1 draw and n3 row"
+  },
+  "troops": {
+    "line": "Line",
+    "artillery": "Artillery",
+    "guardian": "Guardian",
+    "horde": "Horde"
+  },
+  "combat": {
+    "title": "Combat at {{hex}}",
+    "attacker": "Attacks",
+    "defender": "Defends",
+    "troops": "Troops",
+    "support": "Artillery support",
+    "modifiers": "Modifiers",
+    "cap": "cap +{{n}}",
+    "total": "Total",
+    "wins": "{{name}} wins",
+    "tie": "Tie: each side loses one troop",
+    "preview": "Combat preview",
+    "confirm": "Move and attack",
+    "cancel": "Cancel",
+    "casualtiesTitle": "Choose casualties",
+    "casualtiesHint": "Remove troops adding up to at least {{n}} strength (none to spare). Survivors retreat.",
+    "confirmCasualties": "Confirm casualties",
+    "mod": {
+      "defenderHomeBoard": "Home board",
+      "formation2": "Formation of 2",
+      "formation3": "Formation of 3+",
+      "wall": "Wall",
+      "adjacentOutpost": "Adjacent Outpost",
+      "attackerCrossedBorder": "Crossed the border"
+    }
+  },
+  "tariff": {
+    "label": "Tariff",
+    "hint": "Border tariff: each troop entering your territory pays 1 of this resource (changes once per round)."
   }
 }

@@ -44,6 +44,9 @@ const record = (seed: number, extra: Partial<GameRecord> = {}): GameRecord => ({
   disasters: 1,
   eliminations: 0,
   excavations: 2,
+  combats: 0,
+  recruits: 0,
+  villageHits: 0,
   ...extra,
 });
 

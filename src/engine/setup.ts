@@ -214,6 +214,7 @@ export function createGame(ctx: EngineContext, options: GameOptions): GameState 
       status: {},
       guardian: null,
       excavatedBy: null,
+      troops: [],
     };
   }
   // Depois dos tiles: com cartas desligadas o RNG não é tocado e o planeta não muda.
@@ -240,6 +241,10 @@ export function createGame(ctx: EngineContext, options: GameOptions): GameState 
       receivedThisRound: 0,
       deliveredThisTurn: 0,
       eliminated: false,
+      // Interpretação AR: tarifa inicial = border.defaultTariff (Comida).
+      tariff: ctx.balance.border.defaultTariff,
+      tariffRound: 0,
+      tariffMods: [],
     };
   });
 
@@ -262,6 +267,7 @@ export function createGame(ctx: EngineContext, options: GameOptions): GameState 
     cards,
     pending: null,
     ...(options.playToRoundLimit ? { variant: { playToRoundLimit: true } } : {}),
+    combat: null,
     world: { deck: eventDeck, used: [], current: null, braced: [], firstSurveyDone: false, withheld: [] },
     winners: [],
     endReason: null,

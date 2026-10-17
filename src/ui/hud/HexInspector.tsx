@@ -6,7 +6,17 @@
 import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { usePresentation } from '../../anim';
-import { type Action, actionCost, checkAction, type HexKey, type Reason } from '../../engine';
+import {
+  type Action,
+  actionAt,
+  actionCost,
+  actionTargets,
+  checkAction,
+  type HexKey,
+  type Reason,
+} from '../../engine';
+import { troopStrength } from '../../engine/rules/troops';
+import { chooseAction } from '../game/commands';
 import { deficit, type ResourceAmounts, slotsUsed } from '../../engine/queries';
 import { buildCostAt, upgradeCost } from '../../engine/rules/build';
 import { useSceneStore } from '../../render3d/sceneStore';
@@ -23,6 +33,8 @@ interface Option {
   readonly key?: string;
   readonly action: Action;
   readonly cost: ResourceAmounts;
+  /** Em vez de executar: ex. Mover entra no modo de destino. */
+  readonly onClick?: () => void;
 }
 
 function ReasonText({ reason, cost }: { reason: Reason; cost: ResourceAmounts }) {
@@ -53,7 +65,7 @@ function ActionRow({ option }: { option: Option }) {
         type="button"
         className={`${hud.btn} ${hud.btnInk} ${styles.actBtn}`}
         disabled={!check.ok}
-        onClick={() => perform(option.action)}
+        onClick={() => (option.onClick ? option.onClick() : perform(option.action))}
         data-testid={`act-${option.id}`}
       >
         <span className={styles.actLabel}>
@@ -191,6 +203,49 @@ export function HexInspector({ hexKey }: { hexKey: HexKey }) {
       }));
     if (upgrades.length) sections.push({ title: t('hud.upgrade'), options: upgrades });
 
+    // Fase 7: recrutar perto do Quartel, subir tropa e mover (o motor decide se pode).
+    if (state.layers.conflict) {
+      const military: Option[] = [];
+      for (const troop of ['line', 'artillery'] as const) {
+        military.push({
+          id: `recruit-${troop}`,
+          label: t('inspector.recruit', { troop: t(`troops.${troop}`) }),
+          action: { type: 'recruit', player: me, hex: hexKey, troop },
+          cost: ctx.balance.troops[troop].cost,
+        });
+      }
+      const mine = hex.troops.filter((tr) => tr.owner === me);
+      for (const tr of mine) {
+        military.push({
+          id: `upgrade-troop-${tr.uid}`,
+          label: t('inspector.upgradeTroop', { troop: t(`troops.${tr.type}`), level: tr.level + 1 }),
+          action: { type: 'upgradeTroop', player: me, uid: tr.uid },
+          cost: ctx.balance.troops[tr.type].cost,
+        });
+      }
+      if (mine.length) {
+        const template = { type: 'move', from: hexKey } as const;
+        const first = actionTargets(ctx, state, me, template)[0];
+        const action = (first && actionAt(ctx, state, me, template, first)) || {
+          type: 'move' as const,
+          player: me,
+          from: hexKey,
+          to: hexKey,
+          uids: mine.map((x) => x.uid),
+        };
+        military.push({
+          id: 'move',
+          label: t('inspector.move'),
+          action,
+          cost: {},
+          onClick: () => chooseAction(template),
+        });
+      }
+      const ok = military.filter((o) => checkAction(ctx, state, o.action).ok);
+      const no = military.filter((o) => !checkAction(ctx, state, o.action).ok);
+      if (military.length) sections.push({ title: t('inspector.military'), options: ok, collapse: no });
+    }
+
     // Fase 6: escavar Templo/Ruína e limpar contaminação (o motor decide se pode).
     const site = ctx.terrain(hex.surface);
     if (hex.revealed && site.kind === 'site' && site.def.action === 'excavate') {
@@ -277,6 +332,25 @@ export function HexInspector({ hexKey }: { hexKey: HexKey }) {
             </>
           )}
         </dl>
+
+        {hex.troops.length > 0 && (
+          <Section title={t('inspector.troops')}>
+            <ul className={styles.structList} data-testid="inspector-troops">
+              {hex.troops.map((tr) => (
+                <li key={tr.uid}>
+                  <strong>
+                    {t('inspector.troopLine', {
+                      troop: t(`troops.${tr.type}`),
+                      level: tr.level,
+                      strength: troopStrength(ctx, shown, tr),
+                    })}
+                  </strong>{' '}
+                  · <span className={hud.muted}>{playerName(t, tr.owner)}</span>
+                </li>
+              ))}
+            </ul>
+          </Section>
+        )}
 
         <Section title={t('inspector.structures')}>
           {hex.structures.length === 0 ? (

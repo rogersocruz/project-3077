@@ -53,6 +53,25 @@ export interface StructureState {
   overloaded?: boolean;
 }
 
+/** GDD 8.1: papéis de tropa. */
+export type TroopType = 'line' | 'artillery';
+
+export interface TroopState {
+  readonly uid: number;
+  readonly type: TroopType;
+  level: number;
+  readonly owner: PlayerId;
+  /** Ordem de chegada ao hex (quem chegou por último é o atacante, se o ativo não luta ali). */
+  arrived: number;
+  /** GDD 8.4: cruzou fronteira nesta rodada (atacante −1). */
+  crossedRound?: number;
+  /** Deserção: não pode se mover nesta rodada. */
+  rootedRound?: number;
+  /** Reforço Orbital: +força até o fim da rodada. */
+  bonusRound?: number;
+  bonusAmount?: number;
+}
+
 /** Subsolo selado (Colapso de Galeria): o dono do tabuleiro limpa gastando ações. */
 export interface SubsoilSeal {
   readonly clearActions: number;
@@ -82,6 +101,8 @@ export interface HexState {
   guardian: number | null;
   /** Quem escavou a Ruína (uma vez por Ruína; o bônus passivo é dele — AN). */
   excavatedBy: PlayerId | null;
+  /** GDD 8: tropas no hex (cada uma ocupa 1 espaço). */
+  troops: TroopState[];
 }
 
 /**
@@ -126,6 +147,12 @@ export interface PlayerState {
   deliveredThisTurn: number;
   /** GDD 13.2: Vila com 0 vidas — fora da partida (D11: sai da partida). */
   eliminated: boolean;
+  /** GDD 5.4: tarifa de fronteira declarada (1 unidade por tropa que entra). */
+  tariff: ResourceId;
+  /** Rodada em que a tarifa mudou (uma vez por rodada — interpretação AR). */
+  tariffRound: number;
+  /** Recursos a mais na tarifa (cartas/tratados), teto `border.maxModifiers`. */
+  tariffMods: ResourceId[];
 }
 
 // ── Cartas (GDD 7) ───────────────────────────────────────────────────────────
@@ -142,7 +169,8 @@ export type CardTarget =
   | { readonly kind: 'player'; readonly player: PlayerId }
   | { readonly kind: 'resource'; readonly resource: ResourceId }
   | { readonly kind: 'permanent'; readonly player: PlayerId; readonly card: CardUid }
-  | { readonly kind: 'deck'; readonly deck: DrawDeck };
+  | { readonly kind: 'deck'; readonly deck: DrawDeck }
+  | { readonly kind: 'troop'; readonly uid: number };
 
 /** Carta entregue esperando a Revelação do destinatário (interpretação X: alvo na entrega). */
 export interface DeliveredCard {
@@ -193,7 +221,9 @@ export interface WithheldProduction {
 }
 
 /** Escolha em dois passos que trava a partida até ser resolvida. */
-export interface PendingChoice {
+export type PendingChoice = TutorChoice | CasualtyChoice;
+
+export interface TutorChoice {
   readonly kind: 'tutor';
   readonly player: PlayerId;
   /** A carta que pediu a escolha (Requisição Prioritária). */
@@ -201,6 +231,29 @@ export interface PendingChoice {
   readonly deck: DrawDeck;
   /** Cartas vistas (continuam no topo do baralho até a escolha). */
   readonly options: CardUid[];
+}
+
+/** GDD 8.4 passo 4: o perdedor escolhe quais tropas perde (força removida ≥ `need`). */
+export interface CasualtyChoice {
+  readonly kind: 'casualties';
+  readonly player: PlayerId;
+  readonly hex: HexKey;
+  readonly need: number;
+  /** Tropas do perdedor no hex e a força com que lutaram. */
+  readonly options: { readonly uid: number; readonly strength: number }[];
+}
+
+/** Fase 6 em andamento: hexes já resolvidos e Artilharias que já apoiaram neste turno. */
+export interface CombatPhase {
+  done: HexKey[];
+  supportUsed: number[];
+  /** Escolhas de baixas ainda a fazer (a primeira está em `pending`). */
+  queue?: {
+    readonly hex: HexKey;
+    readonly player: PlayerId;
+    readonly need: number;
+    readonly options: { readonly uid: number; readonly strength: number }[];
+  }[];
 }
 
 export interface TradeOffer {
@@ -242,6 +295,8 @@ export interface GameState {
   cards: CardsState;
   pending: PendingChoice | null;
   world: WorldState;
+  /** Combate do turno em andamento (null fora da fase 6). */
+  combat: CombatPhase | null;
   /** Variantes de laboratório (GameOptions.playToRoundLimit); ausente em partida normal. */
   readonly variant?: { readonly playToRoundLimit?: boolean };
   winners: PlayerId[];
