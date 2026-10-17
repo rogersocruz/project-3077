@@ -101,6 +101,21 @@ export const REASON_KEYS = [
   'troopRooted',
   'noPath',
   'invalidCasualties',
+  // Tratados (Fase 8)
+  'treatyPending',
+  'noTreatyPending',
+  'notTreatyRecipient',
+  'notTreatyProposer',
+  'treatyAlreadyProposed',
+  'treatyLimit',
+  'treatyInvalid',
+  'treatyConflict',
+  'treatyNotFound',
+  'notTreatyParty',
+  'notCommercePact',
+  'treatyUsed',
+  'treatyForbids',
+  'treatyGold',
 ] as const;
 
 export type ReasonKey = (typeof REASON_KEYS)[number];

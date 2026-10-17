@@ -76,10 +76,25 @@
   ],
   "contract": {
     "subjects": [
-      "you",
       "me",
-      "anyone",
-      "third"
+      "you",
+      "anySignatory",
+      "third",
+      "anyone"
+    ],
+    "victims": [
+      "me",
+      "you",
+      "eitherSignatory",
+      "otherSignatory",
+      "third",
+      "anyone"
+    ],
+    "obligors": [
+      "me",
+      "you",
+      "actor",
+      "otherSignatory"
     ],
     "triggers": [
       {
@@ -229,7 +244,7 @@
         "of": "otherSignatory"
       },
       "then": {
-        "obligor": "invader",
+        "obligor": "actor",
         "verb": "overrideToll",
         "object": "resource",
         "type": "iron",
@@ -272,5 +287,19 @@
       "type": "pact",
       "pact": "pact_free_passage"
     }
+  ],
+  "pactConflicts": [
+    [
+      "pact_free_passage",
+      "pact_closed_border"
+    ],
+    [
+      "pact_staging",
+      "pact_closed_border"
+    ],
+    [
+      "pact_open_survey",
+      "pact_closed_survey"
+    ]
   ]
 }

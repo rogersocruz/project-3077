@@ -1,6 +1,7 @@
 /** Atalhos de leitura da partida para os componentes do HUD. */
 import { usePresentation } from '../../anim';
 import { type Action, decider } from '../../engine';
+import { pactsBrokenBy } from '../../engine/rules/treaties';
 import { useSettings } from '../../settings';
 import { useSession } from './session';
 import { useUi } from './uiStore';
@@ -25,8 +26,16 @@ export function useInstantCounters(): boolean {
   return useSettings((s) => s.gameplay.animationSpeed === 'instant');
 }
 
-/** Executa pela sessão; ação ilegal vira aviso com o motivo do motor. */
-export function perform(action: Action): boolean {
+/**
+ * Executa pela sessão; ação ilegal vira aviso com o motivo do motor. Ação que rompe pacto
+ * (GDD 10, interpretação BB) pede confirmação antes, a menos que `confirmed`.
+ */
+export function perform(action: Action, confirmed = false): boolean {
+  const { ctx, state } = useSession.getState();
+  if (!confirmed && ctx && state && pactsBrokenBy(ctx, state, action).length > 0) {
+    useUi.getState().open({ kind: 'breakPact', action });
+    return false;
+  }
   const r = useSession.getState().dispatch(action);
   if (!r.ok) useUi.getState().refuse(r.reason);
   return r.ok;

@@ -47,6 +47,10 @@ const record = (seed: number, extra: Partial<GameRecord> = {}): GameRecord => ({
   combats: 0,
   recruits: 0,
   villageHits: 0,
+  treatiesProposed: 0,
+  treatiesSigned: 0,
+  treatiesTriggered: 0,
+  pactsBroken: 0,
   ...extra,
 });
 

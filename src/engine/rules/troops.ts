@@ -32,6 +32,7 @@ import type { GameState, HexKey, HexState, PlayerId, TroopState, TroopType } fro
 import { workshopUnlock } from './build';
 import { hasPermanent } from './permanents';
 import { eventParams } from './world';
+import { stagingAllies, tollWithTreaties } from './treatyQueries';
 
 type ActionOf<T extends Action['type']> = Extract<Action, { type: T }>;
 
@@ -190,7 +191,7 @@ export interface MovePlan {
   /** Comida total (todas as tropas). */
   readonly food: number;
   /** Pedágio por dono de território: o que o jogador paga a cada um. */
-  readonly tolls: { readonly owner: PlayerId; readonly amounts: ResourceAmounts }[];
+  readonly tolls: { readonly owner: PlayerId; readonly amounts: ResourceAmounts; readonly treaty?: number }[];
   readonly crossed: boolean;
 }
 
@@ -218,7 +219,9 @@ export function planMove(
   const start = state.hexes[from];
   const goal = state.hexes[to];
   if (!start || !goal || from === to || !goal.revealed) return null;
-  const blocked = (h: HexState) => h.guardian !== null || h.troops.some((t) => t.owner !== player);
+  // Base Avançada: tropas do aliado não bloqueiam o caminho.
+  const blocked = (h: HexState) =>
+    h.guardian !== null || h.troops.some((t) => t.owner !== player && !stagingAllies(state, player, t.owner));
   const dist = new Map<HexKey, number>([[from, 0]]);
   const prev = new Map<HexKey, HexKey>();
   const open: HexKey[] = [from];
@@ -245,7 +248,7 @@ export function planMove(
   while (path[0] !== from) path.unshift(prev.get(path[0] as HexKey) as HexKey);
   // Pedágio: cada entrada num território alheio (tabuleiro de outro jogador).
   const own = getPlayer(state, player).boardId;
-  const tolls = new Map<PlayerId, ResourceAmounts>();
+  const tolls = new Map<PlayerId, { amounts: ResourceAmounts; treaty?: number }>();
   let crossed = false;
   for (let i = 1; i < path.length; i++) {
     const a = state.hexes[path[i - 1] as HexKey];
@@ -254,17 +257,20 @@ export function planMove(
     const owner = boardOwner(state, b.boardId);
     if (owner === null || owner === player || getPlayer(state, owner).eliminated) continue;
     crossed = true;
-    const due = tolls.get(owner) ?? {};
-    for (const [r, q] of Object.entries(tariffOf(ctx, state, owner))) {
-      due[r as ResourceId] = (due[r as ResourceId] ?? 0) + (q ?? 0) * n;
+    // GDD 10: tratados mudam o pedágio (Corredor Livre, Tarifa Preferencial, Muralha Comercial).
+    const quote = tollWithTreaties(state, player, owner, n, tariffOf(ctx, state, owner));
+    const due = tolls.get(owner) ?? { amounts: {} };
+    for (const [r, q] of Object.entries(quote.amounts)) {
+      due.amounts[r as ResourceId] = (due.amounts[r as ResourceId] ?? 0) + (q ?? 0);
     }
+    if (quote.treaty !== undefined) due.treaty = quote.treaty;
     tolls.set(owner, due);
   }
   let food = (dist.get(to) ?? 0) * n;
   // Ventos de Cauda e Antigrav: metade da Comida, arredondado para cima.
   if (eventParams(ctx, state, 'halfMoveCost') || hasPermanent(ctx, state, player, 'antigrav'))
     food = Math.ceil(food / 2);
-  return { path, food, tolls: [...tolls].map(([owner, amounts]) => ({ owner, amounts })), crossed };
+  return { path, food, tolls: [...tolls].map(([owner, t]) => ({ owner, ...t })), crossed };
 }
 
 /** Total que o movimento custa ao jogador (Comida + pedágios). */
@@ -314,7 +320,21 @@ export function applyMove(
   for (const t of plan.tolls) {
     pay(me, t.amounts);
     gain(getPlayer(state, t.owner).resources, t.amounts);
-    events.push({ type: 'tollPaid', from: a.player, to: t.owner, resources: t.amounts });
+    if (Object.values(t.amounts).some((q) => (q ?? 0) > 0))
+      events.push({ type: 'tollPaid', from: a.player, to: t.owner, resources: t.amounts });
+    // Contrato "PAGA EM VEZ DA TARIFA" (Tarifa Preferencial) vale em toda entrada (BC).
+    const contract = state.treaties.active.find((x) => x.id === t.treaty && x.terms.kind === 'contract');
+    if (contract) {
+      events.push({
+        type: 'treatyTriggered',
+        treaty: contract.id,
+        obligor: a.player,
+        beneficiary: t.owner,
+        consequence: 'overrideToll',
+        resources: t.amounts,
+        defaulted: false,
+      });
+    }
   }
   const stamp = state.nextUid++;
   const moving = from.troops.filter((t) => a.uids.includes(t.uid));

@@ -274,6 +274,10 @@ function crossCheck(d: GameData, issues: DataIssue[]): void {
       if (!pactIds.has(t.pact)) err('treaties.json', `.templates[${i}].pact`, `pacto "${t.pact}" não existe`);
       return;
     }
+    const k = d.treaties.contract;
+    if (!k.subjects.includes(t.if.subject)) err('treaties.json', `.templates[${i}].if.subject`, `papel "${t.if.subject}" não existe`);
+    if (!k.victims.includes(t.if.of)) err('treaties.json', `.templates[${i}].if.of`, `papel "${t.if.of}" não existe`);
+    if (!k.obligors.includes(t.then.obligor)) err('treaties.json', `.templates[${i}].then.obligor`, `papel "${t.then.obligor}" não existe`);
     const trig = triggers.get(t.if.verb);
     if (!trig) err('treaties.json', `.templates[${i}].if.verb`, `gatilho "${t.if.verb}" não existe`);
     else if (!trig.objects.includes(t.if.object)) {
@@ -288,6 +292,10 @@ function crossCheck(d: GameData, issues: DataIssue[]): void {
         `"${t.then.object}" não é objeto válido de "${t.then.verb}"`,
       );
     }
+  });
+
+  d.treaties.pactConflicts.forEach((pair, i) => {
+    for (const id of pair) if (!pactIds.has(id)) err('treaties.json', `.pactConflicts[${i}]`, `pacto "${id}" não existe`);
   });
 
   // ── balance.json ──

@@ -31,6 +31,7 @@ export function NewGame() {
   const [events, setEvents] = useState(true);
   const [special, setSpecial] = useState(true);
   const [conflict, setConflict] = useState(true);
+  const [treaties, setTreaties] = useState(true);
   // Assentos guardados para 6: mudar a contagem não perde a escolha.
   const [seats, setSeats] = useState<SeatKind[]>(() => Array.from({ length: MAX }, () => 'human'));
   const active = seats.slice(0, players);
@@ -50,6 +51,7 @@ export function NewGame() {
             events,
             special,
             conflict,
+            treaties,
             seats: active.join(','),
           });
         }}
@@ -186,6 +188,15 @@ export function NewGame() {
             data-testid="layer-conflict"
           />
           {t('newGame.conflict')}
+        </label>
+        <label className={styles.option}>
+          <input
+            type="checkbox"
+            checked={treaties}
+            onChange={(e) => setTreaties(e.target.checked)}
+            data-testid="layer-treaties"
+          />
+          {t('newGame.treaties')}
         </label>
         <label className={styles.option}>
           <input

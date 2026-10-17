@@ -306,6 +306,16 @@ export class Director {
         return;
       }
 
+      case 'treaty': {
+        // UX_SPEC 2.12: selo dourado no centro; a faixa do jogador pisca.
+        if (this.instant) return;
+        usePresentation.setState({ treatyFx: { kind: cue.fx, treaty: cue.treaty, event: cue.event } });
+        await this.wait(T.treatySeal);
+        if (epoch !== this.epoch) return;
+        usePresentation.setState({ treatyFx: null });
+        return;
+      }
+
       case 'worldEvent': {
         // UX_SPEC 2.14: a mesa escurece, a carta vem ao centro com a cor da categoria e
         // os hexes atingidos pulsam; depois a carta encolhe para o topo do HUD.

@@ -5,6 +5,7 @@
  * cartas: quantas na mão e envelopes a revelar; o retrato aceita a carta arrastada para
  * entrega (data-player).
  */
+import { TreatyBand } from '../treaty/TreatyParts';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { usePresentation } from '../../anim';
@@ -109,6 +110,7 @@ function PlayerCard({ state, id }: { state: GameState; id: PlayerId }) {
           </span>
         )}
       </div>
+      {state.layers.treaties && <TreatyBand state={state} player={id} />}
       <div className={styles.tracks} role="list" aria-label={t('hud.tracks')}>
         {TRACKS.map((k) => (
           <div

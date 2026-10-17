@@ -146,3 +146,32 @@ Leitura: o combate funciona (o exemplo 8.4.1 é teste de aceite), mas **a IA qua
 usa** — recruta para defesa e raramente ataca, porque a corrida econômica (Carvão/Ouro)
 termina antes de um ataque compensar. A rota militar só deve ser avaliada depois da IA de
 tribo/agressão (Fase 9) e do ajuste do Cofre Precursor (ver Fase 6).
+
+## Fase 8 — Tratados
+
+Comando: `npm run sim -- --games 200 --players 4 --seed 1 --layers cards,events,specialHexes,conflict,treaties --out simulations/phase8`
+(seeds 1–200, IA normal nos 4 assentos). Intervalos de 95% de Wilson.
+
+| Condição | Vitórias [IC 95%] |
+|---|---|
+| Ouro | 43,0% [36,3–49,9] |
+| Carvão | 42,5% [35,9–49,4] |
+| Petróleo | 6,0% [3,5–10,2] |
+| Comida | 4,5% [2,4–8,3] |
+| Ferro | 2,0% [0,8–5,0] |
+| Expansão | 1,5% [0,5–4,3] |
+| Limite de rodadas | 1,0% [0,3–3,6] |
+| Pedregulho | 0,0% [0,0–1,9] |
+| Eliminação | 0,0% [0,0–1,9] |
+
+Por partida: 0,63 tratados propostos, 0,63 assinados, 0 disparos, 0,015 pactos rompidos;
+5,32 recrutamentos, 0,21 combates, 0,33 ataques à Vila. As taxas de vitória ficam dentro dos
+intervalos da Fase 7 (Carvão 46,5% → 42,5%, Ouro 42% → 43%): os tratados não mudam o
+equilíbrio.
+
+Leitura: a IA v1 só assina quando a conta passa o Ouro do aceite — na prática, Não Agressão
+diante de um exército vizinho. A Tarifa Preferencial quase nunca compensa para a IA porque o
+Ferro (valor 2) custa mais que a tarifa padrão de Comida (valor 1); com tarifa em Ouro/Petróleo
+ela passa a valer. Contratos não disparam porque a IA evita o gatilho e quase não ataca
+(DECISOES_ABERTAS: "IA de negociação e tratados", risco alto). Tratados são, hoje, ferramenta
+dos jogadores humanos.

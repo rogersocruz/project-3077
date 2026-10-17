@@ -46,9 +46,17 @@ interface PresentationStore {
   eventReveal: { readonly event: string; readonly category: string } | null;
   /** Painel do combate resolvido (UX_SPEC 2.13) enquanto toca. */
   combat: Extract<GameEvent, { type: 'combatResolved' }> | null;
+  /** Selo de tratado (assinatura, disparo, quebra) enquanto toca (UX_SPEC 2.12). */
+  treatyFx: TreatyFx | null;
   /** Relatório de carta de informação: só para quem jogou; a fila espera o "Entendi". */
   intel: { readonly player: PlayerId; readonly card: string; readonly report: IntelReport } | null;
   log: readonly LogEntry[];
+}
+
+export interface TreatyFx {
+  readonly kind: 'signed' | 'triggered' | 'broken';
+  readonly treaty: number;
+  readonly event: GameEvent;
 }
 
 export const usePresentation = create<PresentationStore>()(() => ({
@@ -61,6 +69,7 @@ export const usePresentation = create<PresentationStore>()(() => ({
   banner: null,
   eventReveal: null,
   combat: null,
+  treatyFx: null,
   intel: null,
   log: [],
 }));

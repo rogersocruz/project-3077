@@ -45,7 +45,26 @@ import { freeSurveyAt } from './rules/specials';
 import { autoCasualties, checkCasualtyChoice } from './rules/combat';
 import { checkMove, checkRecruit, checkSetTariff, checkUpgradeTroop } from './rules/troops';
 import { braceActions, checkBrace, checkCleanHex, checkExcavate, eventParams } from './rules/world';
-import type { CardTarget, CardUid, GameState, HexKey, PlayerId, Resources } from './state';
+import {
+  checkBreakTreaty,
+  checkProposeTreaty,
+  checkTreatyResponse,
+  checkUseTreaty,
+  commerceQuote,
+  isCommercePact,
+  restrictionReason,
+} from './rules/treaties';
+import { treatiesOf } from './rules/treatyQueries';
+import type {
+  CardTarget,
+  CardUid,
+  ContractTerms,
+  GameState,
+  HexKey,
+  PlayerId,
+  Resources,
+  TreatyTerms,
+} from './state';
 
 export type CheckResult = { readonly ok: true } | { readonly ok: false; readonly reason: Reason };
 
@@ -64,6 +83,7 @@ type ActionOf<T extends Action['type']> = Extract<Action, { type: T }>;
  */
 export function decider(state: GameState): PlayerId {
   if (state.pending) return state.pending.player;
+  if (state.treaties.pending) return state.treaties.pending.to;
   return state.pendingTrade ? state.pendingTrade.to : state.activePlayer;
 }
 
@@ -260,6 +280,12 @@ function checkActionsPhase(ctx: EngineContext, state: GameState, action: Action)
       return fromReason(checkMove(ctx, state, action));
     case 'setTariff':
       return fromReason(checkSetTariff(state, action));
+    case 'proposeTreaty':
+      return fromReason(checkProposeTreaty(ctx, state, action));
+    case 'breakTreaty':
+      return fromReason(checkBreakTreaty(state, action));
+    case 'useTreaty':
+      return fromReason(checkUseTreaty(ctx, state, action));
     case 'brace':
       return fromReason(checkBrace(ctx, state, action));
     case 'cleanHex':
@@ -297,6 +323,13 @@ function checkDeliveryPhase(ctx: EngineContext, state: GameState, action: Action
 
 /** Valida qualquer ação concreta e explica a recusa. */
 export function checkAction(ctx: EngineContext, state: GameState, action: Action): CheckResult {
+  const r = checkActionRules(ctx, state, action);
+  if (!r.ok) return r;
+  // GDD 10: consequência NÃO PODE de contrato em vigor.
+  return fromReason(restrictionReason(ctx, state, action));
+}
+
+function checkActionRules(ctx: EngineContext, state: GameState, action: Action): CheckResult {
   if (state.stage === 'over') return no('gameOver');
   if (!state.players[action.player]) return no('notYourTurn');
 
@@ -319,6 +352,9 @@ export function checkAction(ctx: EngineContext, state: GameState, action: Action
   }
   if (action.type === 'chooseCasualties') return no('invalidChoice');
   if (action.type === 'resolveChoice') return no('invalidChoice');
+  if (state.treaties.pending) return fromReason(checkTreatyResponse(ctx, state, action));
+  if (action.type === 'acceptTreaty' || action.type === 'rejectTreaty' || action.type === 'cancelTreaty')
+    return no('noTreatyPending');
   if (state.pendingTrade) return checkTrade(ctx, state, action);
   if (
     action.type === 'acceptTrade' ||
@@ -496,6 +532,12 @@ export function legalActions(ctx: EngineContext, state: GameState, player: Playe
     candidates.push({ type: 'chooseCasualties', player, uids: autoCasualties(fighters, p.need) });
   } else if (state.pending) {
     for (const card of state.pending.options) candidates.push({ type: 'resolveChoice', player, card });
+  } else if (state.treaties.pending) {
+    candidates.push(
+      { type: 'acceptTreaty', player },
+      { type: 'rejectTreaty', player },
+      { type: 'cancelTreaty', player },
+    );
   } else if (state.pendingTrade) {
     const t = state.pendingTrade;
     candidates.push(
@@ -531,6 +573,7 @@ export function legalActions(ctx: EngineContext, state: GameState, player: Playe
       }
       if (state.layers.events) candidates.push({ type: 'brace', player });
       if (state.layers.conflict) conflictCandidates(ctx, state, player, candidates);
+      if (state.layers.treaties) treatyCandidates(ctx, state, player, candidates);
       for (const give of RESOURCE_IDS) {
         for (const receive of RESOURCE_IDS) {
           if (give === receive) continue;
@@ -598,6 +641,61 @@ function conflictCandidates(ctx: EngineContext, state: GameState, player: Player
     for (const to of dests) out.push({ type: 'move', player, from, to, uids });
   }
   for (const resource of RESOURCE_IDS) out.push({ type: 'setTariff', player, resource });
+}
+
+/**
+ * Fase 8: modelos prontos de treaties.json para cada outro jogador, romper pactos próprios e
+ * usos representativos dos pactos de comércio (1 unidade de cada recurso por cada outro).
+ */
+function treatyCandidates(ctx: EngineContext, state: GameState, player: PlayerId, out: Action[]): void {
+  for (const other of state.players) {
+    if (other.id === player) continue;
+    for (const terms of templateTerms(ctx)) out.push({ type: 'proposeTreaty', player, to: other.id, terms });
+  }
+  for (const t of treatiesOf(state, player)) {
+    if (t.terms.kind === 'pact') out.push({ type: 'breakTreaty', player, treaty: t.id });
+    if (!isCommercePact(t)) continue;
+    for (const give of RESOURCE_IDS) {
+      for (const receive of RESOURCE_IDS) {
+        if (give === receive) continue;
+        // Menor quantidade que rende 1 unidade.
+        for (let amount = 1; amount <= 6; amount++) {
+          const got = commerceQuote(ctx, t, give, amount, receive);
+          if (got === null) break;
+          if (got >= 1) {
+            out.push({ type: 'useTreaty', player, treaty: t.id, give, amount, receive });
+            break;
+          }
+        }
+      }
+    }
+  }
+}
+
+/** Termos dos modelos prontos (treaties.json → templates), com os papéis do construtor. */
+export function templateTerms(ctx: EngineContext): TreatyTerms[] {
+  return ctx.data.treaties.templates.map((tpl): TreatyTerms => {
+    if (tpl.type === 'pact') return { kind: 'pact', pact: tpl.pact, template: tpl.id };
+    const k = ctx.data.treaties.contract;
+    const consequence = k.consequences.find((c) => c.verb === tpl.then.verb);
+    return {
+      kind: 'contract',
+      subject: tpl.if.subject as ContractTerms['subject'],
+      negated: false,
+      verb: tpl.if.verb,
+      object: tpl.if.object,
+      of: tpl.if.of as ContractTerms['of'],
+      obligor: tpl.then.obligor as ContractTerms['obligor'],
+      consequence: tpl.then.verb,
+      target: tpl.then.object,
+      ...(tpl.then.type ? { resource: tpl.then.type } : {}),
+      ...(tpl.then.amount !== undefined && consequence?.params?.includes('amount')
+        ? { amount: tpl.then.amount }
+        : {}),
+      ...(tpl.then.perTroop ? { perTroop: true } : {}),
+      template: tpl.id,
+    };
+  });
 }
 
 /** A mesma quantia com 1 unidade a menos no maior item (null se ficaria vazia). */

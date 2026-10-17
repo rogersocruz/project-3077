@@ -9,6 +9,14 @@ import { actionCost, checkAction } from './legal';
 import { advanceSetup, continueCombat, continueTurn, endCurrentPhase } from './phases';
 import { applyCasualtyChoice } from './rules/combat';
 import { applyMove, applyRecruit, applySetTariff, applyUpgradeTroop } from './rules/troops';
+import {
+  applyProposeTreaty,
+  applyTreatyResponse,
+  applyUseTreaty,
+  breakPact,
+  observeTreaties,
+  pactsBrokenBy,
+} from './rules/treaties';
 import { gain, getPlayer, pay, sameBoardNeighbors } from './queries';
 import { IllegalActionError } from './reasons';
 import { buildCostAt, raiseLevel, upgradeCost } from './rules/build';
@@ -220,6 +228,22 @@ function apply(ctx: EngineContext, s: GameState, action: Action, cost: number, e
       applyCasualtyChoice(ctx, s, action.uids, events);
       if (!s.pending) continueCombat(ctx, s, events);
       return;
+    case 'proposeTreaty':
+      applyProposeTreaty(s, action, events);
+      return;
+    case 'acceptTreaty':
+    case 'rejectTreaty':
+    case 'cancelTreaty':
+      applyTreatyResponse(ctx, s, action, events);
+      return;
+    case 'breakTreaty': {
+      const t = s.treaties.active.find((x) => x.id === action.treaty);
+      if (t) breakPact(ctx, s, t, player.id, events);
+      return;
+    }
+    case 'useTreaty':
+      applyUseTreaty(ctx, s, action, events);
+      return;
     case 'brace':
       applyBrace(s, action, events, (uid) => produceWithheldMine(ctx, s, uid, events));
       return;
@@ -239,7 +263,15 @@ export function applyAction(ctx: EngineContext, state: GameState, action: Action
   // entradas (copiar o histórico inteiro a cada ação deixava a partida O(n²)).
   const next = structuredClone<GameState>({ ...state, log: [] });
   const events: GameEvent[] = [];
+  // GDD 10 (BB): a ação que o pacto proíbe é legal, mas rompe o pacto.
+  const broken = pactsBrokenBy(ctx, state, action);
   apply(ctx, next, action, actionCost(ctx, state, action), events);
+  for (const t of broken) {
+    const live = next.treaties.active.find((x) => x.id === t.id);
+    if (live) breakPact(ctx, next, live, action.player, events);
+  }
+  // Contratos disparam pelo que a ação causou (BE).
+  if (next.stage !== 'over') observeTreaties(ctx, next, events, action.player);
   next.log = [...state.log, structuredClone(action)];
   return { state: next, events };
 }

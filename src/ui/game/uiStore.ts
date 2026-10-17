@@ -17,7 +17,11 @@ export type Modal =
   /** Zoom da carta do evento da rodada (Fase 6). */
   | { readonly kind: 'event' }
   /** Fase 7: previsão de combate antes de confirmar o movimento. */
-  | { readonly kind: 'movePreview'; readonly action: Extract<Action, { type: 'move' }> };
+  | { readonly kind: 'movePreview'; readonly action: Extract<Action, { type: 'move' }> }
+  /** Fase 8: construtor de tratado / tratados ativos. */
+  | { readonly kind: 'treaty' }
+  /** Fase 8: a ação rompe pactos (GDD 10, interpretação BB) — confirmar antes. */
+  | { readonly kind: 'breakPact'; readonly action: Action };
 
 export interface Toast {
   readonly key: string;

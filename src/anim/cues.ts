@@ -175,7 +175,14 @@ export type Cue =
       readonly hexes: readonly HexKey[];
     }
   // ── Combate (Fase 7, UX_SPEC 2.13) ──
-  | { readonly kind: 'combat'; readonly event: Extract<GameEvent, { type: 'combatResolved' }> };
+  | { readonly kind: 'combat'; readonly event: Extract<GameEvent, { type: 'combatResolved' }> }
+  // ── Tratados (Fase 8, UX_SPEC 2.12) ──
+  | {
+      readonly kind: 'treaty';
+      readonly fx: 'signed' | 'triggered' | 'broken';
+      readonly treaty: number;
+      readonly event: Extract<GameEvent, { type: 'treatySigned' | 'treatyTriggered' | 'pactBroken' }>;
+    };
 
 /** Estrutura `uid` com a posição dentro do hex (procura em `primary`, depois em `fallback`). */
 function placed(primary: GameState, fallback: GameState, uid: number): PlacedStructureCue | null {
@@ -489,6 +496,23 @@ export function buildCues(ctx: EngineContext, batch: Batch): Cue[] {
         break;
       case 'combatResolved':
         cues.push({ kind: 'combat', event: e });
+        break;
+      case 'treatySigned':
+        cues.push({ kind: 'treaty', fx: 'signed', treaty: e.treaty, event: e });
+        break;
+      case 'treatyTriggered':
+        cues.push({ kind: 'treaty', fx: 'triggered', treaty: e.treaty, event: e });
+        if (e.resources) {
+          cues.push({ kind: 'resources', player: e.obligor, amounts: e.resources, sign: -1 });
+          cues.push({ kind: 'resources', player: e.beneficiary, amounts: e.resources, sign: 1 });
+        }
+        break;
+      case 'pactBroken':
+        cues.push({ kind: 'treaty', fx: 'broken', treaty: e.treaty, event: e });
+        break;
+      case 'treatyTrade':
+        cues.push({ kind: 'resources', player: e.from, amounts: e.give, sign: -1 });
+        cues.push({ kind: 'resources', player: e.from, amounts: e.receive, sign: 1 });
         break;
       case 'eventFoodLoss':
         if (e.amount > 0)

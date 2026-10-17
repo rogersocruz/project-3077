@@ -59,6 +59,7 @@ export interface SimSummary {
   readonly combatsPerGame: number;
   readonly recruitsPerGame: number;
   readonly villageHitsPerGame: number;
+  readonly treatiesPerGame: { proposed: number; signed: number; triggered: number; broken: number };
 }
 
 const TRACKS: readonly (TrackId | 'elimination' | 'roundLimit')[] = [
@@ -95,6 +96,7 @@ export function summarize(records: readonly GameRecord[], allCardIds: readonly s
   let combats = 0;
   let recruits = 0;
   let villageHits = 0;
+  const treaties = { proposed: 0, signed: 0, triggered: 0, broken: 0 };
   let totalMs = 0;
 
   for (const r of records) {
@@ -136,6 +138,10 @@ export function summarize(records: readonly GameRecord[], allCardIds: readonly s
     combats += r.combats ?? 0;
     recruits += r.recruits ?? 0;
     villageHits += r.villageHits ?? 0;
+    treaties.proposed += r.treatiesProposed ?? 0;
+    treaties.signed += r.treatiesSigned ?? 0;
+    treaties.triggered += r.treatiesTriggered ?? 0;
+    treaties.broken += r.pactsBroken ?? 0;
     for (const [id, c] of Object.entries(r.cardsPlayed)) played[id] = (played[id] ?? 0) + c;
     for (const [id, c] of Object.entries(r.cardsDrawn)) drawn[id] = (drawn[id] ?? 0) + c;
   }
@@ -192,6 +198,12 @@ export function summarize(records: readonly GameRecord[], allCardIds: readonly s
     combatsPerGame: combats / n,
     recruitsPerGame: recruits / n,
     villageHitsPerGame: villageHits / n,
+    treatiesPerGame: {
+      proposed: treaties.proposed / n,
+      signed: treaties.signed / n,
+      triggered: treaties.triggered / n,
+      broken: treaties.broken / n,
+    },
   };
 }
 
@@ -344,6 +356,13 @@ export function summaryText(s: SimSummary, header = ''): string {
     out.push(
       '',
       `Conflito por partida: ${s.recruitsPerGame.toFixed(2)} tropas recrutadas · ${s.combatsPerGame.toFixed(2)} combates · ${s.villageHitsPerGame.toFixed(2)} ataques à Vila`,
+    );
+  }
+  const tr = s.treatiesPerGame;
+  if (tr.proposed > 0) {
+    out.push(
+      '',
+      `Tratados por partida: ${tr.proposed.toFixed(2)} propostos · ${tr.signed.toFixed(2)} assinados · ${tr.triggered.toFixed(2)} disparos · ${tr.broken.toFixed(2)} pactos rompidos`,
     );
   }
   const playedCards = s.cards.filter((c) => c.drawn > 0 || c.played > 0);

@@ -2,6 +2,7 @@
  * Construção, melhoria, alcance e sondagem (GDD 6.3, 6.5, 6.6, 11).
  * Cada função de verificação devolve o motivo da ilegalidade ou null.
  */
+import { boardOwnerOf, surveyOpen } from './treatyQueries';
 import { RESOURCE_IDS } from '../../data/schemas';
 import type { EngineContext, StructureDef } from '../context';
 import type { GameEvent } from '../events';
@@ -325,7 +326,10 @@ export function checkSurvey(
 ): Reason | null {
   const hex = getHex(state, key);
   if (!hex) return { key: 'noSuchHex' };
-  const opts = droneBonus === undefined ? {} : { bonus: droneBonus, crossBorder: true };
+  // Céu Aberto (GDD 10): sondar o território do outro signatário atravessa a fronteira.
+  const open = surveyOpen(state, player, boardOwnerOf(state, hex.boardId));
+  const opts =
+    droneBonus === undefined ? (open ? { crossBorder: true } : {}) : { bonus: droneBonus, crossBorder: true };
   if (!inRange(ctx, state, player, hex, opts)) return { key: 'outOfRange' };
   if (hex.surveyedBy.includes(player)) return { key: 'alreadySurveyed' };
   return null;

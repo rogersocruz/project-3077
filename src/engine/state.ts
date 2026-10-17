@@ -153,6 +153,10 @@ export interface PlayerState {
   tariffRound: number;
   /** Recursos a mais na tarifa (cartas/tratados), teto `border.maxModifiers`. */
   tariffMods: ResourceId[];
+  /** GDD 10: rodada da última proposta de tratado (uma por turno — interpretação BA). */
+  treatyRound: number;
+  /** Ações a perder no próximo turno (inadimplência e quebra de pacto fora do próprio turno). */
+  actionDebt: number;
 }
 
 // ── Cartas (GDD 7) ───────────────────────────────────────────────────────────
@@ -256,6 +260,82 @@ export interface CombatPhase {
   }[];
 }
 
+// ── Tratados (GDD 10) ────────────────────────────────────────────────────────
+
+/** Papéis de treaties.json → contract: me = quem propôs, you = quem recebeu a proposta. */
+export type TreatySubject = 'me' | 'you' | 'anySignatory' | 'third' | 'anyone';
+export type TreatyVictim = 'me' | 'you' | 'eitherSignatory' | 'otherSignatory' | 'third' | 'anyone';
+export type TreatyObligor = 'me' | 'you' | 'actor' | 'otherSignatory';
+
+/** Contrato SE (gatilho) → ENTÃO (consequência). */
+export interface ContractTerms {
+  readonly kind: 'contract';
+  readonly subject: TreatySubject;
+  /** "SE NÃO": dispara se o sujeito não fizer até o prazo. */
+  readonly negated: boolean;
+  readonly verb: string;
+  readonly object: string;
+  readonly of: TreatyVictim;
+  readonly obligor: TreatyObligor;
+  readonly consequence: string;
+  readonly target: string;
+  readonly resource?: ResourceId;
+  readonly amount?: number;
+  /** Pagamento multiplicado pelas tropas do gatilho (Tarifa Preferencial). */
+  readonly perTroop?: boolean;
+  /** NÃO PODE: por quantas rodadas. */
+  readonly rounds?: number;
+  /** ENTREGA permanente: qual (do obrigado, escolhido na proposta). */
+  readonly permanent?: CardUid;
+  /** Modelo pronto de origem (treaties.json → templates). */
+  readonly template?: string;
+}
+
+export interface PactTerms {
+  readonly kind: 'pact';
+  readonly pact: string;
+  /** Preço Fixo: recurso e preço em Ouro por unidade. */
+  readonly resource?: ResourceId;
+  readonly price?: number;
+  readonly template?: string;
+}
+
+export type TreatyTerms = ContractTerms | PactTerms;
+
+export interface TreatyProposal {
+  readonly from: PlayerId;
+  readonly to: PlayerId;
+  readonly terms: TreatyTerms;
+}
+
+export interface Treaty {
+  readonly id: number;
+  /** [quem propôs, quem aceitou]: resolve os papéis me/you. */
+  readonly parties: readonly [PlayerId, PlayerId];
+  readonly terms: TreatyTerms;
+  readonly signedRound: number;
+  /** Vale até o fim desta rodada (contrato com "SE NÃO": prazo). */
+  readonly until: number;
+  /** Pacto de comércio: rodada do último uso de cada signatário (na ordem de `parties`). */
+  used?: [number, number];
+}
+
+/** Consequência NÃO PODE em vigor: `player` não faz `verb` contra `against` até `until`. */
+export interface TreatyRestriction {
+  readonly treaty: number;
+  readonly player: PlayerId;
+  readonly against: PlayerId;
+  readonly verb: string;
+  readonly until: number;
+}
+
+export interface TreatiesState {
+  active: Treaty[];
+  restrictions: TreatyRestriction[];
+  pending: TreatyProposal | null;
+  nextId: number;
+}
+
 export interface TradeOffer {
   readonly from: PlayerId;
   readonly to: PlayerId;
@@ -292,6 +372,7 @@ export interface GameState {
   hexes: Record<HexKey, HexState>;
   nextUid: number;
   pendingTrade: TradeOffer | null;
+  treaties: TreatiesState;
   cards: CardsState;
   pending: PendingChoice | null;
   world: WorldState;

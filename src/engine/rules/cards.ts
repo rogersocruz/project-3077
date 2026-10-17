@@ -4,6 +4,7 @@
  * Cada função `check*` devolve o motivo da ilegalidade ou null; as `apply*` mudam a
  * cópia de trabalho do reducer.
  */
+import { receiveCapBonus } from './treatyQueries';
 import { RESOURCE_IDS } from '../../data/schemas';
 import type { Action, CardUse } from '../actions';
 import type { CardDef, EngineContext } from '../context';
@@ -379,7 +380,8 @@ export function checkDeliver(
   const target = targetHex(state, a.target);
   const def0 = cardDefOf(ctx, state, a.card);
   if (def0.valence === 'sabotage' && target && shieldedHex(ctx, state, target)) return { key: 'shielded' };
-  const cap = ctx.balance.cards.receiveCapPerRound;
+  // Canal Aberto (GDD 10): entre os signatários o teto sobe.
+  const cap = ctx.balance.cards.receiveCapPerRound + receiveCapBonus(state, a.player, a.to);
   if (to.receivedThisRound >= cap) return { key: 'receiveCapReached', params: { cap } };
   const def = cardDefOf(ctx, state, a.card);
   return effectOf(def).check(scope(ctx, state, a.player, a.card, a.to, 'play', a.sacrifice), a.target);

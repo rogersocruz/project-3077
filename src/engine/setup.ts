@@ -245,6 +245,8 @@ export function createGame(ctx: EngineContext, options: GameOptions): GameState 
       tariff: ctx.balance.border.defaultTariff,
       tariffRound: 0,
       tariffMods: [],
+      treatyRound: 0,
+      actionDebt: 0,
     };
   });
 
@@ -264,6 +266,7 @@ export function createGame(ctx: EngineContext, options: GameOptions): GameState 
     hexes,
     nextUid: 1,
     pendingTrade: null,
+    treaties: { active: [], restrictions: [], pending: null, nextId: 1 },
     cards,
     pending: null,
     ...(options.playToRoundLimit ? { variant: { playToRoundLimit: true } } : {}),

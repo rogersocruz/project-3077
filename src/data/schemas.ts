@@ -368,12 +368,17 @@ export const TreatiesFile = z.strictObject({
     }),
   ),
   contract: z.strictObject({
+    /** Papéis: me = quem propõe, you = quem recebe (resolvidos na assinatura). */
     subjects: z.array(z.string()).min(1),
+    victims: z.array(z.string()).min(1),
+    obligors: z.array(z.string()).min(1),
     triggers: z.array(VerbSpec).min(1),
     negation: z.strictObject({ allowed: z.boolean(), deadlineRounds: Positive }),
     consequences: z.array(VerbSpec).min(1),
     obligorMustBeSignatory: z.boolean(),
   }),
+  /** Pactos que não podem valer ao mesmo tempo entre os mesmos signatários. */
+  pactConflicts: z.array(z.tuple([Id, Id])),
   templates: z.array(
     z.discriminatedUnion('type', [
       z.strictObject({

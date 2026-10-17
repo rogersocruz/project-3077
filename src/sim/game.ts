@@ -84,6 +84,11 @@ export interface GameRecord {
   readonly combats: number;
   readonly recruits: number;
   readonly villageHits: number;
+  /** Fase 8: tratados propostos, assinados, disparados e pactos rompidos. */
+  readonly treatiesProposed: number;
+  readonly treatiesSigned: number;
+  readonly treatiesTriggered: number;
+  readonly pactsBroken: number;
 }
 
 export interface SimGameOptions {
@@ -166,6 +171,10 @@ export function playSimGame(ctx: EngineContext, opts: SimGameOptions): GameRecor
   let combats = 0;
   let recruits = 0;
   let villageHits = 0;
+  let treatiesProposed = 0;
+  let treatiesSigned = 0;
+  let treatiesTriggered = 0;
+  let pactsBroken = 0;
   const n = ctx.playerCount;
   const trajectory: RoundPoint[][] = Array.from({ length: n }, () => []);
   const flows = () =>
@@ -304,6 +313,18 @@ export function playSimGame(ctx: EngineContext, opts: SimGameOptions): GameRecor
         case 'villageAttacked':
           villageHits++;
           break;
+        case 'treatyProposed':
+          treatiesProposed++;
+          break;
+        case 'treatySigned':
+          treatiesSigned++;
+          break;
+        case 'treatyTriggered':
+          treatiesTriggered++;
+          break;
+        case 'pactBroken':
+          pactsBroken++;
+          break;
       }
     }
     state = next;
@@ -362,6 +383,10 @@ export function playSimGame(ctx: EngineContext, opts: SimGameOptions): GameRecor
     combats,
     recruits,
     villageHits,
+    treatiesProposed,
+    treatiesSigned,
+    treatiesTriggered,
+    pactsBroken,
   };
 }
 

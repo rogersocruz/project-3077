@@ -48,6 +48,8 @@ import { EndScreen, PauseMenu, PrivacyScreen, QuickRules, RoundBanner, Toast } f
 import { PlayersPanel } from '../hud/PlayersPanel';
 import { TopBar } from '../hud/TopBar';
 import { TradeModal, TradeReply } from '../hud/Trade';
+import { TreatyModal } from '../treaty/TreatyModal';
+import { BreakPactConfirm, TreatyFx, TreatyReply } from '../treaty/TreatyParts';
 import { useNav } from '../nav';
 
 /** Arrasto maior que isso com o botão direito é órbita, não "cancelar". */
@@ -142,7 +144,7 @@ function useTargets() {
       return;
     }
     const template = state?.stage === 'setup' ? ({ type: 'chooseVillage' } as const) : mode;
-    if (!decides || !ctx || !state || !template || state.pendingTrade) {
+    if (!decides || !ctx || !state || !template || state.pendingTrade || state.treaties.pending) {
       setTargets(null);
       return;
     }
@@ -260,6 +262,10 @@ export function GameScreen() {
       {modal?.kind === 'bank' && <BankModal />}
       {modal?.kind === 'trade' && <TradeModal counter={modal.counter} />}
       {pending && !busy && !gate && modal?.kind !== 'trade' && <TradeReply />}
+      {modal?.kind === 'treaty' && <TreatyModal />}
+      {!busy && !gate && <TreatyReply />}
+      <BreakPactConfirm />
+      <TreatyFx />
       {modal?.kind === 'rules' && <QuickRules />}
       {modal?.kind === 'discard' && <DiscardModal />}
       {cards && !busy && !gate && <DrawChoice />}

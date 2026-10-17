@@ -28,6 +28,41 @@ describe('Agente: partidas inteiras (GDD 6, 7 e 13)', { timeout: 120_000 }, () =
     expect(r.seats.every((s) => s.focus !== null)).toBe(true);
   });
 
+  it('com todas as camadas e tratados (Fase 8) a partida termina, determinística', () => {
+    const layers = { cards: true, events: true, specialHexes: true, conflict: true, treaties: true };
+    const a = playSimGame(ctx, { seed: 3, levels: ['normal', 'hard', 'normal'], layers });
+    const b = playSimGame(ctx, { seed: 3, levels: ['normal', 'hard', 'normal'], layers });
+    expect(a.endReason).not.toBeNull();
+    expect({ ...b, ms: 0 }).toEqual({ ...a, ms: 0 });
+  });
+
+  it('IA só aceita tratado que rende mais que o Ouro (GDD 10; PROMPTS Fase 8 item 4)', () => {
+    const layers = { conflict: true, treaties: true };
+    const nonAggression = { kind: 'pact' as const, pact: 'pact_non_aggression' };
+    // Sem ameaça do proponente, Não Agressão não paga o Ouro: recusa.
+    let calm = applyAction(ctx, startedGame(ctx, { seed: 4, layers }), {
+      type: 'proposeTreaty',
+      player: 0,
+      to: 1,
+      terms: nonAggression,
+    }).state;
+    expect(chooseAction(ctx, calm, createAgent('normal', 1)).type).toBe('rejectTreaty');
+    // O proponente tem um exército perto: a paz vale o Ouro.
+    calm = edit(startedGame(ctx, { seed: 4, layers }), (x) => {
+      for (let i = 0; i < 3; i++) {
+        const uid = x.nextUid++;
+        x.hexes[key(0, 0, 0)]?.troops.push({ uid, type: 'line', level: 3, owner: 0, arrived: uid });
+      }
+    });
+    const threat = applyAction(ctx, calm, {
+      type: 'proposeTreaty',
+      player: 0,
+      to: 1,
+      terms: nonAggression,
+    }).state;
+    expect(chooseAction(ctx, threat, createAgent('normal', 1)).type).toBe('acceptTreaty');
+  });
+
   it('determinismo: mesma seed, mesma partida (CLAUDE.md regra 1)', () => {
     const a = playSimGame(ctx, { seed: 12, levels: ['normal'] });
     const b = playSimGame(ctx, { seed: 12, levels: ['normal'] });

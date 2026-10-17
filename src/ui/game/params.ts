@@ -22,6 +22,8 @@ export interface GameSetup {
   readonly specialHexes: boolean;
   /** Tropas e combate (Fase 7; na URL `conflict=1`). */
   readonly conflict: boolean;
+  /** Tratados (Fase 8; na URL `treaties=1`). */
+  readonly treaties: boolean;
   /** Um por jogador (Fase 5). */
   readonly seats: readonly SeatKind[];
 }
@@ -67,6 +69,7 @@ export function parseGameParams(search: string): GameParams {
       events: p.get('events') === '1',
       specialHexes: p.get('special') === '1',
       conflict: p.get('conflict') === '1',
+      treaties: p.get('treaties') === '1',
       seats: parseSeats(players, p.get('seats'), p.get('ai')),
     },
     speed:
@@ -87,4 +90,5 @@ export const sameSetup = (a: GameSetup | null, b: GameSetup) =>
   a.events === b.events &&
   a.specialHexes === b.specialHexes &&
   a.conflict === b.conflict &&
+  a.treaties === b.treaties &&
   a.seats.join() === b.seats.join();

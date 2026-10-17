@@ -142,9 +142,15 @@ export function openTrade(): void {
   useUi.getState().open({ kind: 'trade', counter: false });
 }
 
-/** Tratados são da Fase 8: o atalho existe e explica por que não abre. */
+/** GDD 10 / UX_SPEC 2.12: construtor de tratado e lista dos ativos (tecla Y). */
 export function openTreaty(): void {
-  useUi.getState().refuse({ key: 'layerDisabled', params: { layer: 'treaties' } });
+  const state = useSession.getState().state;
+  if (!state?.layers.treaties) {
+    useUi.getState().refuse({ key: 'layerDisabled', params: { layer: 'treaties' } });
+    return;
+  }
+  useUi.getState().setMode(null);
+  useUi.getState().open({ kind: 'treaty' });
 }
 
 export function endPhase(): void {

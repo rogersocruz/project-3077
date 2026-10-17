@@ -38,6 +38,7 @@ import {
   yieldWorth,
 } from './evaluate';
 import { expectations } from './expect';
+import { respondTreaty, treatyProposal } from './treaties';
 import { type AiFocus, type AiLevel, MINE_FOCI } from './types';
 import { type AiWeights, DEFAULT_WEIGHTS } from './weights';
 
@@ -124,6 +125,7 @@ export function chooseAction(ctx: EngineContext, state: GameState, agent: Agent)
   if (state.stage === 'setup') return chooseSetup(ctx, state, player, legal, agent);
   if (state.pending?.kind === 'casualties') return legal.find((a) => a.type === 'chooseCasualties') ?? first;
   if (state.pending) return chooseTutor(ctx, state, legal);
+  if (state.treaties.pending) return respondTreaty(ctx, state, player, legal, agent.weights);
   if (state.pendingTrade) return respondTrade(ctx, state, player, legal, agent);
   if (state.phase === 'draw') return chooseDraw(ctx, state, player, legal, agent);
   if (state.phase === 'delivery') return chooseDelivery(ctx, state, player, legal, agent);
@@ -135,7 +137,16 @@ export function chooseAction(ctx: EngineContext, state: GameState, agent: Agent)
 
 const RICH: Resources = { food: 999, stone: 999, iron: 999, coal: 999, oil: 999, gold: 999 };
 /** Não simulados: propostas (fluxo próprio) e tarifa (não muda a avaliação; a IA mantém a padrão). */
-const TRADE_ONLY = new Set<Action['type']>(['proposeTrade', 'counterTrade', 'cancelTrade', 'setTariff']);
+const TRADE_ONLY = new Set<Action['type']>([
+  'proposeTrade',
+  'counterTrade',
+  'cancelTrade',
+  'setTariff',
+  // Tratados têm fluxo próprio (ai/treaties.ts); romper só acontece se a ação valer a quebra.
+  'proposeTreaty',
+  'breakTreaty',
+  'useTreaty',
+]);
 
 function chooseInActions(
   ctx: EngineContext,
@@ -160,6 +171,12 @@ function chooseInActions(
       memo.proposed = true;
       return proposal.action;
     }
+  }
+
+  // Tratado: no máximo um por turno (o motor também limita), só modelos prontos.
+  if (agent.level !== 'easy') {
+    const treaty = treatyProposal(ctx, state, player, w);
+    if (treaty) return treaty;
   }
 
   if (agent.level === 'easy') return sampleEasy(scored, now, end, agent);

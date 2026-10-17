@@ -99,8 +99,51 @@ npm run assets:check confere ícones, créditos, sha256 e licenças
 - Se uma regra do GDD parecer contraditória, **pare e pergunte** — não invente.
 
 ## Estado atual
-- Fase concluída: 7 — Tropas e combate
-- Próxima fase: 8 — Tratados (validade decidida por regra fixa no motor, sem IA)
+- Fase concluída: 8 — Tratados e negociação
+- Próxima fase: 9 — Facções, vitória completa e fim de partida
+- Tratados (Fase 8):
+  - Jogar: Nova partida (Tratados ligado por padrão) ou URL `treaties=1`. Botão "Tratado" / tecla
+    Y abre o construtor (`ui/treaty/TreatyModal.tsx`): parceiro, modelos prontos, Contrato
+    (quem dispara → o que faz → contra o quê → de quem → quem cumpre → consequência → detalhes)
+    ou Pacto (categoria → pacto), revisão em linguagem natural (`ui/treaty/describe.ts`), custo em
+    Ouro em destaque. Aba "Tratados ativos": romper pacto e oferta dos pactos de comércio.
+    Resposta do destinatário com tela de privacidade (`TreatyReply`); faixa dourada no painel
+    do jogador (`TreatyBand`); selo do diretor na assinatura/disparo/quebra (cue `treaty`).
+  - Validade = regra fixa do motor (decisão do usuário): `rules/treaties.ts → checkTreatyTerms`
+    (rascunho parcial para o construtor, `ui/treaty/builder.ts` só oferece o que passa).
+    Vocabulário de papéis em `treaties.json → contract.subjects/victims/obligors` e
+    `pactConflicts` (novos; o modelo Tarifa Preferencial usa `actor` no lugar de `invader`).
+  - Motor: estado `treaties {active, restrictions, pending, nextId}`, `player.treatyRound`,
+    `player.actionDebt`; ações `proposeTreaty/acceptTreaty/rejectTreaty/cancelTreaty/
+    breakTreaty/useTreaty`; gatilhos lidos dos eventos no fim de cada ação
+    (`observeTreaties`); prazos no FIM da rodada (`endRoundTreaties`); pedágio, Base Avançada,
+    Canal Aberto e Céu Aberto em `rules/treatyQueries.ts` (lidos por troops/combat/cards/build).
+    Tratados Livres virou passivo real (`effects/treaties.ts`; `effects/gated.ts` saiu).
+  - Decisões do usuário: ação proibida por pacto ROMPE (com aviso e confirmação) + botão
+    Romper; contrato sem disparo expira em 5 rodadas e a troca de pedágio vale em toda entrada;
+    pactos de comércio = oferta permanente.
+  - Interpretações provisórias (isoladas em rules/treaties.ts; **revisar com o usuário**):
+    BA) só o ativo propõe, nas Ações, 1 proposta por turno, tratado bilateral, resposta na hora;
+    BB) pacto: ação proibida rompe; NÃO PODE de contrato = proibição real (o motor recusa);
+    BC) "N rodadas" contam a atual; "SE NÃO" vence no fim da rodada seguinte; PAGA EM VEZ DA
+        TARIFA contínua; as outras consequências disparam uma vez e encerram;
+    BD) papéis me/you = quem propôs/recebeu; otherSignatory (vítima) = o signatário que não agiu;
+        (obrigado) = parceiro da vítima; beneficiário = sempre o outro signatário;
+    BE) gatilho pelos eventos (autor = jogador da ação, remetente da carta revelada ou
+        atacante); ATACAR também ao mover para hex com tropa/Vila da vítima; DESTRUIR inclui
+        rebaixar; carta paga/entregue/descartada é sorteada; inadimplência = paga o que puder e
+        perde 1 ação (no próprio turno sai na hora; senão vira dívida no próximo turno);
+    BF) Livre Comércio pelo valor base (arredonda a favor de quem cede), Preço Fixo = recurso ⇄
+        Ouro pelo preço, 1 vez por turno, sem aceite.
+  - IA (`ai/treaties.ts`): aceita se o valor estimado passa o Ouro + margem (paz ∝ força do
+    outro; pedágio ∝ tropas; contrato ∝ chance × valor); propõe só modelos prontos que valem
+    para os dois e com Ouro dos dois. Pesos `treaty*` em `weights.ts`.
+  - Testes: `rules/treaties.test.ts` (validação, aceite/Ouro/limite, cada gatilho, cada
+    consequência, inadimplência, SE NÃO, expiração, pactos, Tarifa Preferencial como critério de
+    aceite, replay), `ai/agent.test.ts` (aceita/recusa), `e2e/treaty.spec.ts` (capturas
+    `screenshots/phase8-*`).
+  - Fora da fase: contraproposta de tratado, tratados com cartas na proposta (só nas
+    consequências), faixa dourada em 3D na bandeja (hoje no painel HUD do jogador).
 - Tropas e combate (Fase 7):
   - Jogar: Nova partida (Conflito ligado por padrão) ou URL `conflict=1`. Recrutar/subir tropa
     e "Mover tropas daqui" no inspetor do hex; mover para hex com inimigo abre a previsão

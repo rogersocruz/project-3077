@@ -30,7 +30,7 @@ import {
 } from '../testing';
 import { CARD_EFFECTS, effectIssues, effectOf } from './registry';
 import { radiusArea } from './targets';
-import { type ApplyScope, LayerDisabledError } from './types';
+import { type ApplyScope } from './types';
 
 const ctx = makeContext(3);
 /** Paga cartas sem atingir limiar de vitória no fim da rodada. */
@@ -853,16 +853,11 @@ describe('passivos de permanentes', () => {
 // ── Camadas futuras e registro ───────────────────────────────────────────────
 
 describe('effectIds de camadas futuras e registro (CLAUDE.md regra 6)', () => {
-  it('handlers de tratados recusam com "camada desligada" e lançam se aplicados', () => {
+  it('todas as camadas têm handler implementado (Fase 8 fechou os tratados)', () => {
     const gatedIds = Object.entries(CARD_EFFECTS)
       .filter(([, h]) => !h.implemented)
       .map(([id]) => id);
-    expect(gatedIds.sort()).toEqual(['freeTreaties']);
-    const s = edit(cardsGame(ctx), (x) => void giveCard(x, 0, 'tech_corporate_diplomacy'));
-    const card = s.players[0]?.hand.at(-1) ?? -1;
-    const sc = scopeOf(s, 0, card);
-    expect(effectOf(sc.def).check(sc, undefined)?.key).toBe('layerDisabled');
-    expect(() => effectOf(sc.def).apply(sc, undefined)).toThrow(LayerDisabledError);
+    expect(gatedIds).toEqual([]);
   });
 
   it('todo effectId dos dados é conhecido; effectId ou parâmetro errado falha na carga', () => {

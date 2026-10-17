@@ -90,7 +90,7 @@ export function discardFromHand(
   state: GameState,
   player: PlayerId,
   cards: readonly CardUid[],
-  reason: 'cost' | 'limit',
+  reason: 'cost' | 'limit' | 'treaty',
   events: GameEvent[],
 ): void {
   for (const card of cards) {

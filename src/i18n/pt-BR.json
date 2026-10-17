@@ -133,7 +133,21 @@
       "tariffAlreadyChanged": "A tarifa já mudou nesta rodada.",
       "troopRooted": "Essa tropa não pode se mover nesta rodada (Deserção).",
       "noPath": "Não há caminho: hexes ocultos ou bloqueados por tropas inimigas.",
-      "invalidCasualties": "Escolha tropas que somem pelo menos a força necessária, sem sobrar."
+      "invalidCasualties": "Escolha tropas que somem pelo menos a força necessária, sem sobrar.",
+      "treatyPending": "Há uma proposta de tratado esperando resposta.",
+      "noTreatyPending": "Não há proposta de tratado esperando resposta.",
+      "notTreatyRecipient": "Só quem recebeu a proposta pode responder.",
+      "notTreatyProposer": "Só quem propôs pode retirar a proposta.",
+      "treatyAlreadyProposed": "Você já propôs um tratado neste turno.",
+      "treatyLimit": "Cada jogador pode ter no máximo {{max}} tratados ativos.",
+      "treatyInvalid": "Essa combinação de tratado não é válida.",
+      "treatyConflict": "Já existe um pacto igual ou contraditório entre vocês.",
+      "treatyNotFound": "Esse tratado não está ativo.",
+      "notTreatyParty": "Você não assinou esse tratado.",
+      "notCommercePact": "Esse pacto não é de comércio.",
+      "treatyUsed": "Você já usou esse pacto neste turno.",
+      "treatyForbids": "Um tratado proíbe isso contra esse jogador.",
+      "treatyGold": "Falta Ouro para assinar: cada participante paga 1 no aceite."
     }
   },
   "terrain": {
@@ -212,7 +226,8 @@
     "allHuman": "Todos humanos",
     "events": "Eventos globais (um por rodada; desastres atingem a Vila)",
     "special": "Hexes especiais (Templo, Ruína e hazards únicos)",
-    "conflict": "Tropas e combate (Quartel, movimento, fronteira, ataque à Vila)"
+    "conflict": "Tropas e combate (Quartel, movimento, fronteira, ataque à Vila)",
+    "treaties": "Tratados (contratos SE/ENTÃO e pactos)"
   },
   "phases": {
     "reveal": "Revelação",
@@ -318,7 +333,8 @@
     "ai": "IA",
     "aiThinking": "{{name}} está pensando…",
     "armyTariff": "Exército: {{n}} tropa(s) · tarifa de fronteira: {{resource}}",
-    "armyShort": "⚔ {{n}}"
+    "armyShort": "⚔ {{n}}",
+    "treatyHint": "Propor tratado ou ver os ativos"
   },
   "noTargets": {
     "explore": "Não há hex para explorar: só vizinhos de hexes revelados do seu tabuleiro.",
@@ -558,7 +574,18 @@
     "guardianDefeated": "O Guardião em {{hex}} foi derrotado.",
     "villageAttacked": "A Vila de {{name}} foi atacada por {{by}}.",
     "troopBoosted": "Uma tropa de {{name}} ganhou +{{n}} de força nesta rodada.",
-    "troopRooted": "Uma tropa de {{name}} não pode se mover nesta rodada."
+    "troopRooted": "Uma tropa de {{name}} não pode se mover nesta rodada.",
+    "treatyProposed": "{{from}} propôs um tratado a {{to}}.",
+    "treatyRejected": "{{to}} recusou o tratado de {{from}}.",
+    "treatyCancelled": "{{from}} retirou a proposta de tratado a {{to}}.",
+    "treatySigned": "{{a}} e {{b}} assinaram o tratado nº {{id}}: {{text}}",
+    "treatyTriggered": "Tratado nº {{id}} disparou: {{obligor}} {{what}} ({{beneficiary}}).",
+    "treatyDefaulted": "Tratado nº {{id}} disparou: {{obligor}} {{what}} ({{beneficiary}}) — inadimplente, perde 1 ação.",
+    "treatyFulfilled": "Tratado nº {{id}} cumprido: termina sem consequência.",
+    "treatyExpired": "Tratado nº {{id}} expirou.",
+    "pactBroken": "{{name}} rompeu o pacto {{pact}}: descarta a mão e perde 1 ação.",
+    "treatyTrade": "{{from}} trocou {{give}} por {{receive}} com {{to}} (pacto de comércio).",
+    "actionDebtPaid": "{{name}} perde {{count}} ação(ões) por tratado."
   },
   "cards": {
     "deck": {
@@ -690,9 +717,10 @@
       "cards": "Cartas",
       "specialHexes": "Hexes especiais",
       "events": "Eventos globais",
-      "conflict": "Tropas e combate"
+      "conflict": "Tropas e combate",
+      "treaties": "Tratados"
     },
-    "layersNote": "Tropas, tratados e facções entram no simulador com as fases deles.",
+    "layersNote": "Facções entram no simulador com a Fase 9.",
     "invalid": "balance inválido — corrija antes de simular:",
     "run": "Simular",
     "stop": "Parar",
@@ -796,5 +824,142 @@
   "tariff": {
     "label": "Tarifa",
     "hint": "Tarifa de fronteira: cada tropa que entra no seu território paga 1 deste recurso (muda 1× por rodada)."
+  },
+  "treaty": {
+    "title": "Tratados",
+    "tabNew": "Novo tratado",
+    "tabActive": "Tratados ativos",
+    "partner": "Com quem",
+    "templates": "Modelos prontos",
+    "contract": "Contrato",
+    "pact": "Pacto",
+    "contractHint": "SE (gatilho) → ENTÃO (consequência). Dispara uma vez; sem disparo, expira em {{n}} rodadas.",
+    "pactHint": "Estado contínuo por {{n}} rodadas ou até alguém romper.",
+    "category": {
+      "border": "Fronteira",
+      "cards": "Cartas",
+      "military": "Militar",
+      "commerce": "Comércio",
+      "observation": "Observação"
+    },
+    "step": {
+      "subject": "Quem dispara",
+      "verb": "O que faz",
+      "object": "Contra o quê",
+      "of": "De quem",
+      "obligor": "Quem cumpre",
+      "consequence": "Consequência",
+      "target": "O quê",
+      "details": "Detalhes",
+      "pact": "Pacto"
+    },
+    "if": "SE",
+    "ifNot": "SE NÃO",
+    "negated": "SE NÃO (prazo: fim da próxima rodada)",
+    "role": {
+      "me": "Eu",
+      "you": "O parceiro",
+      "anySignatory": "{{a}} ou {{b}}",
+      "third": "um terceiro",
+      "anyone": "qualquer jogador",
+      "eitherSignatory": "{{a}} ou {{b}}",
+      "otherSignatory": "o outro signatário",
+      "actor": "quem agiu",
+      "partner": "o outro signatário"
+    },
+    "verb": {
+      "attack": "ATACAR",
+      "target": "DAR ALVO EM",
+      "destroy": "DESTRUIR",
+      "steal": "ROUBAR",
+      "observe": "OBSERVAR",
+      "enter": "ENTRAR EM",
+      "collect": "COLETAR"
+    },
+    "object": {
+      "structure": "estrutura",
+      "troop": "tropa",
+      "village": "Vila",
+      "territory": "território",
+      "card": "carta",
+      "permanent": "permanente",
+      "resource": "recurso",
+      "subsoil": "subsolo",
+      "border": "fronteira",
+      "action": "ação",
+      "attack": "atacar",
+      "target": "dar alvo",
+      "enter": "entrar"
+    },
+    "consVerb": {
+      "pay": "PAGA",
+      "give": "ENTREGA",
+      "discard": "DESCARTA",
+      "loseAction": "PERDE",
+      "forbid": "NÃO PODE",
+      "overrideToll": "PAGA EM VEZ DA TARIFA"
+    },
+    "cons": {
+      "pay": "PAGA {{amount}} {{resource}}{{perTroop}}",
+      "payCards": "ENTREGA {{count}} carta(s) da mão",
+      "givePermanent": "ENTREGA o permanente {{card}}",
+      "giveCard": "ENTREGA 1 carta da mão",
+      "discard": "DESCARTA {{count}} carta(s)",
+      "loseAction": "PERDE {{count}} ação(ões)",
+      "forbid": "NÃO PODE {{verb}} por {{count}} rodada(s)",
+      "overrideToll": "PAGA só {{amount}} {{resource}}{{perTroop}} em vez da tarifa"
+    },
+    "consShort": {
+      "pay": "pagou {{list}}",
+      "cards": "entregou {{count}} carta(s)",
+      "give": "entregou {{count}} carta(s)",
+      "discard": "descartou {{count}} carta(s)",
+      "loseAction": "perdeu ações",
+      "forbid": "ficou proibido de agir contra",
+      "overrideToll": "pagou {{list}} em vez da tarifa"
+    },
+    "perTroop": " por tropa",
+    "sentence": "{{if}} {{subject}} {{verb}} {{object}} {{of}}, ENTÃO {{obligor}} {{consequence}} (beneficiário: {{beneficiary}}).",
+    "pactSentence": "PACTO {{name}}: {{text}}{{extra}}",
+    "fixedPrice": " ({{resource}} = {{price}} Ouro)",
+    "pactPending": "Escolha um pacto.",
+    "cost": "Custo: {{n}} Ouro de cada participante, cobrado só no aceite.",
+    "costFree": "{{name}} não paga Ouro (Tratados Livres).",
+    "review": "Revisão",
+    "send": "Enviar proposta",
+    "proposalFrom": "Proposta de tratado de {{name}}",
+    "accept": "Assinar",
+    "reject": "Recusar",
+    "until": "até o fim da rodada {{n}}",
+    "deadline": "prazo: fim da rodada {{n}}",
+    "none": "Nenhum tratado ativo.",
+    "break": "Romper",
+    "breakTitle": "Romper pacto?",
+    "breakWarn": "Esta ação rompe: {{list}}. Quem rompe descarta a mão e perde 1 ação.",
+    "breakConfirm": "Romper e continuar",
+    "useTitle": "Oferta permanente",
+    "trade": "Trocar",
+    "tradeQuote": "Você recebe {{n}} {{resource}}.",
+    "give": "Dou",
+    "receive": "Recebo",
+    "amount": "Quantidade",
+    "rounds": "Rodadas",
+    "price": "Preço (Ouro)",
+    "resource": "Recurso",
+    "perTroopToggle": "Por tropa",
+    "permanent": "Permanente",
+    "signed": "TRATADO ASSINADO",
+    "triggered": "TRATADO DISPAROU",
+    "broken": "PACTO ROMPIDO",
+    "obligorOf": "Obrigação de {{name}}",
+    "band": "Tratados ativos de {{name}}",
+    "notYourTurn": "Só o jogador da vez propõe tratados.",
+    "roleOf": {
+      "name": "de {{name}}",
+      "eitherSignatory": "de {{a}} ou de {{b}}",
+      "otherSignatory": "do outro signatário",
+      "third": "de um terceiro",
+      "anyone": "de qualquer jogador"
+    }
   }
 }

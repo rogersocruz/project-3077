@@ -3,7 +3,7 @@
  * em legal.ts se esse jogador pode agir agora.
  */
 import type { ResourceId } from '../data/schemas';
-import type { CardTarget, CardUid, HexKey, PlayerId, Resources, TroopType } from './state';
+import type { CardTarget, CardUid, HexKey, PlayerId, Resources, TreatyTerms, TroopType } from './state';
 
 /**
  * Carta da mão usada junto com outra ação (Drone com Sondar/Construir, Contrato de Obra
@@ -87,6 +87,23 @@ export type Action =
   | { type: 'setTariff'; player: PlayerId; resource: ResourceId }
   /** GDD 8.4 passo 4: o perdedor escolhe as baixas. */
   | { type: 'chooseCasualties'; player: PlayerId; uids: readonly number[] }
+  /** GDD 10: propor tratado (grátis; 1 por turno — interpretação BA). */
+  | { type: 'proposeTreaty'; player: PlayerId; to: PlayerId; terms: TreatyTerms }
+  /** O destinatário aceita (cada um paga o Ouro) ou recusa; quem propôs pode retirar. */
+  | { type: 'acceptTreaty'; player: PlayerId }
+  | { type: 'rejectTreaty'; player: PlayerId }
+  | { type: 'cancelTreaty'; player: PlayerId }
+  /** Romper um pacto de propósito (mesma penalidade da ação proibida). */
+  | { type: 'breakTreaty'; player: PlayerId; treaty: number }
+  /** Pacto de comércio: oferta permanente com o outro signatário (interpretação BF). */
+  | {
+      type: 'useTreaty';
+      player: PlayerId;
+      treaty: number;
+      give: ResourceId;
+      amount: number;
+      receive: ResourceId;
+    }
   /** Pântano Ácido contaminado: limpar gastando ações. */
   | { type: 'cleanHex'; player: PlayerId; hex: HexKey }
   /** Colapso de Galeria: o dono do tabuleiro remove o selo gastando ações. */
@@ -137,6 +154,12 @@ export const ACTION_COST: Record<ActionType, number> = {
   move: 0,
   setTariff: 0,
   chooseCasualties: 0,
+  proposeTreaty: 0,
+  acceptTreaty: 0,
+  rejectTreaty: 0,
+  cancelTreaty: 0,
+  breakTreaty: 0,
+  useTreaty: 0,
   brace: 0,
   cleanHex: 0,
   deliverCard: 0,

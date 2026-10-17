@@ -47,7 +47,7 @@ export const DEFAULT_SIM: SimConfig = {
 };
 
 /** Camadas que a simulação aceita ligar hoje (as outras ainda não têm regra no motor). */
-export const SIM_LAYERS: readonly LayerName[] = ['cards', 'events', 'specialHexes', 'conflict'];
+export const SIM_LAYERS: readonly LayerName[] = ['cards', 'events', 'specialHexes', 'conflict', 'treaties'];
 
 const isObj = (x: unknown): x is Record<string, unknown> => !!x && typeof x === 'object' && !Array.isArray(x);
 

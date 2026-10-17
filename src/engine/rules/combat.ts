@@ -21,6 +21,7 @@ import { getPlayer, hexKeyOf } from '../queries';
 import type { CasualtyChoice, GameState, HexKey, HexState, PlayerId, TroopState } from '../state';
 import { loseVillageLives } from './hazards';
 import { troopStrength } from './troops';
+import { stagingAllies } from './treatyQueries';
 
 /** Dono dos lados neutros: Guardião (−1) e Horda (−2). */
 export const NEUTRAL = -1;
@@ -66,6 +67,10 @@ export function contestedHexes(state: GameState): HexKey[] {
   const out: HexKey[] = [];
   for (const [key, hex] of Object.entries(state.hexes)) {
     const owners = new Set(hex.troops.map((t) => t.owner));
+    // Base Avançada (GDD 10): só os dois signatários no hex = sem combate.
+    const [a, b] = [...owners];
+    if (owners.size === 2 && hex.guardian === null && stagingAllies(state, a as PlayerId, b as PlayerId))
+      continue;
     if (owners.size + (hex.guardian !== null && hex.troops.length > 0 ? 1 : 0) >= 2) out.push(key);
   }
   return out.sort();

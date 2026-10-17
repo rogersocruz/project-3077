@@ -39,6 +39,8 @@ export const T = {
   eventPulse: 2.5,
   /** Fase 7: painel de combate (cinemática curta). */
   combatPanel: 1.8,
+  /** Selo de tratado (assinatura, disparo, quebra). */
+  treatySeal: 1.4,
   /** IA (Fase 5): pausa antes de cada decisão, para a mesa ser legível. */
   aiThink: 0.35,
 } as const;

@@ -10,6 +10,7 @@ import type {
   HexKey,
   PlayerId,
   Resources,
+  TreatyTerms,
   TroopType,
   TurnPhase,
 } from './state';
@@ -78,7 +79,7 @@ export type GameEvent =
   /** O id da carta é privado: o registro só mostra a quem comprou. */
   | { type: 'cardDrawn'; player: PlayerId; card: CardUid; deck: DrawDeck }
   | { type: 'deckReshuffled'; deck: DrawDeck; size: number }
-  | { type: 'cardDiscarded'; player: PlayerId; card: CardUid; reason: 'cost' | 'limit' }
+  | { type: 'cardDiscarded'; player: PlayerId; card: CardUid; reason: 'cost' | 'limit' | 'treaty' }
   | { type: 'cardPlayed'; player: PlayerId; card: CardUid; target?: CardTarget }
   /** Entrega lacrada: a carta só é conhecida na Revelação. */
   | { type: 'cardDelivered'; from: PlayerId; to: PlayerId; card: CardUid }
@@ -160,4 +161,35 @@ export type GameEvent =
   | { type: 'villageAttacked'; player: PlayerId; by: PlayerId[] }
   | { type: 'troopBoosted'; player: PlayerId; uid: number; amount: number }
   | { type: 'troopRooted'; player: PlayerId; uid: number }
+  // ── Tratados (Fase 8) ──
+  | { type: 'treatyProposed'; from: PlayerId; to: PlayerId; terms: TreatyTerms }
+  | { type: 'treatyRejected'; from: PlayerId; to: PlayerId }
+  | { type: 'treatyCancelled'; from: PlayerId; to: PlayerId }
+  | { type: 'treatySigned'; treaty: number; parties: [PlayerId, PlayerId]; terms: TreatyTerms; until: number }
+  /** O contrato disparou: `obligor` cumpriu a consequência em favor de `beneficiary`. */
+  | {
+      type: 'treatyTriggered';
+      treaty: number;
+      obligor: PlayerId;
+      beneficiary: PlayerId;
+      consequence: string;
+      resources?: Partial<Resources>;
+      cards?: number;
+      /** Inadimplência: pagou só o que pôde (e perde ação). */
+      defaulted: boolean;
+    }
+  /** "SE NÃO": o sujeito fez o que devia; o contrato termina sem consequência. */
+  | { type: 'treatyFulfilled'; treaty: number }
+  | { type: 'treatyExpired'; treaty: number }
+  | { type: 'pactBroken'; treaty: number; by: PlayerId; pact: string }
+  | {
+      type: 'treatyTrade';
+      treaty: number;
+      from: PlayerId;
+      to: PlayerId;
+      give: Partial<Resources>;
+      receive: Partial<Resources>;
+    }
+  /** Ações cobradas no começo do turno (dívida de inadimplência ou quebra). */
+  | { type: 'actionDebtPaid'; player: PlayerId; amount: number }
   | { type: 'gameOver'; winners: PlayerId[]; reason: 'condition' | 'roundLimit' };

@@ -133,7 +133,21 @@
       "tariffAlreadyChanged": "The tariff already changed this round.",
       "troopRooted": "That troop cannot move this round (Desertion).",
       "noPath": "No path: hidden hexes or blocked by enemy troops.",
-      "invalidCasualties": "Choose troops adding up to at least the needed strength, with none to spare."
+      "invalidCasualties": "Choose troops adding up to at least the needed strength, with none to spare.",
+      "treatyPending": "A treaty proposal is waiting for an answer.",
+      "noTreatyPending": "There is no treaty proposal waiting.",
+      "notTreatyRecipient": "Only the recipient can answer the proposal.",
+      "notTreatyProposer": "Only the proposer can withdraw the proposal.",
+      "treatyAlreadyProposed": "You already proposed a treaty this turn.",
+      "treatyLimit": "Each player can have at most {{max}} active treaties.",
+      "treatyInvalid": "That treaty combination is not valid.",
+      "treatyConflict": "There is already an identical or contradictory pact between you.",
+      "treatyNotFound": "That treaty is not active.",
+      "notTreatyParty": "You did not sign that treaty.",
+      "notCommercePact": "That pact is not a commerce pact.",
+      "treatyUsed": "You already used that pact this turn.",
+      "treatyForbids": "A treaty forbids that against this player.",
+      "treatyGold": "Not enough Gold to sign: each party pays 1 on acceptance."
     }
   },
   "terrain": {
@@ -212,7 +226,8 @@
     "allHuman": "All human",
     "events": "Global events (one per round; disasters hit the Village)",
     "special": "Special hexes (Temple, Ruin and unique hazards)",
-    "conflict": "Troops and combat (Barracks, movement, borders, Village attacks)"
+    "conflict": "Troops and combat (Barracks, movement, borders, Village attacks)",
+    "treaties": "Treaties (IF/THEN contracts and pacts)"
   },
   "phases": {
     "reveal": "Reveal",
@@ -285,7 +300,7 @@
     "bank": "Bank",
     "trade": "Trade",
     "treaty": "Treaty",
-    "treatyLocked": "Treaties arrive with the Treaties layer.",
+    "treatyLocked": "Treaties come with the Treaties layer.",
     "undo": "Undo",
     "undoHint": "Undoes Build, Upgrade, Bank or Install — back to the last revealed information",
     "undone": "Action undone.",
@@ -318,7 +333,8 @@
     "ai": "AI",
     "aiThinking": "{{name}} is thinking…",
     "armyTariff": "Army: {{n}} troop(s) · border tariff: {{resource}}",
-    "armyShort": "⚔ {{n}}"
+    "armyShort": "⚔ {{n}}",
+    "treatyHint": "Propose a treaty or see active ones"
   },
   "noTargets": {
     "explore": "No hex to explore: only neighbours of revealed hexes on your board.",
@@ -558,7 +574,18 @@
     "guardianDefeated": "The Guardian at {{hex}} was defeated.",
     "villageAttacked": "{{name}}'s Village was attacked by {{by}}.",
     "troopBoosted": "One of {{name}}'s troops gains +{{n}} strength this round.",
-    "troopRooted": "One of {{name}}'s troops cannot move this round."
+    "troopRooted": "One of {{name}}'s troops cannot move this round.",
+    "treatyProposed": "{{from}} proposed a treaty to {{to}}.",
+    "treatyRejected": "{{to}} rejected {{from}}'s treaty.",
+    "treatyCancelled": "{{from}} withdrew the treaty proposal to {{to}}.",
+    "treatySigned": "{{a}} and {{b}} signed treaty #{{id}}: {{text}}",
+    "treatyTriggered": "Treaty #{{id}} fired: {{obligor}} {{what}} ({{beneficiary}}).",
+    "treatyDefaulted": "Treaty #{{id}} fired: {{obligor}} {{what}} ({{beneficiary}}) — defaulted, loses 1 action.",
+    "treatyFulfilled": "Treaty #{{id}} fulfilled: ends with no consequence.",
+    "treatyExpired": "Treaty #{{id}} expired.",
+    "pactBroken": "{{name}} broke the pact {{pact}}: discards the hand and loses 1 action.",
+    "treatyTrade": "{{from}} traded {{give}} for {{receive}} with {{to}} (commerce pact).",
+    "actionDebtPaid": "{{name}} loses {{count}} action(s) to a treaty."
   },
   "cards": {
     "deck": {
@@ -690,9 +717,10 @@
       "cards": "Cards",
       "specialHexes": "Special hexes",
       "events": "Global events",
-      "conflict": "Troops and combat"
+      "conflict": "Troops and combat",
+      "treaties": "Treaties"
     },
-    "layersNote": "Troops, treaties and factions join the simulator with their phases.",
+    "layersNote": "Factions join the simulator in Phase 9.",
     "invalid": "Invalid balance — fix it before simulating:",
     "run": "Simulate",
     "stop": "Stop",
@@ -796,5 +824,142 @@
   "tariff": {
     "label": "Tariff",
     "hint": "Border tariff: each troop entering your territory pays 1 of this resource (changes once per round)."
+  },
+  "treaty": {
+    "title": "Treaties",
+    "tabNew": "New treaty",
+    "tabActive": "Active treaties",
+    "partner": "With whom",
+    "templates": "Ready templates",
+    "contract": "Contract",
+    "pact": "Pact",
+    "contractHint": "IF (trigger) → THEN (consequence). Fires once; if it never fires, it expires in {{n}} rounds.",
+    "pactHint": "Ongoing state for {{n}} rounds or until someone breaks it.",
+    "category": {
+      "border": "Border",
+      "cards": "Cards",
+      "military": "Military",
+      "commerce": "Commerce",
+      "observation": "Observation"
+    },
+    "step": {
+      "subject": "Who triggers",
+      "verb": "Does what",
+      "object": "Against what",
+      "of": "Whose",
+      "obligor": "Who complies",
+      "consequence": "Consequence",
+      "target": "What",
+      "details": "Details",
+      "pact": "Pact"
+    },
+    "if": "IF",
+    "ifNot": "IF NOT",
+    "negated": "IF NOT (deadline: end of next round)",
+    "role": {
+      "me": "Me",
+      "you": "The partner",
+      "anySignatory": "{{a}} or {{b}}",
+      "third": "a third party",
+      "anyone": "any player",
+      "eitherSignatory": "{{a}} or {{b}}",
+      "otherSignatory": "the other signatory",
+      "actor": "whoever acted",
+      "partner": "the other signatory"
+    },
+    "verb": {
+      "attack": "ATTACKS",
+      "target": "TARGETS",
+      "destroy": "DESTROYS",
+      "steal": "STEALS",
+      "observe": "OBSERVES",
+      "enter": "ENTERS",
+      "collect": "COLLECTS"
+    },
+    "object": {
+      "structure": "structure",
+      "troop": "troop",
+      "village": "Village",
+      "territory": "territory",
+      "card": "card",
+      "permanent": "permanent",
+      "resource": "resource",
+      "subsoil": "subsoil",
+      "border": "border",
+      "action": "action",
+      "attack": "attack",
+      "target": "target",
+      "enter": "enter"
+    },
+    "consVerb": {
+      "pay": "PAYS",
+      "give": "GIVES",
+      "discard": "DISCARDS",
+      "loseAction": "LOSES",
+      "forbid": "CANNOT",
+      "overrideToll": "PAYS INSTEAD OF THE TARIFF"
+    },
+    "cons": {
+      "pay": "PAYS {{amount}} {{resource}}{{perTroop}}",
+      "payCards": "GIVES {{count}} card(s) from hand",
+      "givePermanent": "GIVES the permanent {{card}}",
+      "giveCard": "GIVES 1 card from hand",
+      "discard": "DISCARDS {{count}} card(s)",
+      "loseAction": "LOSES {{count}} action(s)",
+      "forbid": "CANNOT {{verb}} for {{count}} round(s)",
+      "overrideToll": "PAYS only {{amount}} {{resource}}{{perTroop}} instead of the tariff"
+    },
+    "consShort": {
+      "pay": "paid {{list}}",
+      "cards": "gave {{count}} card(s)",
+      "give": "gave {{count}} card(s)",
+      "discard": "discarded {{count}} card(s)",
+      "loseAction": "lost actions",
+      "forbid": "is forbidden to act against",
+      "overrideToll": "paid {{list}} instead of the tariff"
+    },
+    "perTroop": " per troop",
+    "sentence": "{{if}} {{subject}} {{verb}} {{object}} {{of}}, THEN {{obligor}} {{consequence}} (beneficiary: {{beneficiary}}).",
+    "pactSentence": "PACT {{name}}: {{text}}{{extra}}",
+    "fixedPrice": " ({{resource}} = {{price}} Gold)",
+    "pactPending": "Choose a pact.",
+    "cost": "Cost: {{n}} Gold from each party, charged only on acceptance.",
+    "costFree": "{{name}} pays no Gold (Free Treaties).",
+    "review": "Review",
+    "send": "Send proposal",
+    "proposalFrom": "Treaty proposal from {{name}}",
+    "accept": "Sign",
+    "reject": "Reject",
+    "until": "until the end of round {{n}}",
+    "deadline": "deadline: end of round {{n}}",
+    "none": "No active treaties.",
+    "break": "Break",
+    "breakTitle": "Break pact?",
+    "breakWarn": "This action breaks: {{list}}. Whoever breaks discards the hand and loses 1 action.",
+    "breakConfirm": "Break and continue",
+    "useTitle": "Standing offer",
+    "trade": "Trade",
+    "tradeQuote": "You receive {{n}} {{resource}}.",
+    "give": "I give",
+    "receive": "I receive",
+    "amount": "Amount",
+    "rounds": "Rounds",
+    "price": "Price (Gold)",
+    "resource": "Resource",
+    "perTroopToggle": "Per troop",
+    "permanent": "Permanent",
+    "signed": "TREATY SIGNED",
+    "triggered": "TREATY FIRED",
+    "broken": "PACT BROKEN",
+    "obligorOf": "{{name}}'s obligation",
+    "band": "{{name}}'s active treaties",
+    "notYourTurn": "Only the active player proposes treaties.",
+    "roleOf": {
+      "name": "of {{name}}",
+      "eitherSignatory": "of {{a}} or {{b}}",
+      "otherSignatory": "of the other signatory",
+      "third": "of a third party",
+      "anyone": "of any player"
+    }
   }
 }

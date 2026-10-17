@@ -9,6 +9,7 @@ import { RESOURCE_IDS } from '../../data/schemas';
 import type { CardTarget, CardUid, GameEvent, GameState, HexKey, PlayerId } from '../../engine';
 import { findStructure, type ResourceAmounts } from '../../engine/queries';
 import { seatFaction } from '../../render3d/model';
+import { pactDef, treatyText } from '../treaty/describe';
 
 export const playerName = (t: TFunction, id: PlayerId) => t(`factions.${seatFaction(id)}`);
 
@@ -128,6 +129,16 @@ export const LOG_KEYS: Record<GameEvent['type'], string> = {
   villageAttacked: 'villageAttacked',
   troopBoosted: 'troopBoosted',
   troopRooted: 'troopRooted',
+  treatyProposed: 'treatyProposed',
+  treatyRejected: 'treatyRejected',
+  treatyCancelled: 'treatyCancelled',
+  treatySigned: 'treatySigned',
+  treatyTriggered: 'treatyTriggered',
+  treatyFulfilled: 'treatyFulfilled',
+  treatyExpired: 'treatyExpired',
+  pactBroken: 'pactBroken',
+  treatyTrade: 'treatyTrade',
+  actionDebtPaid: 'actionDebtPaid',
 };
 
 /** Detalhes que poluem o registro; ficam atrás do filtro "detalhes". */
@@ -147,6 +158,9 @@ export function eventPlayers(e: GameEvent): PlayerId[] {
   if (e.type === 'combatResolved') return e.sides.map((x) => x.owner).filter((o) => o >= 0);
   if ('from' in e && e.type !== 'hordeAttack') return [e.from, e.to];
   if (e.type === 'subsoilSealed') return [e.by];
+  if (e.type === 'treatySigned') return [...e.parties];
+  if (e.type === 'treatyTriggered') return [e.obligor, e.beneficiary];
+  if (e.type === 'pactBroken') return [e.by];
   if (e.type === 'gameOver') return e.winners;
   return [];
 }
@@ -431,5 +445,49 @@ export function logLine(
       return t(key, { name: name(e.player), n: e.amount });
     case 'troopRooted':
       return t(key, { name: name(e.player) });
+    // ── Tratados (Fase 8) ──
+    case 'treatyProposed':
+    case 'treatyRejected':
+    case 'treatyCancelled':
+      return t(key, { from: name(e.from), to: name(e.to) });
+    case 'treatySigned':
+      return t(key, {
+        a: name(e.parties[0]),
+        b: name(e.parties[1]),
+        id: e.treaty,
+        text: treatyText(t, e.terms, {
+          from: e.parties[0],
+          to: e.parties[1],
+          name,
+          card: (uid) => cardName(t, state, uid),
+        }),
+      });
+    case 'treatyTriggered':
+      return t(e.defaulted ? 'log.treatyDefaulted' : key, {
+        id: e.treaty,
+        obligor: name(e.obligor),
+        beneficiary: name(e.beneficiary),
+        what: t(
+          `treaty.consShort.${e.cards !== undefined && e.consequence === 'pay' ? 'cards' : e.consequence}`,
+          {
+            list: e.resources ? amountsText(t, e.resources) : '',
+            count: e.cards ?? 0,
+          },
+        ),
+      });
+    case 'treatyFulfilled':
+    case 'treatyExpired':
+      return t(key, { id: e.treaty });
+    case 'pactBroken':
+      return t(key, { name: name(e.by), pact: pactDef(e.pact)?.name ?? e.pact });
+    case 'treatyTrade':
+      return t(key, {
+        from: name(e.from),
+        to: name(e.to),
+        give: amountsText(t, e.give),
+        receive: amountsText(t, e.receive),
+      });
+    case 'actionDebtPaid':
+      return t(key, { name: name(e.player), count: e.amount });
   }
 }

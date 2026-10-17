@@ -7,7 +7,7 @@ import type { GameData } from '../../data/schemas';
 import type { CardDef } from '../context';
 import type { RuleLayers } from '../state';
 import { drawFromDeck, tutor } from './decks';
-import * as gated from './gated';
+import * as treatyCards from './treaties';
 import { revealBoard, revealHand, revealStocks, revealStructures, revealSubsoilArea } from './info';
 import { droneRange, halfCostBuild } from './modifiers';
 import * as perm from './permanents';
@@ -73,7 +73,7 @@ export const CARD_EFFECTS: Readonly<Record<string, EffectHandler>> = {
   lineStrengthBonus: troops.lineStrengthBonus,
   antigrav: troops.antigrav,
   spawnGuardian: worldCards.spawnGuardian,
-  freeTreaties: gated.freeTreaties,
+  freeTreaties: treatyCards.freeTreaties,
   disasterResist: worldCards.disasterResist,
 };
 

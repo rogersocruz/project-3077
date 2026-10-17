@@ -90,6 +90,16 @@ export interface AiWeights {
   /** Bônus por nível de Universidade (até 2) e por ter Mina, enquanto vale a prioridade. */
   readonly investorUni: number;
   readonly investorMine: number;
+  /**
+   * Fase 8: tratados. `treatyPeace` = valor por ponto de força do parceiro que deixa de ameaçar
+   * (Não Agressão); `treatyToll` = entradas esperadas no território do outro enquanto o tratado
+   * dura (por tropa); `treatyOdds` = chance estimada de um contrato disparar; `treatyMargin` =
+   * quanto o tratado precisa render além do Ouro.
+   */
+  readonly treatyPeace: number;
+  readonly treatyToll: number;
+  readonly treatyOdds: number;
+  readonly treatyMargin: number;
 }
 
 export const DEFAULT_WEIGHTS: AiWeights = {
@@ -140,6 +150,10 @@ export const DEFAULT_WEIGHTS: AiWeights = {
   investorMineRound: 5,
   investorUni: 30,
   investorMine: 70,
+  treatyPeace: 2.5,
+  treatyToll: 0.5,
+  treatyOdds: 0.4,
+  treatyMargin: 1,
 };
 
 export const AI_LEVELS: readonly AiLevel[] = ['easy', 'normal', 'hard'];

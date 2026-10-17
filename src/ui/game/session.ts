@@ -59,6 +59,7 @@ export const useSession = create<SessionStore>()((set, get) => ({
         events: setup.events,
         specialHexes: setup.specialHexes,
         conflict: setup.conflict,
+        treaties: setup.treaties,
       },
     };
     const state = createGame(ctx, options);

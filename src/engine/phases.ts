@@ -12,6 +12,7 @@ import { runProduction, runUpkeep } from './rules/economy';
 import { checkRoundEnd } from './rules/victory';
 import { endRoundEvent, revealEvent } from './rules/world';
 import { runCombatPhase, villageAttacks } from './rules/combat';
+import { endRoundTreaties, payActionDebt } from './rules/treaties';
 import type { GameState, PlayerId, TurnPhase } from './state';
 
 function enterPhase(state: GameState, phase: TurnPhase, events: GameEvent[]): void {
@@ -81,6 +82,8 @@ export function startTurn(ctx: EngineContext, state: GameState, player: PlayerId
   const p = state.players[player];
   if (p) p.deliveredThisTurn = 0;
   events.push({ type: 'turnStarted', player, round: state.round });
+  // Inadimplência ou quebra de pacto fora do próprio turno: as ações saem agora.
+  payActionDebt(state, player, events);
 
   enterPhase(state, 'reveal', events);
   if (state.layers.cards) revealIncoming(ctx, state, player, events);
@@ -134,11 +137,13 @@ function endTurn(ctx: EngineContext, state: GameState, events: GameEvent[]): voi
   endRound(ctx, state, events);
 }
 
-/** GDD 6.1 FIM: tratados com prazo (Fase 8) e verificação de vitória (13.1). */
+/** GDD 6.1 FIM: tratados com prazo e verificação de vitória (13.1). */
 function endRound(ctx: EngineContext, state: GameState, events: GameEvent[]): void {
   endRoundEvent(ctx, state, events);
   // GDD 8.5: tropa na Vila inimiga sem defensor tira vida (pode eliminar).
   villageAttacks(ctx, state, events);
+  // GDD 6.1 FIM: resolve tratados com prazo (Fase 8).
+  endRoundTreaties(ctx, state, events);
   if (finishIfDecided(ctx, state, events)) return;
   events.push({ type: 'roundEnded', round: state.round });
   const verdict = checkRoundEnd(ctx, state);

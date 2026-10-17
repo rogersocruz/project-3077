@@ -211,7 +211,8 @@ export function BottomBar() {
           className={hud.btn}
           disabled={!mineTurn}
           onClick={openTreaty}
-          title={t('hud.treatyLocked')}
+          title={state.layers.treaties ? t('hud.treatyHint') : t('hud.treatyLocked')}
+          data-testid="open-treaty"
         >
           {t('hud.treaty')} <span className={hud.kbd}>Y</span>
         </button>
