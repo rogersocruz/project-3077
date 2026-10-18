@@ -15,6 +15,7 @@ import { join } from 'node:path';
 import { RESOURCE_IDS } from '../src/data/schemas';
 import type { GameRecord } from '../src/sim/game';
 import { gamesCsv, summarize, summaryText } from '../src/sim/report';
+import { economyCsv, metricsText, summarizeMetrics } from '../src/sim/metricsReport';
 import { DEFAULT_SIM, type SimConfig } from '../src/sim/run';
 import { type Interval, meanCI, wilson } from '../src/sim/stats';
 import { runBatch } from './sim-lib';
@@ -30,6 +31,8 @@ const arg = (name: string) => {
   return i >= 0 ? args[i + 1] : undefined;
 };
 const GAMES = Number(arg('games') ?? 1000);
+/** --wincons coal,gold,expansion: só essas condições de vitória em todas as colunas. */
+const WINS = arg('wincons')?.split(',').filter(Boolean);
 
 const VARIANTS: { name: string; label: string; file: string | null }[] = [
   { name: 'baseline-v1', label: 'baseline', file: null },
@@ -48,6 +51,7 @@ const BASE: SimConfig = {
   seed: 1,
   levels: ['normal'],
   layers: { cards: true, events: true, specialHexes: true, conflict: true, treaties: true, factions: true },
+  ...(WINS ? { wincons: WINS } : {}),
 };
 
 const log = (msg: string) => console.log(`[${new Date().toISOString().slice(11, 19)}] ${msg}`);
@@ -78,7 +82,12 @@ async function batch(name: string, file: string | null): Promise<GameRecord[]> {
   writeFileSync(cached, JSON.stringify(slim));
   writeFileSync(join(dir, 'games.csv'), gamesCsv(records));
   writeFileSync(join(dir, 'summary.json'), JSON.stringify({ config, summary }, null, 2) + '\n');
-  writeFileSync(join(dir, 'summary.txt'), summaryText(summary, `${name} — seeds 1–${GAMES}`) + '\n');
+  const metrics = summarizeMetrics(records);
+  writeFileSync(
+    join(dir, 'summary.txt'),
+    summaryText(summary, `${name} — seeds 1–${GAMES}`) + (metrics ? '\n' + metricsText(metrics) : '') + '\n',
+  );
+  if (metrics) writeFileSync(join(dir, 'economy.csv'), economyCsv(metrics));
   log(`${name}: ${(wallMs / 1000).toFixed(0)} s`);
   return records;
 }

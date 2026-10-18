@@ -6,6 +6,9 @@
  * `adaptive`. Os de apresentação gravam nas configurações.
  */
 import { type AiLevel, isAiLevel } from '../../ai/types';
+import { type GameRules, rulesOverride } from '../../data/gameRules';
+
+export { type GameRules, rulesOverride };
 import type { AnimationSpeed, Quality } from '../../settings';
 
 /** Quem joga no assento: pessoa (hotseat) ou IA de um nível. */
@@ -37,39 +40,6 @@ export interface GameSetup {
   readonly rules?: GameRules;
   /** Um por jogador (Fase 5). */
   readonly seats: readonly SeatKind[];
-}
-
-/** UX_SPEC 2.3: ajustes de regra por partida. */
-export interface GameRules {
-  readonly actionsPerTurn?: number;
-  readonly roundLimit?: number;
-  /** Condições de vitória desligadas (trilhas: recursos, 'expansion', 'tribe'). */
-  readonly disabledTracks?: readonly string[];
-}
-
-/** Limiar que desliga uma trilha de acúmulo/expansão (inalcançável). */
-const OFF = 9999;
-
-/** Sobreposição de dados (formato de --override) para as regras da partida. */
-export function rulesOverride(rules: GameRules | undefined): Record<string, unknown> | undefined {
-  if (!rules) return undefined;
-  const balance: Record<string, unknown> = {};
-  const turn: Record<string, number> = {};
-  if (rules.actionsPerTurn) turn['actionsPerTurn'] = rules.actionsPerTurn;
-  if (rules.roundLimit) turn['roundLimit'] = rules.roundLimit;
-  if (Object.keys(turn).length) balance['turn'] = turn;
-  const off = rules.disabledTracks ?? [];
-  if (off.length) {
-    const victory: Record<string, unknown> = {};
-    const thresholds = Object.fromEntries(
-      off.filter((t) => t !== 'expansion' && t !== 'tribe').map((t) => [t, OFF]),
-    );
-    if (Object.keys(thresholds).length) victory['resourceThresholds'] = thresholds;
-    if (off.includes('expansion')) victory['expansionHexes'] = OFF;
-    if (off.includes('tribe')) victory['tribeTarget'] = { enabled: false };
-    balance['victory'] = victory;
-  }
-  return Object.keys(balance).length ? { 'balance.json': balance } : undefined;
 }
 
 /** Regras da partida na URL: `apt` ações por turno, `rl` limite de rodadas, `off` trilhas. */

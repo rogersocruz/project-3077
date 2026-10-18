@@ -5,7 +5,7 @@
 import { availableParallelism } from 'node:os';
 import { Worker } from 'node:worker_threads';
 import type { GameRecord } from '../src/sim/game';
-import { seedsOf, type SimConfig, simData, splitSeeds } from '../src/sim/run';
+import { configOverride, seedsOf, type SimConfig, simData, splitSeeds } from '../src/sim/run';
 
 export const defaultWorkers = () => Math.max(1, availableParallelism() - 1);
 
@@ -14,7 +14,7 @@ export async function runBatch(
   workers = defaultWorkers(),
   onGame?: (done: number) => void,
 ): Promise<{ records: GameRecord[]; wallMs: number; workers: number }> {
-  simData(config.balance, config.override); // falha cedo com dado inválido
+  simData(config.balance, configOverride(config)); // falha cedo com dado inválido
   const slices = splitSeeds(seedsOf(config), Math.min(workers, config.games));
   const started = performance.now();
   const records: GameRecord[] = [];

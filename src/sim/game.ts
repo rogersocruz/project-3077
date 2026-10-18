@@ -12,6 +12,7 @@ import { applyAction } from '../engine/reducer';
 import type { GameEvent } from '../engine/events';
 import { expansionCount, progress, type TrackId } from '../engine/rules/victory';
 import { createGame, type GameOptions } from '../engine/setup';
+import { type GameMetrics, MetricsCollector } from './metrics';
 import type { GameState, Resources } from '../engine/state';
 
 /** Condição de vitória registrada: trilha ou eliminação total. */
@@ -95,6 +96,8 @@ export interface GameRecord {
   readonly treatiesSigned: number;
   readonly treatiesTriggered: number;
   readonly pactsBroken: number;
+  /** Métricas detalhadas (sim/metrics.ts); ausente em registros antigos. */
+  readonly metrics?: GameMetrics;
 }
 
 export interface SimGameOptions {
@@ -109,6 +112,8 @@ export interface SimGameOptions {
   readonly maxSteps?: number;
   /** Laboratório: ninguém vence antes do limite de rodadas (calibração). */
   readonly playToRoundLimit?: boolean;
+  /** Rotas que a IA pode sortear no estilo 'mixed' (condições de vitória ligadas). */
+  readonly foci?: readonly AiFocus[];
 }
 
 const RES = RESOURCE_IDS;
@@ -160,7 +165,7 @@ export function playSimGame(ctx: EngineContext, opts: SimGameOptions): GameRecor
       opts.levels[i % opts.levels.length] ?? 'normal',
       `${opts.seed}:ai:${i}`,
       weights,
-      (opts.style ?? 'mixed') === 'mixed' ? focusRng.pick(AI_FOCI) : null,
+      (opts.style ?? 'mixed') === 'mixed' ? focusRng.pick(opts.foci?.length ? opts.foci : AI_FOCI) : null,
     ),
   );
   const produced = agents.map(zero);
@@ -196,6 +201,7 @@ export function playSimGame(ctx: EngineContext, opts: SimGameOptions): GameRecor
   const coalSpent = Array.from({ length: n }, () => 0);
 
   let state: GameState = createGame(ctx, options);
+  const collector = new MetricsCollector(ctx);
   const hazardsPresent = [
     ...new Set(
       Object.values(state.hexes)
@@ -215,6 +221,7 @@ export function playSimGame(ctx: EngineContext, opts: SimGameOptions): GameRecor
     const action = chooseAction(ctx, state, agent);
     const pendingTrade = state.pendingTrade;
     const { state: next, events } = applyAction(ctx, state, action);
+    collector.onAction(state, action, next, events);
     events.forEach((e, idx) => {
       // Fluxos da rodada corrente (antes de roundEnded; depois de roundStarted é a próxima).
       const f = 'player' in e && typeof e.player === 'number' ? cur[e.player] : undefined;
@@ -405,6 +412,7 @@ export function playSimGame(ctx: EngineContext, opts: SimGameOptions): GameRecor
     treatiesSigned,
     treatiesTriggered,
     pactsBroken,
+    metrics: collector.finish(state),
   };
 }
 

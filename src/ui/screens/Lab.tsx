@@ -2,6 +2,8 @@
  * Laboratório (UX_SPEC 2.18, PROMPTS Fase 5): edita balance.json ao vivo, liga camadas e
  * roda N partidas IA × IA em Web Workers, com barra de progresso, gráficos e CSV.
  */
+import { WINCONS } from '../../data/gameRules';
+import { MetricsPanel } from '../lab/MetricsPanel';
 import { useTranslation } from 'react-i18next';
 import type { TFunction } from 'i18next';
 import { AI_FOCI } from '../../ai/types';
@@ -136,6 +138,26 @@ function SimControls() {
           </label>
         ))}
         <p className={styles.note}>{t('lab.layersNote')}</p>
+      </fieldset>
+      <fieldset className={styles.layers}>
+        <legend className={hud.label}>{t('lab.wincons')}</legend>
+        {WINCONS.map((w) => {
+          const on = !config.wincons || config.wincons.includes(w);
+          const last = on && (config.wincons?.length ?? WINCONS.length) === 1;
+          return (
+            <label key={w} className={styles.check}>
+              <input
+                type="checkbox"
+                checked={on}
+                disabled={last}
+                onChange={(e) => useLab.getState().setWincon(w, e.target.checked)}
+                data-testid={`lab-win-${w}`}
+              />
+              {trackName(t, w)}
+            </label>
+          );
+        })}
+        <p className={styles.note}>{t('lab.winconsNote')}</p>
       </fieldset>
       {errors.length > 0 && (
         <div className={styles.errors} role="alert">
@@ -386,6 +408,7 @@ function Results({ s }: { s: SimSummary }) {
           </table>
         </figure>
       </div>
+      <MetricsPanel records={records} />
     </section>
   );
 }

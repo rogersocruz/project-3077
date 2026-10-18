@@ -363,3 +363,30 @@
 .wide {
   grid-column: span 2;
 }
+
+/* Métricas detalhadas. */
+.metrics {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px solid var(--frame-700);
+}
+
+.curves {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 12px;
+  padding: 10px;
+  border-radius: 4px;
+  background: var(--paper-100);
+  color: var(--ink-900);
+}
+
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  font-size: 12px;
+}

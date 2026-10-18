@@ -7,6 +7,8 @@
  * --balance: arquivo de override (balance/overrides/*.json). Com chaves "*.json" é um patch de
  *   vários arquivos (como --override); senão é um patch (parcial ou completo) do balance.json.
  *   data/ nunca muda.
+ * --wincons coal,gold,expansion: só essas condições de vitória (recursos, expansion, tribe);
+ *   --no-wincons food,stone: todas menos essas. Eliminação e limite de rodadas valem sempre.
  * --rotate: o primeiro nível gira de assento a cada partida (ex.: --level investor,normal,normal,normal).
  * --play-to-limit: laboratório — ninguém vence antes do limite de rodadas (calibração).
  * Roda N partidas IA × IA sem renderização, com seeds sequenciais, em paralelo
@@ -19,7 +21,16 @@ import { isAiLevel, type AiLevel } from '../src/ai/types';
 import { cardsCsv, gamesCsv, summarize, summaryText } from '../src/sim/report';
 import { trajectoryCsv, trajectoryTable } from '../src/sim/trajectory';
 import { defaultWorkers, runBatch } from './sim-lib';
-import { DEFAULT_SIM, deckCardIds, SIM_LAYERS, simData, type SimConfig } from '../src/sim/run';
+import { WINCONS } from '../src/data/gameRules';
+import { economyCsv, metricsText, summarizeMetrics } from '../src/sim/metricsReport';
+import {
+  configOverride,
+  DEFAULT_SIM,
+  deckCardIds,
+  SIM_LAYERS,
+  simData,
+  type SimConfig,
+} from '../src/sim/run';
 import type { LayerName } from '../src/engine/state';
 
 function fail(msg: string): never {
@@ -62,6 +73,20 @@ function parseArgs(argv: readonly string[]): { config: SimConfig; workers: numbe
       layers[l as LayerName] = true;
     }
   }
+  // Condições de vitória: --wincons coal,gold,expansion (só essas) ou --no-wincons food,stone.
+  const list = (k: string) =>
+    (args.get(k) ?? '')
+      .split(',')
+      .map((x) => x.trim())
+      .filter(Boolean);
+  let wincons: string[] | undefined;
+  if (args.has('wincons')) wincons = list('wincons');
+  if (args.has('no-wincons')) wincons = WINCONS.filter((w) => !list('no-wincons').includes(w));
+  if (wincons) {
+    const bad = wincons.filter((w) => !(WINCONS as readonly string[]).includes(w));
+    if (bad.length) fail(`condição desconhecida: ${bad.join(', ')} (use ${WINCONS.join(', ')})`);
+    if (wincons.length === 0) fail('--wincons precisa de ao menos uma condição');
+  }
   const players = int('players', DEFAULT_SIM.players, 3);
   if (players > 6) fail('--players vai de 3 a 6');
   const read = (p: string) => JSON.parse(readFileSync(resolve(p), 'utf8')) as Record<string, unknown>;
@@ -89,6 +114,7 @@ function parseArgs(argv: readonly string[]): { config: SimConfig; workers: numbe
       ...(balance === undefined ? {} : { balance }),
       ...(override === undefined ? {} : { override }),
       ...(args.has('rotate') ? { rotate: true } : {}),
+      ...(wincons ? { wincons } : {}),
       ...(args.has('play-to-limit') ? { playToRoundLimit: true } : {}),
     },
     workers: int('workers', defaultWorkers(), 1),
@@ -97,7 +123,7 @@ function parseArgs(argv: readonly string[]): { config: SimConfig; workers: numbe
 }
 
 const { config, workers, out } = parseArgs(process.argv.slice(2));
-const data = simData(config.balance, config.override); // falha cedo com dado inválido
+const data = simData(config.balance, configOverride(config)); // falha cedo com dado inválido
 
 const progress = (done: number) => {
   if (!process.stdout.isTTY) return;
@@ -113,10 +139,11 @@ const header =
   `Simulação: ${config.games} partidas · ${config.players} jogadores · seeds ${config.seed}–${config.seed + config.games - 1}` +
   ` · IA ${config.levels.join(',')} (${config.style === 'mixed' ? 'rotas sorteadas' : 'sem foco'}) · camadas: economia${Object.keys(config.layers).length ? ', ' + Object.keys(config.layers).join(', ') : ''}` +
   `${config.longMap ? ' · mapa longo' : ''}${config.balance ? ' · balance alternativo' : ''}` +
-  `${config.override ? ' · override' : ''}${config.rotate ? ' · níveis em rodízio' : ''}` +
+  `${config.override ? ' · override' : ''}${config.rotate ? ' · níveis em rodízio' : ''}${config.wincons ? ` · vitória: ${config.wincons.join(', ')}` : ''}` +
   `${config.playToRoundLimit ? ' · até o limite de rodadas' : ''}\n` +
   `Tempo real: ${(wall / 1000).toFixed(1)} s com ${used} workers`;
-const text = summaryText(summary, header);
+const metrics = summarizeMetrics(records);
+const text = summaryText(summary, header) + (metrics ? '\n' + metricsText(metrics) : '');
 
 mkdirSync(out, { recursive: true });
 writeFileSync(join(out, 'games.csv'), gamesCsv(records));
@@ -124,5 +151,11 @@ writeFileSync(join(out, 'cards.csv'), cardsCsv(summary));
 writeFileSync(join(out, 'summary.json'), JSON.stringify({ config, wallMs: wall, summary }, null, 2));
 writeFileSync(join(out, 'summary.txt'), text + '\n');
 writeFileSync(join(out, 'trajectories.csv'), trajectoryCsv(trajectoryTable(records)));
+if (metrics) {
+  writeFileSync(join(out, 'metrics.json'), JSON.stringify(metrics, null, 2));
+  writeFileSync(join(out, 'economy.csv'), economyCsv(metrics));
+}
 console.log(text);
-console.log(`\nRelatório em ${out}/ (games.csv, cards.csv, trajectories.csv, summary.json, summary.txt)`);
+console.log(
+  `\nRelatório em ${out}/ (games.csv, cards.csv, trajectories.csv, economy.csv, metrics.json, summary.json, summary.txt)`,
+);

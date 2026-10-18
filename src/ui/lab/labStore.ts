@@ -2,6 +2,7 @@
  * Estado do Laboratório (UX_SPEC 2.18): rascunho do balance.json (só na memória e no
  * navegador, nunca no arquivo), configuração do lote e o resultado da última simulação.
  */
+import { WINCONS } from '../../data/gameRules';
 import { create } from 'zustand';
 import type { AiLevel } from '../../ai';
 import { RAW_DATA } from '../../data';
@@ -76,6 +77,8 @@ interface LabStore {
   restore(): void;
   setConfig(patch: Partial<Omit<SimConfig, 'balance'>>): void;
   setLayer(layer: LayerName, on: boolean): void;
+  /** Liga/desliga uma condição de vitória do lote (todas ligadas = sem restrição). */
+  setWincon(w: string, on: boolean): void;
   start(): void;
   stop(): void;
 }
@@ -104,6 +107,14 @@ export const useLab = create<LabStore>()((set, get) => ({
 
   setConfig: (patch) => set({ config: { ...get().config, ...patch } }),
 
+  setWincon: (w, on) => {
+    const cur = get().config.wincons ?? [...WINCONS];
+    const next = on ? [...new Set([...cur, w])] : cur.filter((x) => x !== w);
+    const all = WINCONS.every((x) => next.includes(x));
+    const { wincons: _drop, ...rest } = get().config;
+    void _drop;
+    set({ config: all ? rest : { ...rest, wincons: WINCONS.filter((x) => next.includes(x)) } });
+  },
   setLayer: (layer, on) =>
     set({ config: { ...get().config, layers: { ...get().config.layers, [layer]: on } } }),
 

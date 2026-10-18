@@ -10,6 +10,8 @@ import { createContext, type EngineContext } from '../engine/context';
 import { cardEnabled } from '../engine/effects/registry';
 import { DEFAULT_LAYERS, type LayerName, type RuleLayers } from '../engine/state';
 import { type GameRecord, playSimGame } from './game';
+import { disabledFrom, rulesOverride } from '../data/gameRules';
+import { AI_FOCI } from '../ai/types';
 
 export interface SimConfig {
   readonly games: number;
@@ -34,6 +36,20 @@ export interface SimConfig {
   readonly rotate?: boolean;
   /** Laboratório: sem vitória antes do limite de rodadas (calibração). */
   readonly playToRoundLimit?: boolean;
+  /**
+   * Condições de vitória ligadas (recursos, 'expansion', 'tribe'); ausente = todas. As
+   * desligadas viram limiar inalcançável (data/gameRules.ts) e saem do sorteio de rota da IA.
+   * Eliminação total e limite de rodadas valem sempre.
+   */
+  readonly wincons?: readonly string[];
+}
+
+/** Override efetivo do lote: --override/--balance + condições de vitória desligadas. */
+export function configOverride(config: SimConfig): Record<string, unknown> | undefined {
+  const off = config.wincons ? disabledFrom(config.wincons) : [];
+  const rules = off.length ? rulesOverride({ disabledTracks: off }) : undefined;
+  if (!rules) return config.override;
+  return deepMerge(config.override ?? {}, rules) as Record<string, unknown>;
 }
 
 export const DEFAULT_SIM: SimConfig = {
@@ -106,7 +122,7 @@ export function simData(balance?: unknown, override?: Record<string, unknown>): 
 
 export function simContext(
   config: SimConfig,
-  data: GameData = simData(config.balance, config.override),
+  data: GameData = simData(config.balance, configOverride(config)),
 ): EngineContext {
   return createContext(data, config.players, config.longMap);
 }
@@ -147,6 +163,7 @@ export function runSeeds(
       layers: config.layers,
       longMap: config.longMap,
       style: config.style,
+      ...(config.wincons ? { foci: AI_FOCI.filter((f) => config.wincons?.includes(f)) } : {}),
     });
     out.push(r);
     onGame?.(r);

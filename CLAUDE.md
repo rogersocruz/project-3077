@@ -101,6 +101,19 @@ npm run assets:check confere ícones, créditos, sha256 e licenças
 ## Estado atual
 - Fase concluída: 10 — Menus, configurações, save e áudio
 - Próxima fase: 11 — Tutorial, diálogos e Codex
+- Simulação ampliada (pedido do usuário, depois da Fase 10):
+  - Condições de vitória selecionáveis: CLI `--wincons coal,gold,expansion` ou `--no-wincons
+    food,stone` (também no `sim:balance`), Laboratório com caixas "Condições de vitória".
+    Desligada = limiar inalcançável via `data/gameRules.ts → rulesOverride` (o mesmo do setup
+    da partida) e fora do sorteio de rota da IA (`SimGameOptions.foci`); eliminação e limite de
+    rodadas valem sempre. `run.ts → configOverride` junta isso ao --override/--balance.
+  - Métricas detalhadas (`sim/metrics.ts` coleta, `sim/metricsReport.ts` agrega com IC):
+    ritmo (rodada em que alguém passa de 50%/80%, trocas de líder, margem 1º−2º, viradas),
+    curvas por rodada (estoque, renda, gasto, banca, exército, progresso; por recurso, facção
+    e assento → `economy.csv`), ações e decisões por tipo, ações que sobraram, construção (por
+    jogador, 1ª rodada, nível final), cartas por categoria, conflito (combates, vitória do
+    atacante, ataques à Vila) e matrizes por assento (trocas, tratados, sabotagens). Saem no
+    texto do CLI, em `metrics.json`/`economy.csv` e no painel "Métricas detalhadas" do Laboratório.
 - Casca do jogo (Fase 10):
   - Telas: splash (`ui/screens/Splash.tsx`, 3 s, pulável, 1×/sessão; o Playwright pula —
     `?splash=1` força), menu (`Home.tsx`: mesa 3D da vitrine em órbita ao fundo —
