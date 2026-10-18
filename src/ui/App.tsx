@@ -14,6 +14,7 @@ import { useApplySettings } from './useApplySettings';
 // three.js e a cena só baixam quando a mesa abre.
 const TableView = lazy(() => import('./screens/TableView').then((m) => ({ default: m.TableView })));
 const GameScreen = lazy(() => import('./screens/GameScreen').then((m) => ({ default: m.GameScreen })));
+const Collection = lazy(() => import('./screens/Collection').then((m) => ({ default: m.Collection })));
 const Lab = lazy(() => import('./screens/Lab').then((m) => ({ default: m.Lab })));
 const CardGallery = lazy(() => import('./screens/CardGallery').then((m) => ({ default: m.CardGallery })));
 
@@ -82,6 +83,12 @@ function Screen({ view }: { view: ReturnType<typeof useNav.getState>['view'] }) 
       return <SettingsScreen />;
     case 'load':
       return <LoadScreen />;
+    case 'collection':
+      return (
+        <Suspense fallback={null}>
+          <Collection />
+        </Suspense>
+      );
     default:
       return (
         <>

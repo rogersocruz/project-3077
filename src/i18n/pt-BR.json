@@ -26,7 +26,8 @@
     "version": "Regras v{{version}}",
     "daily": "Desafio diário — em breve",
     "language": "Idioma",
-    "menu": "Menu principal"
+    "menu": "Menu principal",
+    "collection": "Coleção"
   },
   "resources": {
     "food": "Comida",
@@ -1304,5 +1305,166 @@
     "horde": "rugido da horda",
     "guardian": "coro do Guardião",
     "victory": "fanfarra"
+  },
+  "collection": {
+    "title": "Coleção",
+    "search": "Buscar…",
+    "tab": {
+      "story": "História",
+      "factions": "Facções",
+      "resources": "Recursos",
+      "terrain": "Terrenos",
+      "structures": "Construções",
+      "cards": "Cartas",
+      "events": "Eventos",
+      "showcase": "Vitrine 3D"
+    },
+    "story": {
+      "premiseTitle": "Ano 3077",
+      "premise": "Um planeta com características semelhantes à Terra é encontrado. Seis grupos independentes, sem autoridade central, pousam em regiões diferentes e correm para explorar, extrair e dominar seus recursos — negociando, sabotando e guerreando entre si.",
+      "axesTitle": "Os quatro eixos do jogo",
+      "axis": {
+        "territory": "Território",
+        "reach": "Alcance e informação",
+        "negotiation": "Negociação",
+        "cards": "Interação por cartas"
+      },
+      "axisText": {
+        "territory": "ocupação, limite de 3 espaços por hex, construção por tropa, tarifa de fronteira",
+        "reach": "raio de construção, sondagem, Drone, Posto de Observação, subsolo oculto",
+        "negotiation": "câmbio livre, banca como piso e teto, tratados SE/ENTÃO, pactos",
+        "cards": "entrega no fim do turno, sabotagem, permanentes roubáveis"
+      },
+      "narratorTitle": "O narrador",
+      "when": {
+        "opening": "Abertura",
+        "firstRound": "Primeira rodada",
+        "seismic": "Evento sísmico",
+        "economic": "Evento econômico",
+        "horde": "Horda",
+        "hoard": "Vitória por acúmulo",
+        "expansion": "Vitória por expansão",
+        "tribe": "Vitória por alvo de tribo",
+        "elimination": "Eliminação"
+      },
+      "line": {
+        "opening": "Ano 3077. Um planeta azul aparece nos registros de uma sonda esquecida. Seis expedições partem antes que alguém consiga reivindicá-lo. Nenhuma pretende dividir.",
+        "firstRound": "As cápsulas tocaram o solo. O que vocês constroem hoje decide quem escreve o nome deste mundo.",
+        "seismic": "O planeta lembra a todos que estava aqui primeiro.",
+        "economic": "Os preços sobem quando a confiança desce.",
+        "horde": "Algo vivia nas ruínas. Agora sabe que vocês chegaram.",
+        "hoard": "{{faction}} não conquistou o planeta. Comprou.",
+        "expansion": "Onde se olha, há uma bandeira de {{faction}}.",
+        "tribe": "Uma rivalidade antiga terminou do jeito que começou.",
+        "elimination": "A Vila de {{faction}} cai em silêncio. O planeta não percebe."
+      },
+      "someFaction": "[facção]"
+    },
+    "advisor": "Conselheiro(a)",
+    "advisorLine": {
+      "revolutionaries": "“Fazer negócio com acionista? Prefiro passar fome.”",
+      "government": "“Protocolo 7-B registrado. Que conste em ata.”",
+      "helix": "“Sua oferta tem margem negativa para nós. Ajuste em 2 Ferro.”",
+      "vantage": "“Uma estrutura anterior a nós. Fascinante. E lucrativa.”",
+      "pirates": "“Bela tecnologia. Ficou melhor do meu lado da mesa.”",
+      "natives": "“Ela se mexe porque vocês pesam demais sobre ela.”"
+    },
+    "value": "Valor base",
+    "bank": "Banca",
+    "bankPrices": "vende a {{sell}} · compra a {{buy}}",
+    "threshold": "Limiar de vitória",
+    "use": "Uso exclusivo",
+    "surfaces": "Superfícies",
+    "produces": "Produz",
+    "buildOn": "Onde constrói",
+    "moveCost": "Movimento",
+    "food": "{{n}} Comida por tropa",
+    "subsoil": "Subsolo",
+    "subsoilNote": "O verso do tile: revelado só por Sondar, e só para quem sondou. Minas extraem dele.",
+    "sites": "Sítios",
+    "site": {
+      "temple": "Escavar compra 2 cartas do Tesouro; depois vira Vazio. Pode despertar um Guardião (força 4).",
+      "ruin": "Escavar compra 1 carta do Tesouro e dá um bônus permanente: +1 compra por turno e acesso ao baralho n3. A Horda emerge daqui."
+    },
+    "excavateCost": "Custo de escavar",
+    "hazards": "Hazards (únicos no planeta)",
+    "bonus": "Bônus",
+    "trigger": "Gatilho",
+    "damage": "Dano",
+    "hazard": {
+      "volcano": {
+        "bonus": "Produz Carvão sem Mina",
+        "damage": "Cinzas: hex e adjacentes não produzem por 2 rodadas"
+      },
+      "geyser": {
+        "bonus": "Minas adjacentes operam sem Carvão",
+        "damage": "Seca por 3 rodadas"
+      },
+      "acid_swamp": {
+        "bonus": "Comida em dobro",
+        "damage": "Contamina; 2 ações para limpar"
+      },
+      "wind_canyon": {
+        "bonus": "Drones que partem daqui são gratuitos",
+        "damage": "Nenhum Drone do dono pode ser usado"
+      },
+      "thin_crust": {
+        "bonus": "Sondagem grátis, Mina mais barata, multiplicador +1",
+        "damage": "Mina colapsa, subsolo selado por 3 rodadas"
+      },
+      "free_port": {
+        "bonus": "Banca sem spread; comércio com qualquer jogador ignora fronteira",
+        "damage": "Fecha por 3 rodadas, spread do dono dobra"
+      },
+      "magnetic_anomaly": {
+        "bonus": "Sabotagem não pode alvejar este hex nem adjacentes",
+        "damage": "Inverte: hex e adjacentes recebem cartas com efeito dobrado"
+      }
+    },
+    "rarity": "Raridade",
+    "rarityN": "r{{n}}",
+    "slots": "Espaços no hex",
+    "anyRevealed": "qualquer hex revelado",
+    "level": "Nível",
+    "cost": "Custo",
+    "effect": "Efeito",
+    "attr": {
+      "yield": "produção",
+      "multiplier": "multiplicador",
+      "range": "raio",
+      "outpostLimit": "limite de Postos",
+      "spreadReduction": "spread −",
+      "defense": "defesa",
+      "defenseAdjacent": "defesa adjacente",
+      "unlocksUpgradeTo": "libera melhorar até nível",
+      "drawTable": "tabela de compra",
+      "upgradeDiscount": "desconto ao melhorar",
+      "handLimitBonus": "limite de mão +",
+      "armyCap": "tropas"
+    },
+    "deck": "Baralho",
+    "deckOpt": {
+      "all": "Todos",
+      "n1": "n1",
+      "n2": "n2",
+      "n3": "n3",
+      "treasure": "Tesouro"
+    },
+    "valence": "Tipo",
+    "valenceOpt": {
+      "all": "Todos",
+      "benefit": "Benefício",
+      "sabotage": "Sabotagem",
+      "information": "Informação",
+      "logistics": "Logística"
+    },
+    "count": "{{n}} cartas",
+    "copies": "{{n}} cópia(s) no baralho",
+    "playersN": "{{n}} jogadores",
+    "orbit": "Órbita automática",
+    "showcaseHint": "Arraste com o botão direito para girar · roda para zoom",
+    "buildToken": {
+      "surveyedSubsoil": "subsolo sondado (com recurso)"
+    }
   }
 }

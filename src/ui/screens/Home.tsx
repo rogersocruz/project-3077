@@ -64,6 +64,14 @@ export function Home() {
           <button type="button" className={hud.btn} onClick={() => go('load')} data-testid="open-load">
             {t('home.load')}
           </button>
+          <button
+            type="button"
+            className={hud.btn}
+            onClick={() => go('collection')}
+            data-testid="open-collection"
+          >
+            {t('home.collection')}
+          </button>
           <button type="button" className={hud.btn} onClick={() => go('lab')} data-testid="open-lab">
             {t('home.lab')}
           </button>

@@ -4,7 +4,8 @@
  */
 import { create } from 'zustand';
 
-export type View = 'home' | 'table' | 'newGame' | 'game' | 'cards' | 'lab' | 'credits' | 'settings' | 'load';
+export type View =
+  'home' | 'table' | 'newGame' | 'game' | 'cards' | 'lab' | 'credits' | 'settings' | 'load' | 'collection';
 
 const VIEWS: readonly View[] = [
   'home',
@@ -16,6 +17,7 @@ const VIEWS: readonly View[] = [
   'credits',
   'settings',
   'load',
+  'collection',
 ];
 
 function viewOf(search: string): View {

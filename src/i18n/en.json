@@ -26,7 +26,8 @@
     "version": "Rules v{{version}}",
     "daily": "Daily challenge — coming soon",
     "language": "Language",
-    "menu": "Main menu"
+    "menu": "Main menu",
+    "collection": "Collection"
   },
   "resources": {
     "food": "Food",
@@ -1304,5 +1305,166 @@
     "horde": "horde roar",
     "guardian": "Guardian choir",
     "victory": "fanfare"
+  },
+  "collection": {
+    "title": "Collection",
+    "search": "Search…",
+    "tab": {
+      "story": "Story",
+      "factions": "Factions",
+      "resources": "Resources",
+      "terrain": "Terrain",
+      "structures": "Structures",
+      "cards": "Cards",
+      "events": "Events",
+      "showcase": "3D showcase"
+    },
+    "story": {
+      "premiseTitle": "Year 3077",
+      "premise": "An Earth-like planet is found. Six independent groups, with no central authority, land in different regions and race to explore, extract and dominate its resources — negotiating, sabotaging and fighting each other.",
+      "axesTitle": "The four axes of the game",
+      "axis": {
+        "territory": "Territory",
+        "reach": "Reach and information",
+        "negotiation": "Negotiation",
+        "cards": "Card interaction"
+      },
+      "axisText": {
+        "territory": "occupation, 3-slot hex limit, building by troop, border tariff",
+        "reach": "build radius, survey, Drone, Outpost, hidden subsoil",
+        "negotiation": "free exchange, bank as floor and ceiling, IF/THEN treaties, pacts",
+        "cards": "end-of-turn delivery, sabotage, stealable permanents"
+      },
+      "narratorTitle": "The narrator",
+      "when": {
+        "opening": "Opening",
+        "firstRound": "First round",
+        "seismic": "Seismic event",
+        "economic": "Economic event",
+        "horde": "Horde",
+        "hoard": "Hoard victory",
+        "expansion": "Expansion victory",
+        "tribe": "Tribe target victory",
+        "elimination": "Elimination"
+      },
+      "line": {
+        "opening": "Year 3077. A blue planet shows up in the logs of a forgotten probe. Six expeditions leave before anyone can claim it. None intends to share.",
+        "firstRound": "The pods touched down. What you build today decides who writes the name of this world.",
+        "seismic": "The planet reminds everyone it was here first.",
+        "economic": "Prices rise when trust falls.",
+        "horde": "Something lived in the ruins. Now it knows you have arrived.",
+        "hoard": "{{faction}} did not conquer the planet. It bought it.",
+        "expansion": "Wherever you look, there is a {{faction}} flag.",
+        "tribe": "An old rivalry ended the way it began.",
+        "elimination": "The Village of {{faction}} falls silent. The planet does not notice."
+      },
+      "someFaction": "[faction]"
+    },
+    "advisor": "Advisor",
+    "advisorLine": {
+      "revolutionaries": "“Do business with a shareholder? I'd rather starve.”",
+      "government": "“Protocol 7-B recorded. Let it be noted in the minutes.”",
+      "helix": "“Your offer has a negative margin for us. Adjust by 2 Iron.”",
+      "vantage": "“A structure older than us. Fascinating. And profitable.”",
+      "pirates": "“Nice tech. It looks better on my side of the table.”",
+      "natives": "“She moves because you weigh too much on her.”"
+    },
+    "value": "Base value",
+    "bank": "Bank",
+    "bankPrices": "buys at {{sell}} · sells at {{buy}}",
+    "threshold": "Victory threshold",
+    "use": "Exclusive use",
+    "surfaces": "Surfaces",
+    "produces": "Produces",
+    "buildOn": "Built on",
+    "moveCost": "Movement",
+    "food": "{{n}} Food per troop",
+    "subsoil": "Subsoil",
+    "subsoilNote": "The back of the tile: revealed only by Survey, and only to the surveyor. Mines extract from it.",
+    "sites": "Sites",
+    "site": {
+      "temple": "Excavate draws 2 Treasure cards; then it becomes Empty. May awaken a Guardian (strength 4).",
+      "ruin": "Excavate draws 1 Treasure card and gives a permanent bonus: +1 draw per turn and access to the n3 deck. The Horde emerges here."
+    },
+    "excavateCost": "Excavation cost",
+    "hazards": "Hazards (unique on the planet)",
+    "bonus": "Bonus",
+    "trigger": "Trigger",
+    "damage": "Damage",
+    "hazard": {
+      "volcano": {
+        "bonus": "Produces Coal without a Mine",
+        "damage": "Ash: hex and neighbors produce nothing for 2 rounds"
+      },
+      "geyser": {
+        "bonus": "Adjacent Mines run without Coal",
+        "damage": "Dries up for 3 rounds"
+      },
+      "acid_swamp": {
+        "bonus": "Double Food",
+        "damage": "Contaminates; 2 actions to clean"
+      },
+      "wind_canyon": {
+        "bonus": "Drones leaving from here are free",
+        "damage": "None of the owner's Drones can be used"
+      },
+      "thin_crust": {
+        "bonus": "Free survey, cheaper Mine, multiplier +1",
+        "damage": "Mine collapses, subsoil sealed for 3 rounds"
+      },
+      "free_port": {
+        "bonus": "Bank without spread; trade with any player ignores borders",
+        "damage": "Closes for 3 rounds, owner's spread doubles"
+      },
+      "magnetic_anomaly": {
+        "bonus": "Sabotage cannot target this hex or neighbors",
+        "damage": "Inverts: hex and neighbors receive cards with doubled effect"
+      }
+    },
+    "rarity": "Rarity",
+    "rarityN": "r{{n}}",
+    "slots": "Hex slots",
+    "anyRevealed": "any revealed hex",
+    "level": "Level",
+    "cost": "Cost",
+    "effect": "Effect",
+    "attr": {
+      "yield": "yield",
+      "multiplier": "multiplier",
+      "range": "range",
+      "outpostLimit": "Outpost limit",
+      "spreadReduction": "spread −",
+      "defense": "defense",
+      "defenseAdjacent": "adjacent defense",
+      "unlocksUpgradeTo": "unlocks upgrades to level",
+      "drawTable": "draw table",
+      "upgradeDiscount": "upgrade discount",
+      "handLimitBonus": "hand limit +",
+      "armyCap": "troops"
+    },
+    "deck": "Deck",
+    "deckOpt": {
+      "all": "All",
+      "n1": "n1",
+      "n2": "n2",
+      "n3": "n3",
+      "treasure": "Treasure"
+    },
+    "valence": "Type",
+    "valenceOpt": {
+      "all": "All",
+      "benefit": "Benefit",
+      "sabotage": "Sabotage",
+      "information": "Information",
+      "logistics": "Logistics"
+    },
+    "count": "{{n}} cards",
+    "copies": "{{n}} cop(ies) in the deck",
+    "playersN": "{{n}} players",
+    "orbit": "Auto orbit",
+    "showcaseHint": "Right-drag to rotate · wheel to zoom",
+    "buildToken": {
+      "surveyedSubsoil": "surveyed subsoil (with a resource)"
+    }
   }
 }

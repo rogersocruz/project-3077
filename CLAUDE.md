@@ -101,6 +101,14 @@ npm run assets:check confere ícones, créditos, sha256 e licenças
 ## Estado atual
 - Fase concluída: 10 — Menus, configurações, save e áudio
 - Próxima fase: 11 — Tutorial, diálogos e Codex
+- Coleção (pedido do usuário; adianta o Codex da Fase 11): menu → Coleção ou `?view=collection`
+  (`&tab=story|factions|resources|terrain|structures|cards|events|showcase`). Abas História
+  (premissa do GDD 1 e falas do narrador da UX_SPEC 7), Facções (habilidade, lore, conselheiro),
+  Recursos (valor, banca, limiar), Terrenos (superfícies, subsolo, sítios, hazards), Construções
+  (níveis com custo/efeito e prévia 3D girando na cor da facção — `ui/collection/StructurePreview.tsx`),
+  Cartas (componente do jogo, filtros por baralho/tipo, busca, zoom), Eventos e Vitrine 3D
+  (`ui/collection/Showcase.tsx`). Busca em todas as abas. Teste: `e2e/collection.spec.ts`.
+  Falta para o Codex da Fase 11: regras com busca e leitura por leitor de tela.
 - Simulação ampliada (pedido do usuário, depois da Fase 10):
   - Condições de vitória selecionáveis: CLI `--wincons coal,gold,expansion` ou `--no-wincons
     food,stone` (também no `sim:balance`), Laboratório com caixas "Condições de vitória".
