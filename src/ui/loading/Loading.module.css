@@ -1,0 +1,52 @@
+.loading {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  background: radial-gradient(circle at 50% 45%, var(--frame-800), var(--frame-900) 70%);
+}
+
+.rosette {
+  width: min(280px, 60vw);
+}
+
+.tile {
+  opacity: 0;
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: fall 0.45s cubic-bezier(0.3, 1.4, 0.5, 1) forwards;
+}
+
+@keyframes fall {
+  from {
+    opacity: 0;
+    transform: translateY(-90px) rotate(-30deg) scale(0.6);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) rotate(0) scale(1);
+  }
+}
+
+.title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--paper-100);
+}
+
+.tip {
+  position: absolute;
+  bottom: 28px;
+  max-width: min(640px, 90vw);
+  margin: 0;
+  text-align: center;
+  color: var(--frame-edge);
+  font-size: 14px;
+}

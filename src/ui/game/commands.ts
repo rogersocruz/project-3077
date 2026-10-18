@@ -115,7 +115,8 @@ export function actOnHex(key: string): boolean {
   // Fase 7: destino com inimigo → previsão de combate antes de confirmar.
   if (action.type === 'move') {
     const dest = state.hexes[action.to];
-    if (dest && (dest.guardian !== null || dest.troops.some((t) => t.owner !== action.player))) {
+    const preview = useSettings.getState().gameplay.combatPreview;
+    if (preview && dest && (dest.guardian !== null || dest.troops.some((t) => t.owner !== action.player))) {
       ui.open({ kind: 'movePreview', action });
       return true;
     }
@@ -170,7 +171,25 @@ export function endPhase(): void {
     ui.open({ kind: 'discard' });
     return;
   }
+  // UX_SPEC 3.3: encerrar as Ações com ações sobrando pede confirmação.
+  if (
+    useSettings.getState().gameplay.confirmIrreversible &&
+    state.phase === 'actions' &&
+    state.actionsLeft > 0 &&
+    ui.modal?.kind !== 'confirmEnd'
+  ) {
+    ui.open({ kind: 'confirmEnd' });
+    return;
+  }
   if (perform({ type: 'endPhase', player })) ui.setArmed(NOT_ARMED);
+}
+
+/** Confirmação do encerramento com ações sobrando. */
+export function confirmEndPhase(): void {
+  const { state } = useSession.getState();
+  const ui = useUi.getState();
+  ui.open(null);
+  if (state && perform({ type: 'endPhase', player: state.activePlayer })) ui.setArmed(NOT_ARMED);
 }
 
 export function undoLast(): void {

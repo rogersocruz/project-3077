@@ -8,11 +8,13 @@
  * próximo jogador ver a própria cascata.
  */
 import gsap from 'gsap';
+import { soundsForCue, soundsForEvents } from '../audio/map';
+import type { SoundId } from '../audio/sounds';
 import { RESOURCE_IDS, type ResourceId } from '../data/schemas';
 import type { EngineContext } from '../engine/context';
 import { decider } from '../engine/legal';
 import { amountTotal, findStructure, type ResourceAmounts } from '../engine/queries';
-import type { CardTarget, GameState, PlayerId, Resources } from '../engine/state';
+import type { CardTarget, GameState, PlayerId, Resources, TurnPhase } from '../engine/state';
 import { type FxAnchor, useFxStore } from '../render3d/fxStore';
 import { useSceneStore } from '../render3d/sceneStore';
 import { palette } from '../ui/theme/tokens';
@@ -30,7 +32,18 @@ export interface DirectorDeps {
   focusBoard(boardId: number): void;
   /** Quem está diante da tela (Espaço = "meu tabuleiro"). */
   setLocalPlayer(player: PlayerId): void;
+  /** UX_SPEC 3.3 "Avançar fases automáticas": desligado = pausa em cada fase automática. */
+  autoAdvance?(): boolean;
+  /** UX_SPEC 3.5: tremor de câmera nos eventos sísmicos. */
+  shake?(): void;
+  /** UX_SPEC 6: toca um som (audio/). */
+  sound?(id: SoundId): void;
+  /** ART_DIRECTION 9: camada tensa da música (combate, evento perigoso). */
+  tension?(): void;
 }
+
+/** Fases automáticas em que "Avançar fases automáticas" desligado pausa. */
+const AUTO_PHASES: readonly TurnPhase[] = ['production', 'upkeep', 'combat'];
 
 type Job =
   { readonly kind: 'batch'; readonly batch: Batch } | { readonly kind: 'settle'; readonly state: GameState };
@@ -47,6 +60,7 @@ export class Director {
   /** Muda a cada reset: tudo que estava tocando para no próximo ponto de espera. */
   private epoch = 0;
   private releaseGate: (() => void) | null = null;
+  private releasePhase: (() => void) | null = null;
   private releaseIntel: (() => void) | null = null;
   private readonly active = new Map<gsap.core.Timeline, () => void>();
   private logId = 1;
@@ -85,6 +99,8 @@ export class Director {
     this.active.clear();
     this.releaseGate?.();
     this.releaseGate = null;
+    this.releasePhase?.();
+    this.releasePhase = null;
     this.releaseIntel?.();
     this.releaseIntel = null;
     useFxStore.getState().clear();
@@ -113,6 +129,11 @@ export class Director {
   /** "Estou pronto" na tela de privacidade. */
   release(): void {
     this.releaseGate?.();
+  }
+
+  /** "Continuar" na pausa entre fases automáticas. */
+  continuePhase(): void {
+    this.releasePhase?.();
   }
 
   /** "Entendi" no relatório de carta de informação. */
@@ -158,6 +179,7 @@ export class Director {
     const ctx = this.ctx;
     if (!ctx) return;
     this.appendLog(b);
+    if (!this.instant) for (const id of soundsForEvents(b.events)) this.deps.sound?.(id);
     for (const cue of buildCues(ctx, b)) {
       if (epoch !== this.epoch) return;
       await this.playCue(cue, b, epoch);
@@ -293,6 +315,13 @@ export class Director {
   private async playCue(cue: Cue, b: Batch, epoch: number): Promise<void> {
     const ctx = this.ctx;
     if (!ctx) return;
+    if (!this.instant) {
+      for (const id of soundsForCue(cue)) this.deps.sound?.(id);
+      const danger =
+        cue.kind === 'combat' ||
+        (cue.kind === 'worldEvent' && ['seismic', 'thermal', 'horde'].includes(cue.category));
+      if (danger) this.deps.tension?.();
+    }
     switch (cue.kind) {
       case 'combat': {
         // UX_SPEC 2.13: painel com as barras de força; as baixas e o recuo vêm no estado novo.
@@ -322,6 +351,8 @@ export class Director {
         const color =
           palette.event[cue.category as keyof typeof palette.event]?.color ?? palette.accent.orange;
         useSceneStore.getState().setPulse(cue.hexes.length ? { keys: new Set(cue.hexes), color } : null);
+        // UX_SPEC 6: evento sísmico treme a câmera (desligável em acessibilidade).
+        if (cue.category === 'seismic' && !this.instant) this.deps.shake?.();
         if (this.instant) {
           useSceneStore.getState().setPulse(null);
           return;
@@ -363,6 +394,20 @@ export class Director {
 
       case 'phase':
         usePresentation.setState((s) => (s.turn ? { turn: { ...s.turn, phase: cue.phase } } : {}));
+        // Avançar fases automáticas desligado: a pessoa da vez confirma cada fase automática.
+        if (
+          this.deps.autoAdvance?.() === false &&
+          AUTO_PHASES.includes(cue.phase) &&
+          this.isHuman(cue.player) &&
+          !this.spectator
+        ) {
+          usePresentation.setState({ phaseHold: cue.phase });
+          this.syncBusy();
+          await new Promise<void>((resolve) => (this.releasePhase = resolve));
+          this.releasePhase = null;
+          usePresentation.setState({ phaseHold: null });
+          if (epoch !== this.epoch) return;
+        }
         if (cue.phase !== 'actions') await this.wait(T.phaseStep);
         return;
 

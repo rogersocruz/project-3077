@@ -55,11 +55,14 @@ export interface AdaptedPost extends PostSettings {
   fxaa: boolean;
 }
 
-export function adaptPost(post: PostSettings, tier: number): AdaptedPost {
+/**
+ * `fxaaOnly` (antisserrilhado FXAA escolhido nas configurações): FXAA em todos os degraus.
+ */
+export function adaptPost(post: PostSettings, tier: number, fxaaOnly = false): AdaptedPost {
   return {
     tiltShift: post.tiltShift && tier < 1,
-    smaa: post.smaa && tier < 2,
-    fxaa: post.smaa && tier >= 2,
+    smaa: post.smaa && !fxaaOnly && tier < 2,
+    fxaa: fxaaOnly || (post.smaa && tier >= 2),
     bloom: post.bloom && tier < 3,
     vignette: post.vignette,
   };

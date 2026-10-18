@@ -1377,3 +1377,21 @@
   display: inline-block;
   line-height: 0;
 }
+
+/* Avançar fases automáticas desligado: "Continuar" no meio da mesa. */
+.phaseHold {
+  position: fixed;
+  left: 50%;
+  top: 18%;
+  transform: translateX(-50%);
+  z-index: 45;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 10px 16px;
+}
+
+/* Salvar/carregar e configurações na pausa. */
+.subModal {
+  width: min(820px, 100%);
+}

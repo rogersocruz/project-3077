@@ -13,3 +13,43 @@ body {
   font-family: var(--font-body);
   -webkit-font-smoothing: antialiased;
 }
+
+/* ── Configurações de tela e acessibilidade (UX_SPEC 3.1, 3.5; ui/theme/accessibility.ts) ── */
+
+/* Escala da interface 80–150%: a página inteira (a cena 3D acompanha o tamanho do contêiner). */
+#root {
+  zoom: var(--ui-scale, 1);
+}
+
+/* Tamanho de texto: blocos de leitura (papel, registro, diálogos, cartas ampliadas). */
+p,
+li,
+td,
+th,
+label,
+figcaption {
+  zoom: var(--text-scale, 1);
+}
+
+/* Alto contraste: texto puro, bordas fortes, sem cinza de apoio. */
+:root[data-contrast='high'] {
+  --frame-edge: #ffffff;
+  --paper-300: #ffffff;
+  --ink-600: #000000;
+}
+
+:root[data-contrast='high'] body {
+  background: #000000;
+}
+
+:root[data-contrast='high'] button,
+:root[data-contrast='high'] select,
+:root[data-contrast='high'] input {
+  outline: 2px solid #ffffff;
+  outline-offset: -2px;
+}
+
+:root[data-contrast='high'] button:focus-visible,
+:root[data-contrast='high'] select:focus-visible {
+  outline: 3px solid var(--accent-orange);
+}

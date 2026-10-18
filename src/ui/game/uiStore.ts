@@ -21,7 +21,12 @@ export type Modal =
   /** Fase 8: construtor de tratado / tratados ativos. */
   | { readonly kind: 'treaty' }
   /** Fase 8: a ação rompe pactos (GDD 10, interpretação BB) — confirmar antes. */
-  | { readonly kind: 'breakPact'; readonly action: Action };
+  | { readonly kind: 'breakPact'; readonly action: Action }
+  /** Fase 10: encerrar as Ações com ações sobrando (confirmar ações irreversíveis). */
+  | { readonly kind: 'confirmEnd' }
+  /** Fase 10: salvar/carregar e configurações dentro da partida. */
+  | { readonly kind: 'saves'; readonly mode: 'save' | 'load' }
+  | { readonly kind: 'settings' };
 
 export interface Toast {
   readonly key: string;

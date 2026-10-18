@@ -3,6 +3,7 @@
  * se mexem. O diretor (src/anim) anima `item.p` com GSAP; aqui só se lê `p` a cada
  * quadro. Com "reduzir movimento", as translações viram fade (o diretor anima `fade`).
  */
+import { useSettings } from '../../settings';
 import { useFrame } from '@react-three/fiber';
 import { useEffect, useMemo, useRef } from 'react';
 import {
@@ -354,12 +355,14 @@ function StructureFx({ item, c }: { item: Extract<FxItem, { kind: 'structure' }>
   );
 }
 
-const SPARKS = 18;
+/** Faíscas por efeito conforme a configuração de partículas (UX_SPEC 3.1). */
+const SPARKS_BY: Record<'low' | 'normal' | 'high', number> = { low: 6, normal: 18, high: 36 };
 const sparkGeo = new IcosahedronGeometry(0.022, 0);
 
 function Sparks({ item, c }: { item: Extract<FxItem, { kind: 'sparks' }>; c: Ctx }) {
   const matrix = useSlotMatrix(item, c);
   const ref = useRef<InstancedMesh>(null);
+  const SPARKS = SPARKS_BY[useSettings((st) => st.render.particles)];
   const seeds = useMemo(() => {
     const rng = Rng.fromSeed(`sparks:${item.id}`);
     return Array.from({ length: SPARKS }, () => ({
@@ -367,7 +370,7 @@ function Sparks({ item, c }: { item: Extract<FxItem, { kind: 'sparks' }>; c: Ctx
       v: 0.5 + rng.next() * 0.6,
       up: 1.1 + rng.next() * 0.9,
     }));
-  }, [item.id]);
+  }, [item.id, SPARKS]);
   const m = useMemo(() => new Matrix4(), []);
   const p = useMemo(() => new Vector3(), []);
   const s = useMemo(() => new Vector3(), []);

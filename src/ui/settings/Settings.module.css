@@ -1,0 +1,110 @@
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-height: 0;
+}
+
+.tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 12px 16px;
+  overflow: auto;
+  max-height: 62vh;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 34px;
+  border-bottom: 1px solid color-mix(in srgb, var(--ink-600) 25%, transparent);
+}
+
+.label {
+  font-size: 14px;
+}
+
+.control {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.select {
+  font-size: 13px;
+  min-width: 160px;
+}
+
+.toggle {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--accent-orange);
+}
+
+.slider {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.slider input {
+  width: 160px;
+  accent-color: var(--accent-orange);
+}
+
+.value {
+  min-width: 46px;
+  text-align: right;
+  font-family: var(--font-numeric);
+}
+
+.sub {
+  margin: 14px 0 4px;
+  font-family: var(--font-display);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-size: 14px;
+}
+
+.keyCell {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+}
+
+.key {
+  min-width: 76px;
+  justify-content: center;
+}
+
+/* Tela de configurações (menu). */
+.screen {
+  min-height: 100vh;
+  display: grid;
+  place-items: start center;
+  padding: 32px 16px;
+}
+
+.page {
+  width: min(760px, 100%);
+  padding: 18px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.pageHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}

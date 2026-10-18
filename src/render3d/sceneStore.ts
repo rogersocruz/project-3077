@@ -34,6 +34,9 @@ interface SceneStore {
   /** Jogador deste dispositivo (Espaço = "meu tabuleiro"). */
   localPlayer: number;
   focus: FocusRequest | null;
+  /** Tremor de câmera (evento sísmico): muda a cada pedido. */
+  shakeNonce: number;
+  shake(): void;
   /** Fim de partida (UX_SPEC 2.16): órbita lenta em volta do foco. */
   orbit: boolean;
   setOrbit(on: boolean): void;
@@ -79,6 +82,8 @@ export const useSceneStore = create<SceneStore>()((set) => ({
     set({ selected });
     for (const l of listeners) l(selected);
   },
+  shakeNonce: 0,
+  shake: () => set((st) => ({ shakeNonce: st.shakeNonce + 1 })),
   orbit: false,
   setOrbit: (orbit) => set({ orbit }),
   requestFocus: (target, instant = false) => set({ focus: { target, instant, nonce: ++nonce } }),

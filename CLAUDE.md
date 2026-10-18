@@ -99,8 +99,47 @@ npm run assets:check confere ícones, créditos, sha256 e licenças
 - Se uma regra do GDD parecer contraditória, **pare e pergunte** — não invente.
 
 ## Estado atual
-- Fase concluída: 9 — Facções, vitória completa e fim de partida
-- Próxima fase: 10 — Menus, configurações, save e áudio
+- Fase concluída: 10 — Menus, configurações, save e áudio
+- Próxima fase: 11 — Tutorial, diálogos e Codex
+- Casca do jogo (Fase 10):
+  - Telas: splash (`ui/screens/Splash.tsx`, 3 s, pulável, 1×/sessão; o Playwright pula —
+    `?splash=1` força), menu (`Home.tsx`: mesa 3D da vitrine em órbita ao fundo —
+    `MenuBackdrop.tsx`; Continuar só com save automático; rodapé com versão e idioma), setup
+    completo (`NewGame.tsx`: assentos Humano/IA/Fechado, facção com habilidade e lore, presets
+    de camadas, condições de vitória, limite de rodadas, ações por turno, velocidade da IA,
+    regra do eliminado, prévia 2D da roseta, duração estimada), carregamento
+    (`ui/loading/LoadingScreen.tsx`, some com `data-scene-ready`), configurações
+    (`?view=settings` e modal da pausa) e carregar (`?view=load`).
+  - Regras da partida (decisão do usuário): `GameSetup.rules` → `rulesOverride` (params.ts) vira
+    override do balance.json só daquela partida (URL `apt`, `rl`, `off`), gravado no save.
+  - Configurações (`settings/index.ts`, UX_SPEC 3; tudo com efeito e teste): vídeo (tela
+    cheia, escala de renderização, limite de FPS — `FpsLimiter`, predefinições Baixa→Ultra,
+    detecção automática — `render3d/autoQuality.ts`, sombras, FXAA/SMAA/desligado, bloom,
+    profundidade de campo, objetos, partículas, escala da interface, FPS; resolução/VSync só
+    no app desktop), áudio (6 canais + silenciar sem foco), jogabilidade (velocidades,
+    confirmar encerrar com ações sobrando, avançar fases automáticas — o diretor para com
+    "Continuar", desfazer, dicas, previsão de combate, salvamento automático, idioma),
+    controles (sensibilidades, inverter eixos, câmera pelas bordas, **atalhos remapeáveis** com
+    aviso de conflito), acessibilidade (`ui/theme/accessibility.ts`: daltonismo com paleta
+    Okabe–Ito validada + formas/símbolos, alto contraste, tamanho de texto, reduzir movimento
+    que manda em `prefersReducedMotion`, tremor de câmera nos eventos sísmicos, legendas,
+    tempo ilimitado nos avisos).
+  - Save (`save/index.ts`, UX_SPEC 9): setup + log + checksum do estado; 10 espaços +
+    automático (por turno/rodada) em localStorage; exportar/importar JSON; carregar refaz pelo
+    log (`session.loadSave`) e avisa versão de regras diferente ou checksum divergente.
+  - Áudio (`src/audio/`, decisões do usuário): sintetizador próprio no formato do sfxr
+    (`sfxr.ts`, determinístico pelo RNG do projeto — sem o pacote jsfxr de licença ambígua),
+    35 sons em `sounds.ts` (todo momento da UX_SPEC 6 + interface), Howler por canal, mapa
+    pista→som no diretor (`map.ts`), trilha procedural em Web Audio (`music.ts`: menu,
+    exploração, camada tensa em combate/evento perigoso), legendas (`CaptionBar`),
+    `public/audio/audio-manifest.json` gerado por `npm run audio:manifest`.
+  - Testes: `audio/audio.test.ts`, `save/save.test.ts`, `settings/settings.test.ts`,
+    `e2e/shell.spec.ts` (salvar → nova página → carregar = estado idêntico; configurações com
+    efeito; atalho remapeado na partida; pausa entre fases; volume no som; legendas; capturas
+    `screenshots/phase10-*`).
+  - Fora da fase: partículas de poeira no menu, "seed do dia" (backlog), app desktop
+    (resolução, VSync, modo sem bordas — Fase 13), leitura de cartas por leitor de tela
+    (Fase 11 com o Codex).
 - Facções e encerramento (Fase 9):
   - Jogar: Nova partida (Facções ligado por padrão; facção por assento ou "Aleatória"; regra
     do eliminado) ou URL `factions=1&fac=pirates,random,…&elim=neutral`. Sem a camada, assento

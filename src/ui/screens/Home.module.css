@@ -1,12 +1,14 @@
 .screen {
+  position: relative;
   min-height: 100vh;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
   gap: 40px;
-  padding: 48px 24px;
+  padding: 48px clamp(16px, 6vw, 96px);
+  overflow: hidden;
   background:
     radial-gradient(ellipse at 30% 20%, var(--frame-700) 0%, transparent 55%),
     radial-gradient(ellipse at 70% 90%, var(--frame-800) 0%, transparent 60%), var(--frame-900);
@@ -38,7 +40,7 @@
   margin: 0;
   font-family: var(--font-display);
   font-weight: 700;
-  font-size: clamp(56px, 9vw, 132px);
+  font-size: clamp(48px, 5.4vw, 84px);
   line-height: 1;
   letter-spacing: 0.04em;
   text-transform: uppercase;
@@ -189,14 +191,69 @@
 
 .menu {
   display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
+  flex-direction: column;
+  align-items: stretch;
   gap: 10px;
-  margin-top: -16px;
 }
 
 .menuMain {
   min-width: 240px;
   min-height: 46px;
   font-size: 20px;
+}
+
+/* Menu sobre a mesa 3D (UX_SPEC 2.2). */
+.backdrop {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+.backdrop::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--frame-900) 85%, transparent) 0%,
+    transparent 60%
+  );
+}
+
+.column {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  width: min(460px, 100%);
+}
+
+.column .plate {
+  padding: 24px 28px 20px;
+}
+
+.footer {
+  position: absolute;
+  z-index: 1;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px clamp(16px, 6vw, 96px);
+  font-size: 13px;
+  color: var(--frame-edge);
+}
+
+.daily {
+  opacity: 0.7;
+}
+
+.versionNum {
+  font-family: var(--font-numeric);
+  font-weight: 700;
 }

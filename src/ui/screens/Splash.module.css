@@ -1,0 +1,90 @@
+.splash {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: grid;
+  place-items: center;
+  background: radial-gradient(circle at 50% 40%, var(--frame-800), var(--frame-900) 70%);
+  cursor: pointer;
+}
+
+.plate {
+  display: flex;
+  align-items: baseline;
+  gap: 18px;
+  padding: 26px 46px;
+  background: linear-gradient(180deg, var(--frame-700), var(--frame-800));
+  border: 2px solid var(--frame-edge);
+  box-shadow: 0 30px 60px rgb(0 0 0 / 0.55);
+  clip-path: polygon(
+    18px 0,
+    calc(100% - 18px) 0,
+    100% 18px,
+    100% calc(100% - 18px),
+    calc(100% - 18px) 100%,
+    18px 100%,
+    0 calc(100% - 18px),
+    0 18px
+  );
+}
+
+.drop {
+  animation: drop 0.5s cubic-bezier(0.3, 1.5, 0.5, 1) both;
+}
+
+@keyframes drop {
+  from {
+    transform: translateY(-60vh) scale(1.1);
+  }
+  to {
+    transform: translateY(0) scale(1);
+  }
+}
+
+.word {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(32px, 6vw, 64px);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--paper-100);
+}
+
+.number {
+  font-family: var(--font-numeric);
+  font-weight: 700;
+  font-size: clamp(40px, 8vw, 84px);
+  color: var(--accent-orange);
+}
+
+.bar {
+  position: absolute;
+  bottom: 48px;
+  width: min(320px, 70vw);
+  height: 3px;
+  background: var(--frame-700);
+}
+
+.fill {
+  display: block;
+  height: 100%;
+  background: var(--accent-orange);
+  animation: load 3s linear both;
+}
+
+@keyframes load {
+  from {
+    width: 0;
+  }
+  to {
+    width: 100%;
+  }
+}
+
+.skip {
+  position: absolute;
+  bottom: 16px;
+  margin: 0;
+  font-size: 12px;
+  color: var(--frame-edge);
+}

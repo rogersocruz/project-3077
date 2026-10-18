@@ -40,6 +40,8 @@ interface PresentationStore {
   /** Fila tocando ou esperando a tela de privacidade: a interface não aceita ações. */
   busy: boolean;
   gate: Gate | null;
+  /** Fase automática esperando "Continuar" (avançar fases automáticas desligado). */
+  phaseHold: string | null;
   /** Faixa "RODADA N" no início de cada rodada. */
   banner: { readonly round: number } | null;
   /** Cinemática do evento global (UX_SPEC 2.14) enquanto toca. */
@@ -66,6 +68,7 @@ export const usePresentation = create<PresentationStore>()(() => ({
   viewer: null,
   busy: false,
   gate: null,
+  phaseHold: null,
   banner: null,
   eventReveal: null,
   combat: null,

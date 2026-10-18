@@ -13,6 +13,7 @@ import { AdaptiveMonitor } from './components/AdaptiveMonitor';
 import { Boards } from './components/Board';
 import { CardMarkers } from './components/CardMarkers';
 import { CameraRig } from './components/CameraRig';
+import { FpsLimiter } from './components/FpsLimiter';
 import { FrameProbe } from './components/FrameProbe';
 import { Fx } from './components/Fx';
 import { HexTiles } from './components/HexTiles';
@@ -79,15 +80,26 @@ export function TableScene({ planet, model, className }: TableSceneProps) {
   const setAutoTier = useSceneStore((s) => s.setAutoTier);
   const effTier = render.adaptiveQuality ? tier : 0;
   useEffect(() => setAutoTier(effTier), [effTier, setAutoTier]);
-  const post = adaptPost(render.post, effTier);
+  // UX_SPEC 3.1: antisserrilhado escolhido (desligado · FXAA · SMAA).
+  const post = adaptPost(
+    { ...render.post, smaa: render.antialias === 'smaa' },
+    effTier,
+    render.antialias === 'fxaa',
+  );
   const postOn = anyPost(post);
   const deviceDpr = typeof window === 'undefined' ? 1 : window.devicePixelRatio;
   const baseDpr = Math.min(Math.max(deviceDpr, profile.dpr[0]), profile.dpr[1]);
-  const dpr = Math.max(0.5, baseDpr * adaptDprScale(effTier));
+  // Escala de renderização 50–150% (UX_SPEC 3.1).
+  const dpr = Math.max(0.5, baseDpr * adaptDprScale(effTier) * render.renderScale);
+  const controls = useSettings((s) => s.controls);
+  // Paleta trocada (modo daltônico): remonta para os materiais lerem as cores novas.
+  const colorMode = useSettings((s) => s.accessibility.colorMode);
 
   return (
     <Canvas
+      key={colorMode}
       className={className}
+      frameloop={render.fpsLimit ? 'never' : 'always'}
       // PCF com raio: sombra suave e mais barata que PCFSoft (que ignora o raio).
       shadows={render.shadows ? { type: PCFShadowMap } : false}
       dpr={dpr}
@@ -128,7 +140,9 @@ export function TableScene({ planet, model, className }: TableSceneProps) {
         smoothTime={render.cameraSmoothTime}
         invertOrbit={render.invertOrbit}
         reducedMotion={reducedMotion}
+        controls={controls}
       />
+      {render.fpsLimit > 0 && <FpsLimiter fps={render.fpsLimit} />}
       {postOn && <Post post={post} />}
       {render.adaptiveQuality && <AdaptiveMonitor onTier={setTier} />}
       {/* Conteúdo novo (modelo) ou geometria nova (qualidade/objetos) pede sombras novas. */}

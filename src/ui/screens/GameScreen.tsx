@@ -44,8 +44,20 @@ import { BottomBar } from '../hud/BottomBar';
 import styles from '../hud/Game.module.css';
 import { HexInspector } from '../hud/HexInspector';
 import { LogPanel } from '../hud/LogPanel';
-import { PauseMenu, PrivacyScreen, QuickRules, RoundBanner, Toast } from '../hud/Overlays';
+import {
+  ConfirmEnd,
+  PauseMenu,
+  PauseSub,
+  PhaseHold,
+  PrivacyScreen,
+  QuickRules,
+  RoundBanner,
+  Toast,
+} from '../hud/Overlays';
 import { EndScreen } from '../end/EndScreen';
+import { LoadingScreen } from '../loading/LoadingScreen';
+import { readSave } from '../../save';
+import { setMusic } from '../../audio';
 import { PlayersPanel } from '../hud/PlayersPanel';
 import { TopBar } from '../hud/TopBar';
 import { TradeModal, TradeReply } from '../hud/Trade';
@@ -158,6 +170,7 @@ function useTargets() {
 export function GameScreen() {
   const search = useNav((s) => s.search);
   const params = useMemo(() => parseGameParams(search), [search]);
+  const loadedFrom = useRef<string | null>(null);
   const start = useSession((s) => s.start);
   const ctx = useSession((s) => s.ctx);
   const shown = usePresentation((s) => s.shown);
@@ -179,10 +192,21 @@ export function GameScreen() {
       const v = params.post;
       st.setPost({ bloom: v, vignette: v, smaa: v, tiltShift: v });
     }
+    // Fase 10: `load=` abre o save (uma vez por navegação) em vez de começar pela URL.
+    if (params.load !== null) {
+      if (loadedFrom.current === search) return;
+      loadedFrom.current = search;
+      const save = readSave(params.load);
+      const r = save ? useSession.getState().loadSave(save) : { ok: false };
+      if (!r.ok) useUi.getState().say('saves.missing', undefined, 'warn');
+      else if ('warning' in r && r.warning) useUi.getState().say(`saves.warn.${r.warning}`);
+      return;
+    }
     if (!sameSetup(useSession.getState().setup, params.setup) || !useSession.getState().state)
       start(params.setup);
-  }, [params, start]);
+  }, [params, start, search]);
 
+  useEffect(() => setMusic('explore'), []);
   useGameShortcuts();
   useTargets();
   useAiDriver();
@@ -231,7 +255,7 @@ export function GameScreen() {
     };
   }, []);
 
-  if (!ctx || !shown) return null;
+  if (!ctx || !shown) return <LoadingScreen factions={[]} />;
   const right = selected ? 'inspector' : logOpen ? 'log' : null;
   const cards = shown.layers.cards;
 
@@ -260,6 +284,9 @@ export function GameScreen() {
       <CombatPanel />
       {!busy && !gate && <CasualtyChoice />}
       <Toast />
+      <PhaseHold />
+      <ConfirmEnd />
+      <PauseSub />
       {modal?.kind === 'bank' && <BankModal />}
       {modal?.kind === 'trade' && <TradeModal counter={modal.counter} />}
       {pending && !busy && !gate && modal?.kind !== 'trade' && <TradeReply />}
@@ -279,6 +306,7 @@ export function GameScreen() {
       {modal?.kind === 'pause' && <PauseMenu />}
       {!busy && <EndScreen />}
       <PrivacyScreen />
+      <LoadingScreen factions={shown.players.map((p) => p.faction)} />
     </main>
   );
 }

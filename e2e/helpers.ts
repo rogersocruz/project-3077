@@ -53,12 +53,13 @@ export async function openGame(page: Page, query: string) {
   await page.waitForSelector('body[data-scene-ready="1"]', { state: 'attached', timeout: 120_000 });
 }
 
-/** Fila de animação vazia, ou parada na tela de privacidade / relatório. */
+/** Fila de animação vazia, ou parada na tela de privacidade / relatório / pausa entre fases. */
 export async function settle(page: Page) {
   await page.waitForFunction(
     () =>
       !(window as unknown as HookWindow).__p3077.busy() ||
       !!document.querySelector('[data-testid=privacy]') ||
+      !!document.querySelector('[data-testid=phase-hold]') ||
       !!document.querySelector('[data-testid=intel]'),
     null,
     { timeout: 60_000 },

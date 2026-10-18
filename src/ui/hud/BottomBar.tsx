@@ -38,6 +38,7 @@ const MODES: { type: ActionTemplate['type']; key: string; label: string }[] = [
 ];
 
 export function BottomBar() {
+  const hints = useSettings((st) => st.gameplay.hints);
   const { t } = useTranslation();
   const ctx = useSession((s) => s.ctx);
   const state = useSession((s) => s.state);
@@ -152,8 +153,9 @@ export function BottomBar() {
         })}
       </div>
 
-      <div className={styles.hint} aria-live="polite">
-        {hint}
+      {/* UX_SPEC 3.3 dicas contextuais (desligáveis). */}
+      <div className={styles.hint} aria-live="polite" data-testid="hud-hint">
+        {hints ? hint : ''}
       </div>
 
       <div className={styles.tradeRow}>

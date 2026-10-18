@@ -1,0 +1,307 @@
+{
+  "_meta": {
+    "note": "Gerado por npm run audio:manifest. Substitua o placeholder pelo arquivo .ogg do caminho indicado."
+  },
+  "sounds": [
+    {
+      "id": "uiClick",
+      "channel": "ui",
+      "brief": "clique seco metálico",
+      "caption": false,
+      "file": "audio/sfx/uiClick.ogg",
+      "placeholder": "sfxr"
+    },
+    {
+      "id": "uiConfirm",
+      "channel": "ui",
+      "brief": "confirmação em dois tons",
+      "caption": false,
+      "file": "audio/sfx/uiConfirm.ogg",
+      "placeholder": "sfxr"
+    },
+    {
+      "id": "uiError",
+      "channel": "ui",
+      "brief": "recusa grave curta",
+      "caption": true,
+      "file": "audio/sfx/uiError.ogg",
+      "placeholder": "sfxr"
+    },
+    {
+      "id": "splashImpact",
+      "channel": "sfx",
+      "brief": "impacto metálico da placa do logo",
+      "caption": true,
+      "file": "audio/sfx/splashImpact.ogg",
+      "placeholder": "sfxr"
+    },
+    {
+      "id": "roundStart",
+      "channel": "sfx",
+      "brief": "gongo metálico curto",
+      "caption": true,
+      "file": "audio/sfx/roundStart.ogg",
+      "placeholder": "sfxr"
+    },
+    {
+      "id": "turnStart",
+      "channel": "ui",
+      "brief": "sinal de vez",
+      "caption": false,
+      "file": "audio/sfx/turnStart.ogg",
+      "placeholder": "sfxr"
+    },
+    {
+      "id": "cardDraw",
+      "channel": "sfx",
+      "brief": "deslizar de papel",
+      "caption": true,
+      "file": "audio/sfx/cardDraw.ogg",
+      "placeholder": "sfxr"
+    },
+    {
+      "id": "cardPlay",
+      "channel": "sfx",
+      "brief": "whoosh + efeito",
+      "caption": true,
+      "file": "audio/sfx/cardPlay.ogg",
+      "placeholder": "sfxr"
+    },
+    {
+      "id": "cardDeliver",
+      "channel": "sfx",
+      "brief": "zumbido de drone",
+      "caption": true,
+      "file": "audio/sfx/cardDeliver.ogg",
+      "placeholder": "sfxr"
+    },
+    {
+      "id": "cardReveal",
+      "channel": "sfx",
+      "brief": "selo rompendo",
+      "caption": true,
+      "file": "audio/sfx/cardReveal.ogg",
+      "placeholder": "sfxr"
+    },
+    {
+      "id": "install",
+      "channel": "sfx",
+      "brief": "trava metálica",
+      "caption": true,
+      "file": "audio/sfx/install.ogg",
+      "placeholder": "sfxr"
+    },
+    {
+      "id": "steal",
+      "channel": "sfx",
+      "brief": "puxão de garra mecânica",
+      "caption": true,
+      "file": "audio/sfx/steal.ogg",
+      "placeholder": "sfxr"
+    },
+    {
+      "id": "explore",
+      "channel": "sfx",
+      "brief": "batida de papelão",
+      "caption": true,
+      "file": "audio/sfx/explore.ogg",
+      "placeholder": "sfxr"
+    },
+    {
+      "id": "survey",
+      "channel": "sfx",
+      "brief": "ping de sonar",
+      "caption": true,
+      "file": "audio/sfx/survey.ogg",
+      "placeholder": "sfxr"
+    },
+    {
+      "id": "build",
+      "channel": "sfx",
+      "brief": "martelos + clank",
+      "caption": true,
+      "file": "audio/sfx/build.ogg",
+      "placeholder": "sfxr"
+    },
+    {
+      "id": "upgrade",
+      "channel": "sfx",
+      "brief": "acorde ascendente",
+      "caption": true,
+      "file": "audio/sfx/upgrade.ogg",
+      "placeholder": "sfxr"
+    },
+    {
+      "id": "produce",
+      "channel": "sfx",
+      "brief": "tilintar metálico",
+      "caption": false,
+      "file": "audio/sfx/produce.ogg",
+      "placeholder": "sfxr"
+    },
+    {
+      "id": "bank",
+      "channel": "sfx",
+      "brief": "caixa registradora futurista",
+      "caption": true,
+      "file": "audio/sfx/bank.ogg",
+      "placeholder": "sfxr"
+    },
+    {
+      "id": "destroy",
+      "channel": "sfx",
+      "brief": "desabamento",
+      "caption": true,
+      "file": "audio/sfx/destroy.ogg",
+      "placeholder": "sfxr"
+    },
+    {
+      "id": "downgrade",
+      "channel": "sfx",
+      "brief": "vidro quebrando",
+      "caption": true,
+      "file": "audio/sfx/downgrade.ogg",
+      "placeholder": "sfxr"
+    },
+    {
+      "id": "villageHit",
+      "channel": "sfx",
+      "brief": "alarme grave",
+      "caption": true,
+      "file": "audio/sfx/villageHit.ogg",
+      "placeholder": "sfxr"
+    },
+    {
+      "id": "troopMove",
+      "channel": "sfx",
+      "brief": "passos / esteira",
+      "caption": true,
+      "file": "audio/sfx/troopMove.ogg",
+      "placeholder": "sfxr"
+    },
+    {
+      "id": "toll",
+      "channel": "sfx",
+      "brief": "bip de pedágio",
+      "caption": true,
+      "file": "audio/sfx/toll.ogg",
+      "placeholder": "sfxr"
+    },
+    {
+      "id": "combat",
+      "channel": "sfx",
+      "brief": "impacto + metal",
+      "caption": true,
+      "file": "audio/sfx/combat.ogg",
+      "placeholder": "sfxr"
+    },
+    {
+      "id": "treatySigned",
+      "channel": "sfx",
+      "brief": "assinatura + selo",
+      "caption": true,
+      "file": "audio/sfx/treatySigned.ogg",
+      "placeholder": "sfxr"
+    },
+    {
+      "id": "treatyTriggered",
+      "channel": "sfx",
+      "brief": "sino",
+      "caption": true,
+      "file": "audio/sfx/treatyTriggered.ogg",
+      "placeholder": "sfxr"
+    },
+    {
+      "id": "pactBroken",
+      "channel": "sfx",
+      "brief": "corrente partida",
+      "caption": true,
+      "file": "audio/sfx/pactBroken.ogg",
+      "placeholder": "sfxr"
+    },
+    {
+      "id": "seismic",
+      "channel": "ambient",
+      "brief": "rumor grave",
+      "caption": true,
+      "file": "audio/sfx/seismic.ogg",
+      "placeholder": "sfxr"
+    },
+    {
+      "id": "thermal",
+      "channel": "ambient",
+      "brief": "erupção abafada",
+      "caption": true,
+      "file": "audio/sfx/thermal.ogg",
+      "placeholder": "sfxr"
+    },
+    {
+      "id": "climatic",
+      "channel": "ambient",
+      "brief": "chuva",
+      "caption": true,
+      "file": "audio/sfx/climatic.ogg",
+      "placeholder": "sfxr"
+    },
+    {
+      "id": "atmospheric",
+      "channel": "ambient",
+      "brief": "vento + estática",
+      "caption": true,
+      "file": "audio/sfx/atmospheric.ogg",
+      "placeholder": "sfxr"
+    },
+    {
+      "id": "economic",
+      "channel": "ambient",
+      "brief": "pregão distante",
+      "caption": true,
+      "file": "audio/sfx/economic.ogg",
+      "placeholder": "sfxr"
+    },
+    {
+      "id": "horde",
+      "channel": "ambient",
+      "brief": "rugido",
+      "caption": true,
+      "file": "audio/sfx/horde.ogg",
+      "placeholder": "sfxr"
+    },
+    {
+      "id": "guardian",
+      "channel": "ambient",
+      "brief": "coro grave",
+      "caption": true,
+      "file": "audio/sfx/guardian.ogg",
+      "placeholder": "sfxr"
+    },
+    {
+      "id": "victory",
+      "channel": "sfx",
+      "brief": "fanfarra",
+      "caption": true,
+      "file": "audio/sfx/victory.ogg",
+      "placeholder": "sfxr"
+    }
+  ],
+  "music": [
+    {
+      "id": "menu",
+      "brief": "orquestral-sintético calmo",
+      "file": "audio/music/menu.ogg",
+      "placeholder": "procedural"
+    },
+    {
+      "id": "explore",
+      "brief": "ambiente de exploração em jogo",
+      "file": "audio/music/explore.ogg",
+      "placeholder": "procedural"
+    },
+    {
+      "id": "tension",
+      "brief": "camada tensa (combate ou evento perigoso)",
+      "file": "audio/music/tension.ogg",
+      "placeholder": "procedural"
+    }
+  ]
+}

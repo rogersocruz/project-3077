@@ -30,8 +30,58 @@ export interface GameSetup {
   readonly factionPicks: readonly (string | null)[];
   /** GDD 13.2 / D11: regra do eliminado (null = padrão do balance.json). */
   readonly eliminatedRule: 'leave' | 'neutral' | null;
+  /**
+   * Regras desta partida (UX_SPEC 2.3 Vitória/Avançado): viram uma sobreposição do
+   * balance.json só desta partida, gravada no save. Ausente = regras dos dados.
+   */
+  readonly rules?: GameRules;
   /** Um por jogador (Fase 5). */
   readonly seats: readonly SeatKind[];
+}
+
+/** UX_SPEC 2.3: ajustes de regra por partida. */
+export interface GameRules {
+  readonly actionsPerTurn?: number;
+  readonly roundLimit?: number;
+  /** Condições de vitória desligadas (trilhas: recursos, 'expansion', 'tribe'). */
+  readonly disabledTracks?: readonly string[];
+}
+
+/** Limiar que desliga uma trilha de acúmulo/expansão (inalcançável). */
+const OFF = 9999;
+
+/** Sobreposição de dados (formato de --override) para as regras da partida. */
+export function rulesOverride(rules: GameRules | undefined): Record<string, unknown> | undefined {
+  if (!rules) return undefined;
+  const balance: Record<string, unknown> = {};
+  const turn: Record<string, number> = {};
+  if (rules.actionsPerTurn) turn['actionsPerTurn'] = rules.actionsPerTurn;
+  if (rules.roundLimit) turn['roundLimit'] = rules.roundLimit;
+  if (Object.keys(turn).length) balance['turn'] = turn;
+  const off = rules.disabledTracks ?? [];
+  if (off.length) {
+    const victory: Record<string, unknown> = {};
+    const thresholds = Object.fromEntries(
+      off.filter((t) => t !== 'expansion' && t !== 'tribe').map((t) => [t, OFF]),
+    );
+    if (Object.keys(thresholds).length) victory['resourceThresholds'] = thresholds;
+    if (off.includes('expansion')) victory['expansionHexes'] = OFF;
+    if (off.includes('tribe')) victory['tribeTarget'] = { enabled: false };
+    balance['victory'] = victory;
+  }
+  return Object.keys(balance).length ? { 'balance.json': balance } : undefined;
+}
+
+/** Regras da partida na URL: `apt` ações por turno, `rl` limite de rodadas, `off` trilhas. */
+function rulesFromUrl(p: URLSearchParams): { rules?: GameRules } {
+  const apt = Number(p.get('apt'));
+  const rl = Number(p.get('rl'));
+  const off = (p.get('off') ?? '').split(',').filter((x) => x !== '');
+  const rules: { actionsPerTurn?: number; roundLimit?: number; disabledTracks?: string[] } = {};
+  if (Number.isInteger(apt) && apt >= 1) rules.actionsPerTurn = apt;
+  if (Number.isInteger(rl) && rl >= 1) rules.roundLimit = rl;
+  if (off.length) rules.disabledTracks = off;
+  return Object.keys(rules).length ? { rules } : {};
 }
 
 export function parseSeats(players: number, seats: string | null, ai: string | null): SeatKind[] {
@@ -53,6 +103,8 @@ export interface GameParams {
   readonly speed: AnimationSpeed | null;
   readonly privacy: boolean | null;
   readonly quality: Quality | null;
+  /** Fase 10: abrir um save (`load=auto|1…10`) em vez de começar pela URL. */
+  readonly load: 'auto' | number | null;
   readonly post: boolean | null;
   readonly adaptive: boolean | null;
 }
@@ -82,12 +134,19 @@ export function parseGameParams(search: string): GameParams {
         .filter((x) => x !== '')
         .map((x) => (x === 'random' ? null : x)),
       eliminatedRule: p.get('elim') === 'neutral' ? 'neutral' : p.get('elim') === 'leave' ? 'leave' : null,
+      ...rulesFromUrl(p),
       seats: parseSeats(players, p.get('seats'), p.get('ai')),
     },
     speed:
       speed === 'instant' ? 'instant' : speed === '0.5' ? 0.5 : speed === '1' ? 1 : speed === '2' ? 2 : null,
     privacy: flag(p.get('privacy')),
-    quality: q === 'low' || q === 'medium' || q === 'high' ? q : null,
+    quality: q === 'low' || q === 'medium' || q === 'high' || q === 'ultra' ? q : null,
+    load: (() => {
+      const l = p.get('load');
+      if (l === 'auto') return 'auto' as const;
+      const n = Number(l);
+      return l !== null && Number.isInteger(n) && n >= 1 ? n : null;
+    })(),
     post: flag(p.get('post')),
     adaptive: flag(p.get('adaptive')),
   };
@@ -106,4 +165,5 @@ export const sameSetup = (a: GameSetup | null, b: GameSetup) =>
   a.factions === b.factions &&
   a.factionPicks.join() === b.factionPicks.join() &&
   a.eliminatedRule === b.eliminatedRule &&
+  JSON.stringify(a.rules ?? null) === JSON.stringify(b.rules ?? null) &&
   a.seats.join() === b.seats.join();

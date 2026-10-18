@@ -32,11 +32,12 @@ function HexLine({ label, hex }: { label: string; hex: SceneHex | undefined }) {
   );
 }
 
-const QUALITIES: Quality[] = ['low', 'medium', 'high'];
+const QUALITIES: Quality[] = ['low', 'medium', 'high', 'ultra'];
 const QUALITY_KEY: Record<Quality, string> = {
   low: 'table.qualityLow',
   medium: 'table.qualityMedium',
   high: 'table.qualityHigh',
+  ultra: 'table.qualityUltra',
 };
 
 function DevPanel({ hexes }: { hexes: readonly SceneHex[] }) {

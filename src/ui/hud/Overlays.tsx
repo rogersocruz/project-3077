@@ -8,7 +8,12 @@ import { director, usePresentation } from '../../anim';
 import { TURN_PHASES } from '../../engine';
 import { seatFaction } from '../../render3d/model';
 import { FactionBadge, Icon } from '../components/Bits';
+import { useSettings } from '../../settings';
+import { playSound } from '../../audio';
 import { useNav } from '../nav';
+import { confirmEndPhase } from '../game/commands';
+import { SavesPanel } from '../saves/SavesPanel';
+import { SettingsPanel } from '../settings/SettingsPanel';
 import { useSession } from '../game/session';
 import { playerName } from '../game/text';
 import { useUi } from '../game/uiStore';
@@ -71,16 +76,36 @@ export function PauseMenu() {
         <button type="button" className={`${hud.btn} ${hud.btnPrimary}`} onClick={() => open(null)} autoFocus>
           {t('pause.resume')}
         </button>
+        <button
+          type="button"
+          className={hud.btn}
+          onClick={() => open({ kind: 'saves', mode: 'save' })}
+          data-testid="pause-save"
+        >
+          {t('pause.save')}
+        </button>
+        <button
+          type="button"
+          className={hud.btn}
+          onClick={() => open({ kind: 'saves', mode: 'load' })}
+          data-testid="pause-load"
+        >
+          {t('pause.load')}
+        </button>
+        <button
+          type="button"
+          className={hud.btn}
+          onClick={() => open({ kind: 'settings' })}
+          data-testid="pause-settings"
+        >
+          {t('pause.settings')}
+        </button>
         <button type="button" className={hud.btn} onClick={() => open({ kind: 'rules' })}>
           {t('rules.title')}
         </button>
-        <button type="button" className={hud.btn} onClick={() => go('newGame')}>
-          {t('end.newGame')}
-        </button>
-        <button type="button" className={hud.btn} onClick={() => go('home')}>
+        <button type="button" className={hud.btn} onClick={() => go('home')} data-testid="pause-menu">
           {t('pause.menu')}
         </button>
-        <p className={styles.pauseNote}>{t('pause.note')}</p>
       </div>
     </div>
   );
@@ -193,21 +218,109 @@ export function RoundBanner() {
   );
 }
 
+/** Salvar/carregar ou configurações dentro da partida (pausa). */
+export function PauseSub() {
+  const { t } = useTranslation();
+  const modal = useUi((s) => s.modal);
+  if (modal?.kind !== 'saves' && modal?.kind !== 'settings') return null;
+  const back = () => useUi.getState().open({ kind: 'pause' });
+  const title =
+    modal.kind === 'settings'
+      ? t('settings.title')
+      : modal.mode === 'save'
+        ? t('saves.saveTitle')
+        : t('saves.loadTitle');
+  return (
+    <div className={hud.overlay} role="dialog" aria-modal="true" aria-label={title}>
+      <div className={`${hud.plate} ${hud.rivets} ${hud.modal} ${styles.subModal}`}>
+        <div className={hud.modalHead}>
+          <h2 className={hud.modalTitle}>{title}</h2>
+          <button type="button" className={hud.btn} onClick={back} data-testid="sub-back">
+            {t('common.back')}
+          </button>
+        </div>
+        {modal.kind === 'settings' ? <SettingsPanel /> : <SavesPanel mode={modal.mode} />}
+      </div>
+    </div>
+  );
+}
+
+/** Confirmar ações irreversíveis (UX_SPEC 3.3): encerrar com ações sobrando. */
+export function ConfirmEnd() {
+  const { t } = useTranslation();
+  const modal = useUi((s) => s.modal);
+  const left = useSession((s) => s.state?.actionsLeft ?? 0);
+  if (modal?.kind !== 'confirmEnd') return null;
+  return (
+    <div className={hud.overlay} role="presentation">
+      <div
+        className={`${hud.plate} ${hud.rivets} ${hud.modal}`}
+        role="alertdialog"
+        aria-modal="true"
+        data-testid="confirm-end"
+      >
+        <h2 className={hud.modalTitle}>{t('hud.confirmEndTitle')}</h2>
+        <p className={`${hud.paper} ${hud.modalBody}`}>{t('hud.confirmEndText', { count: left })}</p>
+        <div className={hud.modalFoot}>
+          <button type="button" className={hud.btn} onClick={() => useUi.getState().open(null)}>
+            {t('common.cancel')}
+          </button>
+          <button
+            type="button"
+            className={`${hud.btn} ${hud.btnPrimary}`}
+            onClick={confirmEndPhase}
+            autoFocus
+            data-testid="confirm-end-ok"
+          >
+            {t('hud.endActions')}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/** Avançar fases automáticas desligado (UX_SPEC 3.3): "Continuar" entre as fases. */
+export function PhaseHold() {
+  const { t } = useTranslation();
+  const hold = usePresentation((s) => s.phaseHold);
+  if (!hold) return null;
+  return (
+    <div className={`${hud.plate} ${styles.phaseHold}`} role="status" data-testid="phase-hold">
+      <span>{t('hud.phaseHold', { phase: t(`phases.${hold}`) })}</span>
+      <button
+        type="button"
+        className={`${hud.btn} ${hud.btnPrimary}`}
+        onClick={() => director.continuePhase()}
+        autoFocus
+      >
+        {t('hud.continue')}
+      </button>
+    </div>
+  );
+}
+
 export function Toast() {
   const { t } = useTranslation();
   const toast = useUi((s) => s.toast);
+  // Acessibilidade "tempo ilimitado": o aviso fica até ser fechado (clique).
+  const unlimited = useSettings((s) => s.accessibility.unlimitedTime);
   useEffect(() => {
-    if (!toast) return;
+    if (toast?.tone === 'warn') playSound('uiError');
+  }, [toast]);
+  useEffect(() => {
+    if (!toast || unlimited) return;
     const id = window.setTimeout(
       () => useUi.setState((s) => (s.toast === toast ? { toast: null } : s)),
       2800,
     );
     return () => window.clearTimeout(id);
-  }, [toast]);
+  }, [toast, unlimited]);
   if (!toast) return null;
   return (
     <div
       key={toast.nonce}
+      onClick={() => useUi.setState({ toast: null })}
       className={`${hud.paper} ${styles.toast} ${toast.tone === 'warn' ? styles.toastWarn : ''}`}
       role="status"
       data-testid="toast"

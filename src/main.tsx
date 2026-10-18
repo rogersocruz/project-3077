@@ -6,6 +6,7 @@ import { App } from './ui/App';
 import './ui/theme/fonts';
 import './ui/theme/global.css';
 import { cssVariables } from './ui/theme/tokens';
+import { useSettings } from './settings';
 
 // Dados inválidos falham aqui, na carga — nunca no meio da partida.
 loadGameData();
@@ -14,7 +15,8 @@ for (const [name, value] of Object.entries(cssVariables())) {
   document.documentElement.style.setProperty(name, value);
 }
 
-await initI18n();
+// Idioma das configurações salvas (UX_SPEC 3.3).
+await initI18n(useSettings.getState().gameplay.language);
 
 const root = document.getElementById('root');
 if (!root) throw new Error('#root ausente em index.html');
