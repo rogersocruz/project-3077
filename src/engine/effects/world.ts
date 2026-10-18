@@ -315,7 +315,12 @@ export const WORLD_EFFECTS: Readonly<Record<string, WorldEffect>> = {
   ignoreDiscardOnSabotage: world({ layer: 'factions', params: z.strictObject({}) }),
   parkEfficiency: world({
     layer: 'factions',
-    params: z.strictObject({ fromLevel: z.number().int().positive(), asLevel: z.number().int().positive() }),
+    params: z.strictObject({
+      fromLevel: z.number().int().positive(),
+      asLevel: z.number().int().positive(),
+      /** Experimento de balanceamento: só os N primeiros Parques do dono. */
+      maxParks: z.number().int().positive().optional(),
+    }),
   }),
   protocol: world({
     layer: 'factions',

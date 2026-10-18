@@ -148,7 +148,8 @@
       "treatyUsed": "You already used that pact this turn.",
       "treatyForbids": "A treaty forbids that against this player.",
       "treatyGold": "Not enough Gold to sign: each party pays 1 on acceptance.",
-      "protocolBand": "Protocol: only cards in the n1 cost band."
+      "protocolBand": "Protocol: only cards in the n1 cost band.",
+      "bankLimit": "The bank sells at most {{n}} resources per turn."
     }
   },
   "terrain": {
@@ -190,7 +191,8 @@
     "hint": "Middle/right: orbit · Wheel: zoom · WASD/arrows: pan · 1–6: player · Space: my board · Home: overview",
     "canvasLabel": "3D game table",
     "adaptive": "Adaptive quality",
-    "autoTier": "Auto adjust: tier {{tier}}"
+    "autoTier": "Auto adjust: tier {{tier}}",
+    "qualityUltra": "Ultra"
   },
   "common": {
     "close": "Close",

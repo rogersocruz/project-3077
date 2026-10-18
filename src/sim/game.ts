@@ -71,6 +71,8 @@ export interface GameRecord {
   readonly seats: PlayerRecord[];
   /** Recursos que mudaram de mão: banca (dados + recebidos) e trocas entre jogadores. */
   readonly bankTraded: Resources;
+  /** Unidades compradas da banca por recurso (todos os jogadores). */
+  readonly bankBought?: Resources;
   readonly playerTraded: Resources;
   readonly tradesAccepted: number;
   /** id da carta → vezes jogada / instalada / entregue. */
@@ -166,6 +168,8 @@ export function playSimGame(ctx: EngineContext, opts: SimGameOptions): GameRecor
   const playerTraded = zero();
   const cardsPlayed: Record<string, number> = {};
   const cardsDrawn: Record<string, number> = {};
+  let lastTreasure: string | null = null;
+  const bankBought = zero();
   let tradesAccepted = 0;
   const hazardHits: Record<string, number> = {};
   const eventsRevealed: Record<string, number> = {};
@@ -272,6 +276,7 @@ export function playSimGame(ctx: EngineContext, opts: SimGameOptions): GameRecor
         case 'bankTraded':
           bankTraded[e.give] += e.amount;
           bankTraded[e.receive] += e.received;
+          bankBought[e.receive] += e.received;
           break;
         case 'tradeAccepted':
           tradesAccepted++;
@@ -292,6 +297,12 @@ export function playSimGame(ctx: EngineContext, opts: SimGameOptions): GameRecor
         case 'cardTaken':
         case 'treasureDrawn':
           bump(cardsDrawn, next.cards.defs[e.card] ?? '?');
+          if (e.type === 'treasureDrawn') lastTreasure = next.cards.defs[e.card] ?? '?';
+          break;
+        // Guardião Desperto resolve na hora em que sai do Tesouro (AO): conta como jogada.
+        case 'guardianSpawned':
+          if (lastTreasure === 'guardian_awakened') bump(cardsPlayed, lastTreasure);
+          lastTreasure = null;
           break;
         case 'hazardTriggered':
           bump(hazardHits, e.hazard);
@@ -376,6 +387,7 @@ export function playSimGame(ctx: EngineContext, opts: SimGameOptions): GameRecor
     ms: now() - started,
     seats,
     bankTraded,
+    bankBought,
     playerTraded,
     tradesAccepted,
     cardsPlayed,

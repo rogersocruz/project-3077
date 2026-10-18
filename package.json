@@ -15,6 +15,7 @@
     "typecheck": "tsc --noEmit",
     "sim": "tsx scripts/sim.ts",
     "sim:experiments": "tsx scripts/experiments.ts",
+    "sim:balance": "tsx scripts/balance.ts",
     "data:check": "tsx scripts/data-check.ts",
     "art:check": "tsx scripts/not-implemented.ts art:check",
     "assets:build": "tsx scripts/assets-build.ts",

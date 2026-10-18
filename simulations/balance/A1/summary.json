@@ -1,0 +1,522 @@
+{
+  "config": {
+    "games": 1000,
+    "players": 4,
+    "seed": 1,
+    "levels": [
+      "normal"
+    ],
+    "layers": {
+      "cards": true,
+      "events": true,
+      "specialHexes": true,
+      "conflict": true,
+      "treaties": true,
+      "factions": true
+    },
+    "longMap": false,
+    "style": "mixed",
+    "override": {
+      "_note": "A1 — a banca vende no máximo 2 recursos por turno a cada jogador; vender à banca continua livre.",
+      "balance.json": {
+        "bank": {
+          "maxBuyPerTurn": 2
+        }
+      }
+    }
+  },
+  "summary": {
+    "games": 1000,
+    "players": 4,
+    "totalMs": 6667866.156875007,
+    "winsByTrack": {
+      "food": 5,
+      "stone": 12,
+      "iron": 34,
+      "coal": 426,
+      "oil": 31,
+      "gold": 440,
+      "expansion": 19,
+      "tribe": 32,
+      "elimination": 0,
+      "roundLimit": 13
+    },
+    "winsBySeat": [
+      238,
+      231,
+      250,
+      281
+    ],
+    "winsByFaction": {
+      "natives": {
+        "seats": 670,
+        "wins": 130
+      },
+      "helix": {
+        "seats": 674,
+        "wins": 338
+      },
+      "government": {
+        "seats": 681,
+        "wins": 155
+      },
+      "pirates": {
+        "seats": 662,
+        "wins": 115
+      },
+      "vantage": {
+        "seats": 658,
+        "wins": 147
+      },
+      "revolutionaries": {
+        "seats": 655,
+        "wins": 115
+      }
+    },
+    "winsByLevel": {
+      "normal": {
+        "seats": 4000,
+        "wins": 1000
+      }
+    },
+    "winsByFocus": {
+      "iron": {
+        "seats": 583,
+        "wins": 158,
+        "onFocus": 12
+      },
+      "coal": {
+        "seats": 567,
+        "wins": 163,
+        "onFocus": 116
+      },
+      "expansion": {
+        "seats": 587,
+        "wins": 126,
+        "onFocus": 17
+      },
+      "stone": {
+        "seats": 572,
+        "wins": 166,
+        "onFocus": 3
+      },
+      "oil": {
+        "seats": 563,
+        "wins": 109,
+        "onFocus": 22
+      },
+      "food": {
+        "seats": 568,
+        "wins": 142,
+        "onFocus": 2
+      },
+      "gold": {
+        "seats": 560,
+        "wins": 136,
+        "onFocus": 103
+      }
+    },
+    "rounds": {
+      "mean": 8.773,
+      "median": 9,
+      "min": 1,
+      "max": 15
+    },
+    "roundsHistogram": {
+      "1": 14,
+      "2": 13,
+      "3": 7,
+      "4": 24,
+      "5": 44,
+      "6": 94,
+      "7": 110,
+      "8": 128,
+      "9": 150,
+      "10": 155,
+      "11": 111,
+      "12": 82,
+      "13": 37,
+      "14": 13,
+      "15": 18
+    },
+    "roundLimitRate": 0.013,
+    "sharedWins": 0,
+    "producedPerGame": {
+      "food": 13.269,
+      "stone": 19.753,
+      "iron": 17.54,
+      "coal": 27.916,
+      "oil": 0.22,
+      "gold": 8.108
+    },
+    "bankTradedPerGame": {
+      "food": 0.283,
+      "stone": 11.939,
+      "iron": 3.589,
+      "coal": 15.962,
+      "oil": 0.5,
+      "gold": 2.504
+    },
+    "playerTradedPerGame": {
+      "food": 0.019,
+      "stone": 0.033,
+      "iron": 0.057,
+      "coal": 0.375,
+      "oil": 0.073,
+      "gold": 0.253
+    },
+    "tradesAcceptedPerGame": 0.405,
+    "structuresPerPlayer": {
+      "park": 2.9235,
+      "village": 1,
+      "outpost": 0.84175,
+      "barracks": 0.77,
+      "quarry": 0.5385,
+      "workshop": 0.13025,
+      "university": 0.096,
+      "mine": 0.04225,
+      "wall": 0.01825,
+      "market": 0.00025
+    },
+    "cards": [
+      {
+        "id": "convoy",
+        "played": 4275,
+        "drawn": 4339,
+        "rate": 0.9852500576169624
+      },
+      {
+        "id": "plunder",
+        "played": 3482,
+        "drawn": 4131,
+        "rate": 0.8428951827644638
+      },
+      {
+        "id": "induced_failure",
+        "played": 3223,
+        "drawn": 4050,
+        "rate": 0.7958024691358024
+      },
+      {
+        "id": "thermal_sweep",
+        "played": 2839,
+        "drawn": 2897,
+        "rate": 0.979979288919572
+      },
+      {
+        "id": "reconnaissance",
+        "played": 2789,
+        "drawn": 2851,
+        "rate": 0.9782532444756226
+      },
+      {
+        "id": "audit",
+        "played": 2785,
+        "drawn": 2848,
+        "rate": 0.9778792134831461
+      },
+      {
+        "id": "market_leak",
+        "played": 2773,
+        "drawn": 2848,
+        "rate": 0.9736657303370787
+      },
+      {
+        "id": "overload",
+        "played": 2648,
+        "drawn": 3861,
+        "rate": 0.6858326858326859
+      },
+      {
+        "id": "desertion",
+        "played": 2406,
+        "drawn": 3857,
+        "rate": 0.6238008815141302
+      },
+      {
+        "id": "deep_survey",
+        "played": 2304,
+        "drawn": 3955,
+        "rate": 0.5825537294563843
+      },
+      {
+        "id": "treasure_cache",
+        "played": 1594,
+        "drawn": 1594,
+        "rate": 1
+      },
+      {
+        "id": "treasure_archive",
+        "played": 1264,
+        "drawn": 1298,
+        "rate": 0.9738058551617874
+      },
+      {
+        "id": "tech_silos",
+        "played": 1254,
+        "drawn": 2011,
+        "rate": 0.6235703630034809
+      },
+      {
+        "id": "reinforcement_orbital",
+        "played": 1226,
+        "drawn": 3584,
+        "rate": 0.34207589285714285
+      },
+      {
+        "id": "tech_orbital_logistics",
+        "played": 1225,
+        "drawn": 2005,
+        "rate": 0.6109725685785536
+      },
+      {
+        "id": "guardian_awakened",
+        "played": 978,
+        "drawn": 978,
+        "rate": 1
+      },
+      {
+        "id": "industrial_espionage",
+        "played": 493,
+        "drawn": 946,
+        "rate": 0.5211416490486258
+      },
+      {
+        "id": "relic_ancestral_lens",
+        "played": 348,
+        "drawn": 352,
+        "rate": 0.9886363636363636
+      },
+      {
+        "id": "relic_nav_core",
+        "played": 321,
+        "drawn": 324,
+        "rate": 0.9907407407407407
+      },
+      {
+        "id": "relic_star_map",
+        "played": 312,
+        "drawn": 316,
+        "rate": 0.9873417721518988
+      },
+      {
+        "id": "orbital_strike",
+        "played": 188,
+        "drawn": 847,
+        "rate": 0.22195985832349469
+      },
+      {
+        "id": "tech_seismic_shielding",
+        "played": 95,
+        "drawn": 748,
+        "rate": 0.1270053475935829
+      },
+      {
+        "id": "advanced_research",
+        "played": 46,
+        "drawn": 1563,
+        "rate": 0.02943058221369162
+      },
+      {
+        "id": "drone_1",
+        "played": 23,
+        "drawn": 4315,
+        "rate": 0.005330243337195829
+      },
+      {
+        "id": "tech_antigrav",
+        "played": 20,
+        "drawn": 760,
+        "rate": 0.02631578947368421
+      },
+      {
+        "id": "tech_corporate_diplomacy",
+        "played": 9,
+        "drawn": 762,
+        "rate": 0.011811023622047244
+      },
+      {
+        "id": "ion_bomb",
+        "played": 6,
+        "drawn": 9,
+        "rate": 0.6666666666666666
+      },
+      {
+        "id": "reverse_engineering",
+        "played": 5,
+        "drawn": 8,
+        "rate": 0.625
+      },
+      {
+        "id": "terraform",
+        "played": 4,
+        "drawn": 10,
+        "rate": 0.4
+      },
+      {
+        "id": "tech_extraction_automation",
+        "played": 4,
+        "drawn": 764,
+        "rate": 0.005235602094240838
+      },
+      {
+        "id": "drone_3",
+        "played": 4,
+        "drawn": 1530,
+        "rate": 0.00261437908496732
+      },
+      {
+        "id": "demolition",
+        "played": 3,
+        "drawn": 8,
+        "rate": 0.375
+      },
+      {
+        "id": "gallery_collapse",
+        "played": 2,
+        "drawn": 4,
+        "rate": 0.5
+      },
+      {
+        "id": "construction_contract",
+        "played": 2,
+        "drawn": 9,
+        "rate": 0.2222222222222222
+      },
+      {
+        "id": "political_coup",
+        "played": 2,
+        "drawn": 9,
+        "rate": 0.2222222222222222
+      },
+      {
+        "id": "tech_ceramic_alloy",
+        "played": 2,
+        "drawn": 9,
+        "rate": 0.2222222222222222
+      },
+      {
+        "id": "tech_sensor_network",
+        "played": 1,
+        "drawn": 6,
+        "rate": 0.16666666666666666
+      },
+      {
+        "id": "diplomatic_support",
+        "played": 0,
+        "drawn": 2172,
+        "rate": 0
+      },
+      {
+        "id": "dossier",
+        "played": 0,
+        "drawn": 6,
+        "rate": 0
+      },
+      {
+        "id": "drone_2",
+        "played": 0,
+        "drawn": 8,
+        "rate": 0
+      },
+      {
+        "id": "priority_requisition",
+        "played": 0,
+        "drawn": 1560,
+        "rate": 0
+      },
+      {
+        "id": "strategic_retreat",
+        "played": 0,
+        "drawn": 3280,
+        "rate": 0
+      },
+      {
+        "id": "tech_counterintel",
+        "played": 0,
+        "drawn": 9,
+        "rate": 0
+      },
+      {
+        "id": "tech_deep_drilling",
+        "played": 0,
+        "drawn": 7,
+        "rate": 0
+      },
+      {
+        "id": "transmutation",
+        "played": 0,
+        "drawn": 10,
+        "rate": 0
+      }
+    ],
+    "msPerGame": 6667.866156875007,
+    "hazards": {
+      "thin_crust": {
+        "games": 1000,
+        "hitGames": 892,
+        "hits": 1567
+      },
+      "free_port": {
+        "games": 1000,
+        "hitGames": 917,
+        "hits": 1596
+      },
+      "volcano": {
+        "games": 1000,
+        "hitGames": 786,
+        "hits": 1081
+      },
+      "geyser": {
+        "games": 1000,
+        "hitGames": 892,
+        "hits": 1567
+      },
+      "acid_swamp": {
+        "games": 1000,
+        "hitGames": 932,
+        "hits": 1668
+      },
+      "wind_canyon": {
+        "games": 1000,
+        "hitGames": 873,
+        "hits": 1478
+      },
+      "magnetic_anomaly": {
+        "games": 1000,
+        "hitGames": 873,
+        "hits": 1478
+      }
+    },
+    "eventsPerGame": {
+      "ev_credit_crash": 0.622,
+      "ev_plague": 0.559,
+      "ev_magnetic_storm": 0.728,
+      "ev_fertile_season": 0.549,
+      "ev_hot_market": 0.687,
+      "ev_seismic_collapse": 0.644,
+      "ev_eruption": 0.405,
+      "ev_horde": 0.831,
+      "ev_tailwinds": 0.35,
+      "ev_acid_rain": 0.56,
+      "ev_ionization": 0.4,
+      "ev_ash_cloud": 0.819,
+      "ev_quake": 0.601,
+      "ev_exposed_vein": 0.287,
+      "ev_guardians": 0.409,
+      "ev_unstable_crust": 0.322
+    },
+    "disastersPerGame": 2.997,
+    "eliminationsPerGame": 0.077,
+    "excavationsPerGame": 3.366,
+    "combatsPerGame": 0.187,
+    "recruitsPerGame": 4.778,
+    "villageHitsPerGame": 0.248,
+    "treatiesPerGame": {
+      "proposed": 0.493,
+      "signed": 0.493,
+      "triggered": 0,
+      "broken": 0.005
+    }
+  }
+}

@@ -168,6 +168,9 @@ export interface PlayerState {
   /** Raízes: rodada e quantos Sondar grátis já usou nela. */
   freeSurveyRound: number;
   freeSurveyUsed: number;
+  /** Unidades compradas da banca na rodada `bankBoughtRound` (limite experimental). */
+  bankBought: number;
+  bankBoughtRound: number;
 }
 
 // ── Cartas (GDD 7) ───────────────────────────────────────────────────────────

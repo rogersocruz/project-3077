@@ -118,6 +118,8 @@ export const REASON_KEYS = [
   'treatyGold',
   // Facções (Fase 9)
   'protocolBand',
+  // Experimentos de balanceamento
+  'bankLimit',
 ] as const;
 
 export type ReasonKey = (typeof REASON_KEYS)[number];

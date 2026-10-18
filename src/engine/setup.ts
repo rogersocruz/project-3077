@@ -297,6 +297,8 @@ export function createGame(ctx: EngineContext, options: GameOptions): GameState 
       neutral: false,
       freeSurveyRound: 0,
       freeSurveyUsed: 0,
+      bankBought: 0,
+      bankBoughtRound: 0,
     };
   });
 

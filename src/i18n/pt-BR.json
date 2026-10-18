@@ -148,7 +148,8 @@
       "treatyUsed": "Você já usou esse pacto neste turno.",
       "treatyForbids": "Um tratado proíbe isso contra esse jogador.",
       "treatyGold": "Falta Ouro para assinar: cada participante paga 1 no aceite.",
-      "protocolBand": "Protocolo: só cartas na faixa de custo n1."
+      "protocolBand": "Protocolo: só cartas na faixa de custo n1.",
+      "bankLimit": "A banca vende no máximo {{n}} recursos por turno."
     }
   },
   "terrain": {
@@ -190,7 +191,8 @@
     "hint": "Meio/direito: orbitar · Roda: zoom · WASD/setas: mover · 1–6: jogador · Espaço: meu tabuleiro · Home: visão geral",
     "canvasLabel": "Mesa do jogo em 3D",
     "adaptive": "Qualidade adaptativa",
-    "autoTier": "Ajuste automático: degrau {{tier}}"
+    "autoTier": "Ajuste automático: degrau {{tier}}",
+    "qualityUltra": "Ultra"
   },
   "common": {
     "close": "Fechar",

@@ -16,7 +16,7 @@
 import { cardCostPoints } from '../../data/validate';
 import type { CardDef, EngineContext } from '../context';
 import type { GameEvent } from '../events';
-import { getPlayer } from '../queries';
+import { getPlayer, ownedStructures } from '../queries';
 import type { DrawDeck, GameState, PlayerId } from '../state';
 import { drawCards } from './decks';
 import { progress } from './victory';
@@ -24,7 +24,7 @@ import { progress } from './victory';
 export interface AbilityParams {
   underdogAction: { actions: number };
   protocol: { band: DrawDeck; extraDraw: number; deck: DrawDeck };
-  parkEfficiency: { fromLevel: number; asLevel: number };
+  parkEfficiency: { fromLevel: number; asLevel: number; maxParks?: number };
   betterBank: { sellOffset: number };
   ignoreDiscardOnSabotage: Record<string, never>;
   freeSurvey: { perTurn: number };
@@ -93,10 +93,25 @@ export function protocolDraw(
   events.push({ type: 'factionAbility', player, ability: 'protocol', amount: p.extraDraw });
 }
 
-/** BI: nível com que o Parque produz. */
-export function parkLevel(ctx: EngineContext, state: GameState, owner: PlayerId, level: number): number {
-  const p = ability(ctx, state, owner, 'parkEfficiency');
-  return p && level === p.fromLevel ? p.asLevel : level;
+/**
+ * BI: nível com que o Parque produz. Com `maxParks` (experimento de balanceamento), só os N
+ * primeiros Parques construídos pelo dono (ordem de construção) ganham a habilidade.
+ */
+export function parkLevel(
+  ctx: EngineContext,
+  state: GameState,
+  park: { readonly uid: number; readonly owner: PlayerId; readonly level: number },
+): number {
+  const p = ability(ctx, state, park.owner, 'parkEfficiency');
+  if (!p || park.level !== p.fromLevel) return park.level;
+  if (p.maxParks !== undefined) {
+    const first = ownedStructures(state, park.owner, 'park')
+      .map((x) => x.structure.uid)
+      .sort((a, b) => a - b)
+      .slice(0, p.maxParks);
+    if (!first.includes(park.uid)) return park.level;
+  }
+  return p.asLevel;
 }
 
 /** BK: descarte exigido no custo da carta. */

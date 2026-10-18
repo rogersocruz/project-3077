@@ -93,6 +93,11 @@ export const BalanceFile = z.strictObject({
     roundingFavorsBank: z.boolean(),
     /** Qual lado do spread o Mercado reduz primeiro (DECISOES_ABERTAS, interpretação A da Fase 1). */
     spreadReductionOrder: z.enum(['sellFirst', 'buyFirst']),
+    /**
+     * Experimento de balanceamento (opcional; ausente = sem limite): unidades que a banca vende
+     * a cada jogador por turno. Vender à banca continua livre.
+     */
+    maxBuyPerTurn: Count.optional(),
   }),
   trade: z.strictObject({
     /** Comércio entre jogadores só entre tabuleiros vizinhos (interpretação B da Fase 1). */
@@ -154,7 +159,16 @@ export const BalanceFile = z.strictObject({
     /** Tarifa de cada jogador no início da partida (interpretação AR). */
     defaultTariff: ResourceId,
   }),
-  events: z.strictObject({ perRound: Count, maxPerCategoryInActiveDeck: Positive, activeDeckSize: Positive }),
+  events: z.strictObject({
+    perRound: Count,
+    maxPerCategoryInActiveDeck: Positive,
+    activeDeckSize: Positive,
+    /**
+     * Experimento de balanceamento (opcional): dano de hazard só pelos eventos nomeados
+     * (id do evento → ids de hazard). Ausente = regra AP (todo hazard da categoria do evento).
+     */
+    hazardTriggers: z.record(z.string(), z.array(z.string())).optional(),
+  }),
   treaties: z.strictObject({
     goldCostEach: Count,
     maxActivePerPlayer: Positive,

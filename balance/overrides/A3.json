@@ -1,0 +1,15 @@
+{
+  "_note": "A3 — dano de hazard só por eventos nomeados; eventos positivos nunca causam dano. Montanha não é hazard (o Tremor já a atinge pelo próprio efeito).",
+  "balance.json": {
+    "events": {
+      "hazardTriggers": {
+        "ev_eruption": ["volcano"],
+        "ev_quake": ["geyser", "thin_crust"],
+        "ev_ash_cloud": ["volcano"],
+        "ev_acid_rain": ["acid_swamp"],
+        "ev_magnetic_storm": ["wind_canyon", "magnetic_anomaly"],
+        "ev_credit_crash": ["free_port"]
+      }
+    }
+  }
+}

@@ -105,9 +105,12 @@ export function revealEvent(ctx: EngineContext, state: GameState, events: GameEv
   events.push({ type: 'eventRevealed', round: state.round, event: id, category: def.category });
   const scope: WorldScope = { ctx, state, events };
   // AP: hazards da mesma categoria sofrem o próprio dano antes do efeito do evento.
+  // Com balance.events.hazardTriggers (experimento): só os hazards nomeados para o evento.
+  const named = ctx.balance.events.hazardTriggers;
   for (const [key, hex] of Object.entries(state.hexes)) {
     const hz = hazardAt(ctx, hex);
-    if (!hz || hz.trigger !== def.category) continue;
+    if (!hz) continue;
+    if (named ? !(named[id] ?? []).includes(hz.id) : hz.trigger !== def.category) continue;
     events.push({ type: 'hazardTriggered', hex: key, hazard: hz.id, effect: hz.damage.effectId });
     worldEffect(hz.damage.effectId).onDamage?.(scope, key, hz.damage.params);
   }

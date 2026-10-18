@@ -147,6 +147,11 @@ function apply(ctx: EngineContext, s: GameState, action: Action, cost: number, e
       const quote = bankQuote(ctx, s, player.id, action.give, action.amount, action.receive);
       player.resources[action.give] -= action.amount;
       player.resources[action.receive] += quote.received;
+      if (player.bankBoughtRound !== s.round) {
+        player.bankBoughtRound = s.round;
+        player.bankBought = 0;
+      }
+      player.bankBought += quote.received;
       events.push({
         type: 'bankTraded',
         player: player.id,

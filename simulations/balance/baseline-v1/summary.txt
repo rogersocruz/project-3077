@@ -1,0 +1,84 @@
+baseline-v1 — seeds 1–1000
+1000 partidas de 4 jogadores em 7338.1 s de CPU (7338 ms/partida)
+
+Vitórias por condição:
+  coal          420  42.0%
+  gold          404  40.4%
+  food           50  5.0%
+  iron           44  4.4%
+  oil            42  4.2%
+  expansion      21  2.1%
+  tribe          21  2.1%
+  stone          15  1.5%
+  roundLimit      4  0.4%
+  elimination     0  0.0%
+  (vitórias compartilhadas: 0)
+
+Vitórias por posição de turno (assento = facção):
+  assento 0     226  22.6%
+  assento 1     222  22.2%
+  assento 2     261  26.1%
+  assento 3     291  29.1%
+
+Vitórias por facção (% das partidas em que a facção jogou, IC 95% de Wilson):
+  helix             674 partidas   53.1%  [49.3%–56.9%]
+  government        681 partidas   22.6%  [19.6%–25.9%]
+  vantage           658 partidas   20.4%  [17.5%–23.6%]
+  natives           670 partidas   18.7%  [15.9%–21.8%]
+  revolutionaries   655 partidas   17.9%  [15.1%–21.0%]
+  pirates           662 partidas   16.9%  [14.3%–20.0%]
+
+Por rota perseguida (vitória = qualquer; pela rota = cumpriu a própria trilha):
+  coal         567 assentos  vitória  32.5%  pela rota  25.0%
+  food         568 assentos  vitória  28.2%  pela rota   6.9%
+  stone        572 assentos  vitória  27.8%  pela rota   1.2%
+  iron         583 assentos  vitória  25.2%  pela rota   4.6%
+  gold         560 assentos  vitória  23.0%  pela rota  17.9%
+  expansion    587 assentos  vitória  20.6%  pela rota   3.2%
+  oil          563 assentos  vitória  17.8%  pela rota   5.9%
+
+Duração: média 8.65 rodadas, mediana 9, faixa 1–15
+Bateram o limite de rodadas: 0.4%
+
+Recursos por partida (todos os jogadores):
+  recurso   produzido    banca  trocado
+  food           13.9      2.6      0.1
+  stone          20.7     16.4      0.1
+  iron           18.3      6.0      0.1
+  coal           29.7     18.2      0.3
+  oil             0.5      1.1      0.1
+  gold            8.9      5.1      0.2
+  trocas aceitas entre jogadores: 0.42 por partida
+
+Estruturas no fim (média por jogador):
+  park 3.16 · village 1.00 · outpost 0.93 · barracks 0.79 · quarry 0.60 · workshop 0.16 · university 0.10 · mine 0.10 · wall 0.03 · market 0.00
+
+Hazards atingidos (D15: % das partidas em que sofreram dano):
+  acid_swamp         93.7%  (1.66 vezes por partida)
+  free_port          91.5%  (1.57 vezes por partida)
+  thin_crust         88.8%  (1.55 vezes por partida)
+  geyser             88.8%  (1.55 vezes por partida)
+  wind_canyon        87.2%  (1.46 vezes por partida)
+  magnetic_anomaly   87.2%  (1.46 vezes por partida)
+  volcano            77.5%  (1.05 vezes por partida)
+
+Desastres por partida: 2.99 · eliminações: 0.07 · escavações: 3.44
+
+Conflito por partida: 5.25 tropas recrutadas · 0.21 combates · 0.22 ataques à Vila
+
+Tratados por partida: 0.55 propostos · 0.55 assinados · 0.00 disparos · 0.00 pactos rompidos
+
+Cartas mais jogadas:
+  convoy                        4199  (98.7% das compradas)
+  plunder                       3382  (83.7% das compradas)
+  induced_failure               3194  (80.1% das compradas)
+  thermal_sweep                 2794  (98.0% das compradas)
+  reconnaissance                2755  (97.8% das compradas)
+  audit                         2751  (97.7% das compradas)
+Cartas menos jogadas:
+  diplomatic_support               0  (0.0% das compradas)
+  dossier                          0  (0.0% das compradas)
+  drone_2                          0  (0.0% das compradas)
+  priority_requisition             0  (0.0% das compradas)
+  strategic_retreat                0  (0.0% das compradas)
+  tech_sensor_network              0  (0.0% das compradas)

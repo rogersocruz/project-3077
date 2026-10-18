@@ -299,6 +299,13 @@ function crossCheck(d: GameData, issues: DataIssue[]): void {
   });
 
   // ── balance.json ──
+  const eventIds = new Set(d.events.map((e) => e.id));
+  const hazardIds = new Set(d.tiles.hazards.map((h) => h.id));
+  for (const [ev, hz] of Object.entries(d.balance.events.hazardTriggers ?? {})) {
+    if (!eventIds.has(ev)) err('balance.json', `.events.hazardTriggers.${ev}`, `evento "${ev}" não existe`);
+    for (const h of hz)
+      if (!hazardIds.has(h)) err('balance.json', `.events.hazardTriggers.${ev}`, `hazard "${h}" não existe`);
+  }
   d.balance.provisional.forEach((p, i) => {
     if (getPath(d.balance, p) === undefined) {
       err('balance.json', `.provisional[${i}]`, `caminho "${p}" não existe em balance.json`);

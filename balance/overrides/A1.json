@@ -1,0 +1,4 @@
+{
+  "_note": "A1 — a banca vende no máximo 2 recursos por turno a cada jogador; vender à banca continua livre.",
+  "balance.json": { "bank": { "maxBuyPerTurn": 2 } }
+}

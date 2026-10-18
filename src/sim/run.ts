@@ -74,6 +74,8 @@ export function applyOverride(
   if (!override) return raw;
   const out: Record<string, unknown> = { ...raw };
   for (const [file, patch] of Object.entries(override)) {
+    // Comentários do arquivo de override (ex.: "_note") não são dados.
+    if (file.startsWith('_')) continue;
     if (!(file in raw)) throw new Error(`override: arquivo desconhecido "${file}"`);
     const base = out[file];
     if (Array.isArray(base) && isObj(patch)) {

@@ -248,7 +248,7 @@ export function structureYield(
   const level = levelDef(
     ctx,
     structure.type === 'park' && state
-      ? { type: 'park', level: parkLevel(ctx, state, structure.owner, structure.level) }
+      ? { type: 'park', level: parkLevel(ctx, state, structure) }
       : structure,
   );
   const out: ResourceAmounts = {};

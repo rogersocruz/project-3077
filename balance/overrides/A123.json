@@ -1,0 +1,17 @@
+{
+  "_note": "A123 — A1 + A2 + A3 juntas.",
+  "balance.json": {
+    "bank": { "maxBuyPerTurn": 2 },
+    "events": {
+      "hazardTriggers": {
+        "ev_eruption": ["volcano"],
+        "ev_quake": ["geyser", "thin_crust"],
+        "ev_ash_cloud": ["volcano"],
+        "ev_acid_rain": ["acid_swamp"],
+        "ev_magnetic_storm": ["wind_canyon", "magnetic_anomaly"],
+        "ev_credit_crash": ["free_port"]
+      }
+    }
+  },
+  "structures.json": { "mine": { "rarity": 1 } }
+}

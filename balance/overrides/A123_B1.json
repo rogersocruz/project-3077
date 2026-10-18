@@ -1,0 +1,18 @@
+{
+  "_note": "A123 + B1 — Helix: os 2 primeiros Parques de nível 1 produzem como nível 2.",
+  "balance.json": {
+    "bank": { "maxBuyPerTurn": 2 },
+    "events": {
+      "hazardTriggers": {
+        "ev_eruption": ["volcano"],
+        "ev_quake": ["geyser", "thin_crust"],
+        "ev_ash_cloud": ["volcano"],
+        "ev_acid_rain": ["acid_swamp"],
+        "ev_magnetic_storm": ["wind_canyon", "magnetic_anomaly"],
+        "ev_credit_crash": ["free_port"]
+      }
+    }
+  },
+  "structures.json": { "mine": { "rarity": 1 } },
+  "factions.json": { "helix": { "ability": { "params": { "maxParks": 2 } } } }
+}

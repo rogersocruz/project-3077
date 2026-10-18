@@ -4,6 +4,9 @@
  *               [--style mixed|balanced] [--override patch.json] [--rotate] [--play-to-limit]
  *               [--workers N] [--out sim-out]
  * --override: patches em qualquer data/*.json (ex.: {"structures.json":{"mine":{"rarity":1}}}).
+ * --balance: arquivo de override (balance/overrides/*.json). Com chaves "*.json" é um patch de
+ *   vários arquivos (como --override); senão é um patch (parcial ou completo) do balance.json.
+ *   data/ nunca muda.
  * --rotate: o primeiro nível gira de assento a cada partida (ex.: --level investor,normal,normal,normal).
  * --play-to-limit: laboratório — ninguém vence antes do limite de rodadas (calibração).
  * Roda N partidas IA × IA sem renderização, com seeds sequenciais, em paralelo
@@ -61,12 +64,19 @@ function parseArgs(argv: readonly string[]): { config: SimConfig; workers: numbe
   }
   const players = int('players', DEFAULT_SIM.players, 3);
   if (players > 6) fail('--players vai de 3 a 6');
+  const read = (p: string) => JSON.parse(readFileSync(resolve(p), 'utf8')) as Record<string, unknown>;
   const balancePath = args.get('balance');
-  const balance = balancePath ? JSON.parse(readFileSync(resolve(balancePath), 'utf8')) : undefined;
   const overridePath = args.get('override');
-  const override = overridePath
-    ? (JSON.parse(readFileSync(resolve(overridePath), 'utf8')) as Record<string, unknown>)
+  const fromBalance = balancePath ? read(balancePath) : undefined;
+  const multiFile = (o: Record<string, unknown>) => Object.keys(o).some((k) => k.endsWith('.json'));
+  const asOverride = fromBalance
+    ? multiFile(fromBalance)
+      ? fromBalance
+      : { 'balance.json': fromBalance }
     : undefined;
+  const merged = { ...(asOverride ?? {}), ...(overridePath ? read(overridePath) : {}) };
+  const override = Object.keys(merged).length ? merged : undefined;
+  const balance = undefined;
   return {
     config: {
       games: int('games', DEFAULT_SIM.games, 1),

@@ -259,7 +259,15 @@ function checkActionsPhase(ctx: EngineContext, state: GameState, action: Action)
       if (!Number.isInteger(action.amount) || action.amount < 1) return no('invalidAmounts');
       if (getPlayer(state, player).resources[action.give] < action.amount) return no('cannotAfford');
       const quote = bankQuote(ctx, state, player, action.give, action.amount, action.receive);
-      return quote.received >= 1 ? OK : no('bankCreditTooLow');
+      if (quote.received < 1) return no('bankCreditTooLow');
+      // Experimento (balance.bank.maxBuyPerTurn): a banca vende no máximo N unidades por turno.
+      const max = ctx.balance.bank.maxBuyPerTurn;
+      if (max !== undefined) {
+        const p = getPlayer(state, player);
+        const used = p.bankBoughtRound === state.round ? p.bankBought : 0;
+        if (used + quote.received > max) return no('bankLimit', { n: max });
+      }
+      return OK;
     }
     case 'proposeTrade':
       return checkOffer(ctx, state, player, action.to, action.give, action.receive);
