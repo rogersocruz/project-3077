@@ -1,71 +1,88 @@
-50 partidas de 6 jogadores em 1225.7 s de CPU (24513 ms/partida)
+1000 partidas de 4 jogadores em 10676.0 s de CPU (10676 ms/partida)
 
 Vitórias por condição:
-  coal           25  50.0%
-  gold           13  26.0%
-  food            4  8.0%
-  iron            3  6.0%
-  stone           2  4.0%
-  oil             2  4.0%
-  expansion       1  2.0%
-  roundLimit      0  0.0%
+  coal          427  42.7%
+  gold          307  30.7%
+  food           70  7.0%
+  iron           61  6.1%
+  roundLimit     54  5.4%
+  expansion      39  3.9%
+  oil            30  3.0%
+  stone          23  2.3%
+  tribe           5  0.5%
+  elimination     0  0.0%
   (vitórias compartilhadas: 0)
 
 Vitórias por posição de turno (assento = facção):
-  assento 0       3  6.0%
-  assento 1       9  18.0%
-  assento 2      10  20.0%
-  assento 3      11  22.0%
-  assento 4      10  20.0%
-  assento 5       7  14.0%
+  assento 0      52  5.2%
+  assento 1     452  45.2%
+  assento 2     452  45.2%
+  assento 3      44  4.4%
+
+Vitórias por facção (% das partidas em que a facção jogou, IC 95% de Wilson):
+  helix             674 partidas   38.1%  [34.5%–41.9%]
+  government        681 partidas   26.4%  [23.3%–29.9%]
+  vantage           658 partidas   23.7%  [20.6%–27.1%]
+  natives           670 partidas   21.0%  [18.1%–24.3%]
+  revolutionaries   655 partidas   20.5%  [17.5%–23.7%]
+  pirates           662 partidas   19.9%  [17.1%–23.2%]
+
+Vitórias por nível de IA:
+  easy     4.8% dos assentos
+  normal   45.2% dos assentos
+  hard     45.2% dos assentos
 
 Por rota perseguida (vitória = qualquer; pela rota = cumpriu a própria trilha):
-  iron          36 assentos  vitória  30.6%  pela rota   2.8%
-  food          47 assentos  vitória  29.8%  pela rota   8.5%
-  coal          45 assentos  vitória  20.0%  pela rota  17.8%
-  stone         38 assentos  vitória  18.4%  pela rota   2.6%
-  expansion     46 assentos  vitória  13.0%  pela rota   2.2%
-  oil           47 assentos  vitória   4.3%  pela rota   2.1%
-  gold          41 assentos  vitória   2.4%  pela rota   2.4%
+  stone        572 assentos  vitória  27.6%  pela rota   2.3%
+  coal         567 assentos  vitória  27.0%  pela rota  19.6%
+  food         568 assentos  vitória  26.2%  pela rota   7.0%
+  expansion    587 assentos  vitória  25.4%  pela rota   6.3%
+  iron         583 assentos  vitória  24.4%  pela rota   4.3%
+  oil          563 assentos  vitória  23.4%  pela rota   4.8%
+  gold         560 assentos  vitória  20.9%  pela rota  13.9%
 
-Duração: média 8.46 rodadas, mediana 9, faixa 1–13
-Bateram o limite de rodadas: 0.0%
+Duração: média 10.36 rodadas, mediana 10, faixa 1–15
+Bateram o limite de rodadas: 5.4%
 
 Recursos por partida (todos os jogadores):
   recurso   produzido    banca  trocado
-  food           17.0      5.8      0.4
-  stone          47.7     18.7      0.2
-  iron           25.8      8.9      0.3
-  coal           40.1     23.6      0.8
-  oil             0.3      0.9      0.1
-  gold           13.8      6.7      0.5
-  trocas aceitas entre jogadores: 1.08 por partida
+  food           12.5     16.5      0.1
+  stone          20.4     21.6      0.1
+  iron           16.9     15.2      0.1
+  coal           27.4     23.1      0.2
+  oil             0.5      1.8      0.0
+  gold           11.7     10.4      0.1
+  trocas aceitas entre jogadores: 0.30 por partida
 
 Estruturas no fim (média por jogador):
-  park 3.68 · outpost 1.21 · quarry 1.16 · village 1.00 · workshop 0.27 · university 0.24 · wall 0.07 · mine 0.05 · barracks 0.01 · archive 0.00 · market 0.00
+  park 2.45 · outpost 1.09 · village 1.00 · barracks 0.63 · quarry 0.44 · workshop 0.21 · mine 0.07 · university 0.07 · wall 0.05 · archive 0.00
 
 Hazards atingidos (D15: % das partidas em que sofreram dano):
-  free_port          94.0%  (1.58 vezes por partida)
-  acid_swamp         92.0%  (1.72 vezes por partida)
-  geyser             86.0%  (1.52 vezes por partida)
-  thin_crust         86.0%  (1.52 vezes por partida)
-  volcano            82.0%  (1.04 vezes por partida)
-  wind_canyon        78.0%  (1.20 vezes por partida)
-  magnetic_anomaly   78.0%  (1.20 vezes por partida)
+  acid_swamp         96.8%  (1.91 vezes por partida)
+  free_port          95.8%  (1.84 vezes por partida)
+  thin_crust         95.2%  (1.81 vezes por partida)
+  geyser             95.2%  (1.81 vezes por partida)
+  wind_canyon        92.4%  (1.72 vezes por partida)
+  magnetic_anomaly   92.4%  (1.72 vezes por partida)
+  volcano            88.4%  (1.27 vezes por partida)
 
-Desastres por partida: 3.94 · eliminações: 0.02 · escavações: 3.48
+Desastres por partida: 3.52 · eliminações: 0.04 · escavações: 1.90
+
+Conflito por partida: 4.06 tropas recrutadas · 0.12 combates · 0.06 ataques à Vila
+
+Tratados por partida: 0.17 propostos · 0.17 assinados · 0.00 disparos · 0.00 pactos rompidos
 
 Cartas mais jogadas:
-  convoy                         433  (96.2% das compradas)
-  plunder                        418  (93.7% das compradas)
-  market_leak                    310  (96.9% das compradas)
-  reconnaissance                 307  (95.0% das compradas)
-  audit                          303  (94.7% das compradas)
-  induced_failure                292  (82.7% das compradas)
+  convoy                        5358  (98.5% das compradas)
+  plunder                       4207  (84.0% das compradas)
+  reconnaissance                3493  (96.0% das compradas)
+  audit                         3423  (94.8% das compradas)
+  thermal_sweep                 3388  (94.7% das compradas)
+  market_leak                   3323  (92.1% das compradas)
 Cartas menos jogadas:
-  construction_contract            0  (0.0% das compradas)
   diplomatic_support               0  (0.0% das compradas)
-  drone_2                          0  (0.0% das compradas)
-  drone_3                          0  (0.0% das compradas)
   guardian_awakened                0  (0.0% das compradas)
-  priority_requisition             0  (0.0% das compradas)
+  tech_ceramic_alloy               0  (0.0% das compradas)
+  transmutation                    0  (0.0% das compradas)
+  strategic_retreat                1  (0.0% das compradas)
+  tech_extraction_automation       1  (0.2% das compradas)
